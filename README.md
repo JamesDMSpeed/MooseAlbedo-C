@@ -1,8 +1,9 @@
-#John Salisbury - NTNU Master's Project
-
+# John Salisbury - NTNU Master's Project
+<br><br>
 ## Tentative Project Title:
 How do moose influence climate? The effect of moose browsing on albedo and radiative forcing in successional boreal forest.
-
+<br><br><br>
+## Project Components:
 ### Question 1: What is the impact of moose exclosure on surface albedo in Norwegian successional boreal forest?
 
 **Hypothesis**:
