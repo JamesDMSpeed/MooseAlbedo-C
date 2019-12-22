@@ -65,3 +65,11 @@ This component of the project is aimed at determining whether moose browsing has
 > Need to develop a hypothesis here.
 
 <br/><br/>
+### Bonus (if time): R Shiny spatial visualization of regional albedo model
+
+**Summary**:
+> I'd like to effectively communicate my results in an interactive, web-based manner. To do this, I'd like to create an R Shiny app with an interactive spatial visualization of the regional albedo model. I'm thinking that I'll do the following:
+<br><br>
+1. Create an R Shiny spatial visualization, using the spatial data from the model (overlaid on a vector map of Norway)
+  - Create a slider where the user can vary moose browsing density -> the spatial data should update in the visualization, and the map should update (however, this may not be realistic if the regional model takes significant time to run! In that case, we'll go with the Mapbox option below).
+
