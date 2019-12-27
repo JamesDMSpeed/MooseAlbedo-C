@@ -3,7 +3,7 @@ This is the README for John Salisbury's master's project with NTNU.
 <br/><br/>
 ## Tentative Project Title:
 How do moose influence climate? The effect of moose browsing on surface albedo in successional boreal forest.
-<br/><br/><br/>
+<br/><br/>
 ## Project Components:
 This section briefly describes relevant info for each of the main research questions (or components) of this project.
 <br/><br/>
@@ -11,8 +11,11 @@ This section briefly describes relevant info for each of the main research quest
 <br/><br/>
 **Hypothesis**:
 > Moose exclosure will increase estimated surface albedo in successional boreal forest, due to greater presence of reflective deciduous trees and less canopy-masking of snow during winter months.
+
+<br><br>
 **Summary**:
 This component of the project is aimed at determining whether moose browsing has an impact on surface albedo in Norwegian successional boreal forests. The component process will look something like the following:
+
 <br><br>
 **1. Assemble Data for Albedo Models:**
   - *_Existing LiDAR data_*:
