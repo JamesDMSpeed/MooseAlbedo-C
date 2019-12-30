@@ -1,5 +1,14 @@
-# MooseAlbedo-C
-How moose browsing influences albedo and C budgets. Master project for John.
-
-# Tentative Project Title:
-How to balance biodiversity conservation, climate mitigation, and timber production? The effect of moose on biodiversity, carbon storage, and albedo in successional boreal forest.
+# Albedo (Exclosures)
+This folder contains relevant code for the comparison of surface albedo between SUSTHERB exclosures and open plots.
+<br><br>
+**File Structure:**
+```
+- 1_Data (contains relevant data)
+	- FSV (LiDAR) - contains LiDAR data necessary for FSV calculations
+	- Sites - contains misc. data for relevant SUSTHERB sites
+	- Snow-Water Equivalent - contains SWE data from senorge.no
+	- Species Composition - contains data on tree species composition at each site
+	- Temperature - contains temp data from senorge.no
+- 2_Model (contains albedo model)
+- 3_Analysis
+```
