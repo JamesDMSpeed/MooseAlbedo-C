@@ -1,13 +1,445 @@
-"","Location","Treatment","Month","Year","Avg_SWE_mm"
-"1","bratsberg","exclosure",1,2017,183.774193548387
-"2","bratsberg","exclosure",2,2017,206.285714285714
-"3","bratsberg","exclosure",3,2017,252.193548387097
-"4","bratsberg","exclosure",4,2017,185.533333333333
-"5","bratsberg","exclosure",5,2017,76.6774193548387
-"6","bratsberg","exclosure",6,2017,0
-"7","bratsberg","exclosure",7,2017,0
-"8","bratsberg","exclosure",8,2017,0
-"9","bratsberg","exclosure",9,2017,0
-"10","bratsberg","exclosure",10,2017,3.67741935483871
-"11","bratsberg","exclosure",11,2017,57.3
-"12","bratsberg","exclosure",12,2017,137.774193548387
+"","LocalityName","Region","LocalityCode","FID","Experiment","Month","Year","SWE_mm"
+"1","Stig Dæhlen","Hedmark","SDB",0,"115",1,2017,4.45161290322581
+"2","Stig Dæhlen","Hedmark","SDB",0,"115",2,2017,6.23214285714286
+"3","Stig Dæhlen","Hedmark","SDB",0,"115",3,2017,3.16774193548387
+"4","Stig Dæhlen","Hedmark","SDB",0,"115",4,2017,0.96
+"5","Stig Dæhlen","Hedmark","SDB",0,"115",5,2017,0
+"6","Stig Dæhlen","Hedmark","SDB",0,"115",6,2017,0
+"7","Stig Dæhlen","Hedmark","SDB",0,"115",7,2017,0
+"8","Stig Dæhlen","Hedmark","SDB",0,"115",8,2017,0
+"9","Stig Dæhlen","Hedmark","SDB",0,"115",9,2017,0
+"10","Stig Dæhlen","Hedmark","SDB",0,"115",10,2017,0
+"11","Stig Dæhlen","Hedmark","SDB",0,"115",11,2017,4.41333333333333
+"12","Stig Dæhlen","Hedmark","SDB",0,"115",12,2017,14.2258064516129
+"13","Nome_Cappelen2","Telemark","2CAB",2,"63",1,2017,1.70322580645161
+"14","Nome_Cappelen2","Telemark","2CAB",2,"63",2,2017,19.7321428571429
+"15","Nome_Cappelen2","Telemark","2CAB",2,"63",3,2017,3.36774193548387
+"16","Nome_Cappelen2","Telemark","2CAB",2,"63",4,2017,0
+"17","Nome_Cappelen2","Telemark","2CAB",2,"63",5,2017,0
+"18","Nome_Cappelen2","Telemark","2CAB",2,"63",6,2017,0
+"19","Nome_Cappelen2","Telemark","2CAB",2,"63",7,2017,0
+"20","Nome_Cappelen2","Telemark","2CAB",2,"63",8,2017,0
+"21","Nome_Cappelen2","Telemark","2CAB",2,"63",9,2017,0
+"22","Nome_Cappelen2","Telemark","2CAB",2,"63",10,2017,0
+"23","Nome_Cappelen2","Telemark","2CAB",2,"63",11,2017,6.23
+"24","Nome_Cappelen2","Telemark","2CAB",2,"63",12,2017,12.6
+"25","Eidskog","Hedmark","STSKNB",3,"109",1,2016,22.3516129032258
+"26","Eidskog","Hedmark","STSKNB",3,"109",2,2016,5.66551724137931
+"27","Eidskog","Hedmark","STSKNB",3,"109",3,2016,10.9741935483871
+"28","Eidskog","Hedmark","STSKNB",3,"109",4,2016,0.136666666666667
+"29","Eidskog","Hedmark","STSKNB",3,"109",5,2016,0
+"30","Eidskog","Hedmark","STSKNB",3,"109",6,2016,0
+"31","Eidskog","Hedmark","STSKNB",3,"109",7,2016,0
+"32","Eidskog","Hedmark","STSKNB",3,"109",8,2016,0
+"33","Eidskog","Hedmark","STSKNB",3,"109",9,2016,0
+"34","Eidskog","Hedmark","STSKNB",3,"109",10,2016,0
+"35","Eidskog","Hedmark","STSKNB",3,"109",11,2016,1.42333333333333
+"36","Eidskog","Hedmark","STSKNB",3,"109",12,2016,2.21612903225806
+"37","Notodden6","Telemark","6NOB",4,"83",1,2017,19.7774193548387
+"38","Notodden6","Telemark","6NOB",4,"83",2,2017,24.7964285714286
+"39","Notodden6","Telemark","6NOB",4,"83",3,2017,11.1870967741935
+"40","Notodden6","Telemark","6NOB",4,"83",4,2017,0.0333333333333333
+"41","Notodden6","Telemark","6NOB",4,"83",5,2017,0
+"42","Notodden6","Telemark","6NOB",4,"83",6,2017,0
+"43","Notodden6","Telemark","6NOB",4,"83",7,2017,0
+"44","Notodden6","Telemark","6NOB",4,"83",8,2017,0
+"45","Notodden6","Telemark","6NOB",4,"83",9,2017,0
+"46","Notodden6","Telemark","6NOB",4,"83",10,2017,0
+"47","Notodden6","Telemark","6NOB",4,"83",11,2017,7.63666666666667
+"48","Notodden6","Telemark","6NOB",4,"83",12,2017,32.8741935483871
+"49","namdalseid_1kub","Trøndelag","1KB",5,"21",1,2010,108.461290322581
+"50","namdalseid_1kub","Trøndelag","1KB",5,"21",2,2010,181.192857142857
+"51","namdalseid_1kub","Trøndelag","1KB",5,"21",3,2010,228.28064516129
+"52","namdalseid_1kub","Trøndelag","1KB",5,"21",4,2010,62.1933333333333
+"53","namdalseid_1kub","Trøndelag","1KB",5,"21",5,2010,0.0516129032258065
+"54","namdalseid_1kub","Trøndelag","1KB",5,"21",6,2010,0
+"55","namdalseid_1kub","Trøndelag","1KB",5,"21",7,2010,0
+"56","namdalseid_1kub","Trøndelag","1KB",5,"21",8,2010,0
+"57","namdalseid_1kub","Trøndelag","1KB",5,"21",9,2010,0
+"58","namdalseid_1kub","Trøndelag","1KB",5,"21",10,2010,2.43225806451613
+"59","namdalseid_1kub","Trøndelag","1KB",5,"21",11,2010,13.7766666666667
+"60","namdalseid_1kub","Trøndelag","1KB",5,"21",12,2010,54.9741935483871
+"61","Fet 3","Hedmark","FKB",6,"119",1,2016,33.7741935483871
+"62","Fet 3","Hedmark","FKB",6,"119",2,2016,14.8862068965517
+"63","Fet 3","Hedmark","FKB",6,"119",3,2016,24.9451612903226
+"64","Fet 3","Hedmark","FKB",6,"119",4,2016,0
+"65","Fet 3","Hedmark","FKB",6,"119",5,2016,0
+"66","Fet 3","Hedmark","FKB",6,"119",6,2016,0
+"67","Fet 3","Hedmark","FKB",6,"119",7,2016,0
+"68","Fet 3","Hedmark","FKB",6,"119",8,2016,0
+"69","Fet 3","Hedmark","FKB",6,"119",9,2016,0
+"70","Fet 3","Hedmark","FKB",6,"119",10,2016,0
+"71","Fet 3","Hedmark","FKB",6,"119",11,2016,1.26333333333333
+"72","Fet 3","Hedmark","FKB",6,"119",12,2016,0.212903225806452
+"73","Didrik Holmsen","Hedmark","DHB",7,"113",1,2018,76.041935483871
+"74","Didrik Holmsen","Hedmark","DHB",7,"113",2,2018,154.735714285714
+"75","Didrik Holmsen","Hedmark","DHB",7,"113",3,2018,181.070967741935
+"76","Didrik Holmsen","Hedmark","DHB",7,"113",4,2018,86.18
+"77","Didrik Holmsen","Hedmark","DHB",7,"113",5,2018,0
+"78","Didrik Holmsen","Hedmark","DHB",7,"113",6,2018,0
+"79","Didrik Holmsen","Hedmark","DHB",7,"113",7,2018,0
+"80","Didrik Holmsen","Hedmark","DHB",7,"113",8,2018,0
+"81","Didrik Holmsen","Hedmark","DHB",7,"113",9,2018,0
+"82","Didrik Holmsen","Hedmark","DHB",7,"113",10,2018,0.161290322580645
+"83","Didrik Holmsen","Hedmark","DHB",7,"113",11,2018,0.86
+"84","Didrik Holmsen","Hedmark","DHB",7,"113",12,2018,23.5677419354839
+"85","Halvard Pramhus","Hedmark","HPB",8,"121",1,2016,25.1870967741935
+"86","Halvard Pramhus","Hedmark","HPB",8,"121",2,2016,7.52068965517241
+"87","Halvard Pramhus","Hedmark","HPB",8,"121",3,2016,12.5322580645161
+"88","Halvard Pramhus","Hedmark","HPB",8,"121",4,2016,0.0366666666666667
+"89","Halvard Pramhus","Hedmark","HPB",8,"121",5,2016,0
+"90","Halvard Pramhus","Hedmark","HPB",8,"121",6,2016,0
+"91","Halvard Pramhus","Hedmark","HPB",8,"121",7,2016,0
+"92","Halvard Pramhus","Hedmark","HPB",8,"121",8,2016,0
+"93","Halvard Pramhus","Hedmark","HPB",8,"121",9,2016,0
+"94","Halvard Pramhus","Hedmark","HPB",8,"121",10,2016,0
+"95","Halvard Pramhus","Hedmark","HPB",8,"121",11,2016,1.08333333333333
+"96","Halvard Pramhus","Hedmark","HPB",8,"121",12,2016,1.79354838709677
+"97","Selbu_kl","Trøndelag","KLB",9,"43",1,2015,52.8838709677419
+"98","Selbu_kl","Trøndelag","KLB",9,"43",2,2015,49.3642857142857
+"99","Selbu_kl","Trøndelag","KLB",9,"43",3,2015,0.993548387096774
+"100","Selbu_kl","Trøndelag","KLB",9,"43",4,2015,0.303333333333333
+"101","Selbu_kl","Trøndelag","KLB",9,"43",5,2015,0
+"102","Selbu_kl","Trøndelag","KLB",9,"43",6,2015,0
+"103","Selbu_kl","Trøndelag","KLB",9,"43",7,2015,0
+"104","Selbu_kl","Trøndelag","KLB",9,"43",8,2015,0
+"105","Selbu_kl","Trøndelag","KLB",9,"43",9,2015,0
+"106","Selbu_kl","Trøndelag","KLB",9,"43",10,2015,0
+"107","Selbu_kl","Trøndelag","KLB",9,"43",11,2015,2.36333333333333
+"108","Selbu_kl","Trøndelag","KLB",9,"43",12,2015,7.16451612903226
+"109","Nsb_Verdal","Trøndelag","1NSB",11,"31",1,2015,7.71935483870968
+"110","Nsb_Verdal","Trøndelag","1NSB",11,"31",2,2015,0.517857142857143
+"111","Nsb_Verdal","Trøndelag","1NSB",11,"31",3,2015,0.0483870967741935
+"112","Nsb_Verdal","Trøndelag","1NSB",11,"31",4,2015,0
+"113","Nsb_Verdal","Trøndelag","1NSB",11,"31",5,2015,0
+"114","Nsb_Verdal","Trøndelag","1NSB",11,"31",6,2015,0
+"115","Nsb_Verdal","Trøndelag","1NSB",11,"31",7,2015,0
+"116","Nsb_Verdal","Trøndelag","1NSB",11,"31",8,2015,0
+"117","Nsb_Verdal","Trøndelag","1NSB",11,"31",9,2015,0
+"118","Nsb_Verdal","Trøndelag","1NSB",11,"31",10,2015,0
+"119","Nsb_Verdal","Trøndelag","1NSB",11,"31",11,2015,1.40666666666667
+"120","Nsb_Verdal","Trøndelag","1NSB",11,"31",12,2015,0.635483870967742
+"121","Sl_Tydal","Trøndelag","SEB",12,"49",1,2015,112.216129032258
+"122","Sl_Tydal","Trøndelag","SEB",12,"49",2,2015,140.967857142857
+"123","Sl_Tydal","Trøndelag","SEB",12,"49",3,2015,72.6451612903226
+"124","Sl_Tydal","Trøndelag","SEB",12,"49",4,2015,13.0666666666667
+"125","Sl_Tydal","Trøndelag","SEB",12,"49",5,2015,0
+"126","Sl_Tydal","Trøndelag","SEB",12,"49",6,2015,0
+"127","Sl_Tydal","Trøndelag","SEB",12,"49",7,2015,0
+"128","Sl_Tydal","Trøndelag","SEB",12,"49",8,2015,0
+"129","Sl_Tydal","Trøndelag","SEB",12,"49",9,2015,0
+"130","Sl_Tydal","Trøndelag","SEB",12,"49",10,2015,0
+"131","Sl_Tydal","Trøndelag","SEB",12,"49",11,2015,6.4
+"132","Sl_Tydal","Trøndelag","SEB",12,"49",12,2015,41.2548387096774
+"133","Kviteseid2","Telemark","2KVB",14,"65",1,2017,96.8129032258065
+"134","Kviteseid2","Telemark","2KVB",14,"65",2,2017,123.525
+"135","Kviteseid2","Telemark","2KVB",14,"65",3,2017,184.664516129032
+"136","Kviteseid2","Telemark","2KVB",14,"65",4,2017,27.2733333333333
+"137","Kviteseid2","Telemark","2KVB",14,"65",5,2017,3.30322580645161
+"138","Kviteseid2","Telemark","2KVB",14,"65",6,2017,0
+"139","Kviteseid2","Telemark","2KVB",14,"65",7,2017,0
+"140","Kviteseid2","Telemark","2KVB",14,"65",8,2017,0
+"141","Kviteseid2","Telemark","2KVB",14,"65",9,2017,0
+"142","Kviteseid2","Telemark","2KVB",14,"65",10,2017,0.241935483870968
+"143","Kviteseid2","Telemark","2KVB",14,"65",11,2017,21.9033333333333
+"144","Kviteseid2","Telemark","2KVB",14,"65",12,2017,82.1677419354839
+"145","Bratsberg","Trøndelag","BRB",15,"35",1,2017,18.6967741935484
+"146","Bratsberg","Trøndelag","BRB",15,"35",2,2017,4.7
+"147","Bratsberg","Trøndelag","BRB",15,"35",3,2017,12.1612903225806
+"148","Bratsberg","Trøndelag","BRB",15,"35",4,2017,0.693333333333333
+"149","Bratsberg","Trøndelag","BRB",15,"35",5,2017,0
+"150","Bratsberg","Trøndelag","BRB",15,"35",6,2017,0
+"151","Bratsberg","Trøndelag","BRB",15,"35",7,2017,0
+"152","Bratsberg","Trøndelag","BRB",15,"35",8,2017,0
+"153","Bratsberg","Trøndelag","BRB",15,"35",9,2017,0
+"154","Bratsberg","Trøndelag","BRB",15,"35",10,2017,0
+"155","Bratsberg","Trøndelag","BRB",15,"35",11,2017,0.21
+"156","Bratsberg","Trøndelag","BRB",15,"35",12,2017,9.53225806451613
+"157","Kviteseid1","Telemark","1KVB",16,"59",1,2017,50.6161290322581
+"158","Kviteseid1","Telemark","1KVB",16,"59",2,2017,66.7892857142857
+"159","Kviteseid1","Telemark","1KVB",16,"59",3,2017,99.1258064516129
+"160","Kviteseid1","Telemark","1KVB",16,"59",4,2017,3.43333333333333
+"161","Kviteseid1","Telemark","1KVB",16,"59",5,2017,0.512903225806452
+"162","Kviteseid1","Telemark","1KVB",16,"59",6,2017,0
+"163","Kviteseid1","Telemark","1KVB",16,"59",7,2017,0
+"164","Kviteseid1","Telemark","1KVB",16,"59",8,2017,0
+"165","Kviteseid1","Telemark","1KVB",16,"59",9,2017,0
+"166","Kviteseid1","Telemark","1KVB",16,"59",10,2017,0
+"167","Kviteseid1","Telemark","1KVB",16,"59",11,2017,9.89666666666667
+"168","Kviteseid1","Telemark","1KVB",16,"59",12,2017,36.7225806451613
+"169","Selbu_Sl","Trøndelag","SLB",17,"45",1,2015,84.3709677419355
+"170","Selbu_Sl","Trøndelag","SLB",17,"45",2,2015,93.1642857142857
+"171","Selbu_Sl","Trøndelag","SLB",17,"45",3,2015,16.6129032258065
+"172","Selbu_Sl","Trøndelag","SLB",17,"45",4,2015,1.35333333333333
+"173","Selbu_Sl","Trøndelag","SLB",17,"45",5,2015,0
+"174","Selbu_Sl","Trøndelag","SLB",17,"45",6,2015,0
+"175","Selbu_Sl","Trøndelag","SLB",17,"45",7,2015,0
+"176","Selbu_Sl","Trøndelag","SLB",17,"45",8,2015,0
+"177","Selbu_Sl","Trøndelag","SLB",17,"45",9,2015,0
+"178","Selbu_Sl","Trøndelag","SLB",17,"45",10,2015,0
+"179","Selbu_Sl","Trøndelag","SLB",17,"45",11,2015,2.73333333333333
+"180","Selbu_Sl","Trøndelag","SLB",17,"45",12,2015,14.5774193548387
+"181","Notodden5","Telemark","5NOB",21,"81",1,2017,48.5322580645161
+"182","Notodden5","Telemark","5NOB",21,"81",2,2017,55.7285714285714
+"183","Notodden5","Telemark","5NOB",21,"81",3,2017,80.3096774193548
+"184","Notodden5","Telemark","5NOB",21,"81",4,2017,2.12333333333333
+"185","Notodden5","Telemark","5NOB",21,"81",5,2017,0.393548387096774
+"186","Notodden5","Telemark","5NOB",21,"81",6,2017,0
+"187","Notodden5","Telemark","5NOB",21,"81",7,2017,0
+"188","Notodden5","Telemark","5NOB",21,"81",8,2017,0
+"189","Notodden5","Telemark","5NOB",21,"81",9,2017,0
+"190","Notodden5","Telemark","5NOB",21,"81",10,2017,0.0032258064516129
+"191","Notodden5","Telemark","5NOB",21,"81",11,2017,11.4966666666667
+"192","Notodden5","Telemark","5NOB",21,"81",12,2017,44.3451612903226
+"193","Fritsøe1","Telemark","1FRB",22,"53",1,2017,7.14516129032258
+"194","Fritsøe1","Telemark","1FRB",22,"53",2,2017,19.1571428571429
+"195","Fritsøe1","Telemark","1FRB",22,"53",3,2017,39.3258064516129
+"196","Fritsøe1","Telemark","1FRB",22,"53",4,2017,4.07666666666667
+"197","Fritsøe1","Telemark","1FRB",22,"53",5,2017,1.7
+"198","Fritsøe1","Telemark","1FRB",22,"53",6,2017,0
+"199","Fritsøe1","Telemark","1FRB",22,"53",7,2017,0
+"200","Fritsøe1","Telemark","1FRB",22,"53",8,2017,0
+"201","Fritsøe1","Telemark","1FRB",22,"53",9,2017,0
+"202","Fritsøe1","Telemark","1FRB",22,"53",10,2017,0
+"203","Fritsøe1","Telemark","1FRB",22,"53",11,2017,10.02
+"204","Fritsøe1","Telemark","1FRB",22,"53",12,2017,44.9741935483871
+"205","verdal_2VB","Trøndelag","2VBB",24,"27",1,2015,23.4193548387097
+"206","verdal_2VB","Trøndelag","2VBB",24,"27",2,2015,2.98928571428571
+"207","verdal_2VB","Trøndelag","2VBB",24,"27",3,2015,0.0741935483870968
+"208","verdal_2VB","Trøndelag","2VBB",24,"27",4,2015,0.126666666666667
+"209","verdal_2VB","Trøndelag","2VBB",24,"27",5,2015,0
+"210","verdal_2VB","Trøndelag","2VBB",24,"27",6,2015,0
+"211","verdal_2VB","Trøndelag","2VBB",24,"27",7,2015,0
+"212","verdal_2VB","Trøndelag","2VBB",24,"27",8,2015,0
+"213","verdal_2VB","Trøndelag","2VBB",24,"27",9,2015,0
+"214","verdal_2VB","Trøndelag","2VBB",24,"27",10,2015,0
+"215","verdal_2VB","Trøndelag","2VBB",24,"27",11,2015,1.53333333333333
+"216","verdal_2VB","Trøndelag","2VBB",24,"27",12,2015,2.99354838709677
+"217","Truls Holm","Hedmark","THB",25,"111",1,2017,4.6741935483871
+"218","Truls Holm","Hedmark","THB",25,"111",2,2017,6.64642857142857
+"219","Truls Holm","Hedmark","THB",25,"111",3,2017,6.29354838709677
+"220","Truls Holm","Hedmark","THB",25,"111",4,2017,3.67
+"221","Truls Holm","Hedmark","THB",25,"111",5,2017,0
+"222","Truls Holm","Hedmark","THB",25,"111",6,2017,0
+"223","Truls Holm","Hedmark","THB",25,"111",7,2017,0
+"224","Truls Holm","Hedmark","THB",25,"111",8,2017,0
+"225","Truls Holm","Hedmark","THB",25,"111",9,2017,0
+"226","Truls Holm","Hedmark","THB",25,"111",10,2017,0
+"227","Truls Holm","Hedmark","THB",25,"111",11,2017,9.65
+"228","Truls Holm","Hedmark","THB",25,"111",12,2017,44.4451612903226
+"229","Drangedal1","Telemark","1DRB",26,"69",1,2017,0.92258064516129
+"230","Drangedal1","Telemark","1DRB",26,"69",2,2017,23.8607142857143
+"231","Drangedal1","Telemark","1DRB",26,"69",3,2017,8.4
+"232","Drangedal1","Telemark","1DRB",26,"69",4,2017,0.01
+"233","Drangedal1","Telemark","1DRB",26,"69",5,2017,0
+"234","Drangedal1","Telemark","1DRB",26,"69",6,2017,0
+"235","Drangedal1","Telemark","1DRB",26,"69",7,2017,0
+"236","Drangedal1","Telemark","1DRB",26,"69",8,2017,0
+"237","Drangedal1","Telemark","1DRB",26,"69",9,2017,0
+"238","Drangedal1","Telemark","1DRB",26,"69",10,2017,0
+"239","Drangedal1","Telemark","1DRB",26,"69",11,2017,8.26666666666667
+"240","Drangedal1","Telemark","1DRB",26,"69",12,2017,15.5870967741935
+"241","Furesdal","Telemark","1FYB",27,"57",1,2017,1.01612903225806
+"242","Furesdal","Telemark","1FYB",27,"57",2,2017,24.7678571428571
+"243","Furesdal","Telemark","1FYB",27,"57",3,2017,32.5935483870968
+"244","Furesdal","Telemark","1FYB",27,"57",4,2017,0.156666666666667
+"245","Furesdal","Telemark","1FYB",27,"57",5,2017,0
+"246","Furesdal","Telemark","1FYB",27,"57",6,2017,0
+"247","Furesdal","Telemark","1FYB",27,"57",7,2017,0
+"248","Furesdal","Telemark","1FYB",27,"57",8,2017,0
+"249","Furesdal","Telemark","1FYB",27,"57",9,2017,0
+"250","Furesdal","Telemark","1FYB",27,"57",10,2017,0
+"251","Furesdal","Telemark","1FYB",27,"57",11,2017,10.0266666666667
+"252","Furesdal","Telemark","1FYB",27,"57",12,2017,34.9387096774194
+"253","Sub_Namdalseid","Trøndelag","1SB",28,"33",1,2010,93.1096774193548
+"254","Sub_Namdalseid","Trøndelag","1SB",28,"33",2,2010,166.592857142857
+"255","Sub_Namdalseid","Trøndelag","1SB",28,"33",3,2010,208.887096774194
+"256","Sub_Namdalseid","Trøndelag","1SB",28,"33",4,2010,64.5266666666667
+"257","Sub_Namdalseid","Trøndelag","1SB",28,"33",5,2010,0.0516129032258065
+"258","Sub_Namdalseid","Trøndelag","1SB",28,"33",6,2010,0
+"259","Sub_Namdalseid","Trøndelag","1SB",28,"33",7,2010,0
+"260","Sub_Namdalseid","Trøndelag","1SB",28,"33",8,2010,0
+"261","Sub_Namdalseid","Trøndelag","1SB",28,"33",9,2010,0
+"262","Sub_Namdalseid","Trøndelag","1SB",28,"33",10,2010,3.81290322580645
+"263","Sub_Namdalseid","Trøndelag","1SB",28,"33",11,2010,2.69
+"264","Sub_Namdalseid","Trøndelag","1SB",28,"33",12,2010,48.8516129032258
+"265","Malvik","Trøndelag","MAB",29,"39",1,2016,11.2677419354839
+"266","Malvik","Trøndelag","MAB",29,"39",2,2016,48.6379310344828
+"267","Malvik","Trøndelag","MAB",29,"39",3,2016,70.6967741935484
+"268","Malvik","Trøndelag","MAB",29,"39",4,2016,0.913333333333333
+"269","Malvik","Trøndelag","MAB",29,"39",5,2016,0
+"270","Malvik","Trøndelag","MAB",29,"39",6,2016,0
+"271","Malvik","Trøndelag","MAB",29,"39",7,2016,0
+"272","Malvik","Trøndelag","MAB",29,"39",8,2016,0
+"273","Malvik","Trøndelag","MAB",29,"39",9,2016,0
+"274","Malvik","Trøndelag","MAB",29,"39",10,2016,0
+"275","Malvik","Trøndelag","MAB",29,"39",11,2016,4.8
+"276","Malvik","Trøndelag","MAB",29,"39",12,2016,8.21935483870968
+"277","Drangedal4","Telemark","4DRB",30,"71",1,2016,86.7870967741935
+"278","Drangedal4","Telemark","4DRB",30,"71",2,2016,84.7137931034483
+"279","Drangedal4","Telemark","4DRB",30,"71",3,2016,95.7161290322581
+"280","Drangedal4","Telemark","4DRB",30,"71",4,2016,0.326666666666667
+"281","Drangedal4","Telemark","4DRB",30,"71",5,2016,0
+"282","Drangedal4","Telemark","4DRB",30,"71",6,2016,0
+"283","Drangedal4","Telemark","4DRB",30,"71",7,2016,0
+"284","Drangedal4","Telemark","4DRB",30,"71",8,2016,0
+"285","Drangedal4","Telemark","4DRB",30,"71",9,2016,0
+"286","Drangedal4","Telemark","4DRB",30,"71",10,2016,0
+"287","Drangedal4","Telemark","4DRB",30,"71",11,2016,62.52
+"288","Drangedal4","Telemark","4DRB",30,"71",12,2016,18.9935483870968
+"289","Nome_Cappelen1","Telemark","1CAB",31,"61",1,2017,1.12903225806452
+"290","Nome_Cappelen1","Telemark","1CAB",31,"61",2,2017,19.7357142857143
+"291","Nome_Cappelen1","Telemark","1CAB",31,"61",3,2017,5.9
+"292","Nome_Cappelen1","Telemark","1CAB",31,"61",4,2017,0
+"293","Nome_Cappelen1","Telemark","1CAB",31,"61",5,2017,0
+"294","Nome_Cappelen1","Telemark","1CAB",31,"61",6,2017,0
+"295","Nome_Cappelen1","Telemark","1CAB",31,"61",7,2017,0
+"296","Nome_Cappelen1","Telemark","1CAB",31,"61",8,2017,0
+"297","Nome_Cappelen1","Telemark","1CAB",31,"61",9,2017,0
+"298","Nome_Cappelen1","Telemark","1CAB",31,"61",10,2017,0
+"299","Nome_Cappelen1","Telemark","1CAB",31,"61",11,2017,6.57
+"300","Nome_Cappelen1","Telemark","1CAB",31,"61",12,2017,11.3354838709677
+"301","Singsås","Trøndelag","LAB",33,"47",1,2015,100.358064516129
+"302","Singsås","Trøndelag","LAB",33,"47",2,2015,123.664285714286
+"303","Singsås","Trøndelag","LAB",33,"47",3,2015,33.3064516129032
+"304","Singsås","Trøndelag","LAB",33,"47",4,2015,0.536666666666667
+"305","Singsås","Trøndelag","LAB",33,"47",5,2015,0
+"306","Singsås","Trøndelag","LAB",33,"47",6,2015,0
+"307","Singsås","Trøndelag","LAB",33,"47",7,2015,0
+"308","Singsås","Trøndelag","LAB",33,"47",8,2015,0
+"309","Singsås","Trøndelag","LAB",33,"47",9,2015,0
+"310","Singsås","Trøndelag","LAB",33,"47",10,2015,0
+"311","Singsås","Trøndelag","LAB",33,"47",11,2015,4.21666666666667
+"312","Singsås","Trøndelag","LAB",33,"47",12,2015,26.3161290322581
+"313","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",1,2018,94.0354838709677
+"314","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",2,2018,178.678571428571
+"315","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",3,2018,206.564516129032
+"316","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",4,2018,105.506666666667
+"317","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",5,2018,0
+"318","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",6,2018,0
+"319","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",7,2018,0
+"320","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",8,2018,0
+"321","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",9,2018,0
+"322","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",10,2018,0.164516129032258
+"323","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",11,2018,0.673333333333333
+"324","Stangeskovene Aurskog","Hedmark","SSAB",34,"117",12,2018,24.4387096774194
+"325","Hi_tydal","Trøndelag","HIB",35,"37",1,2015,104.641935483871
+"326","Hi_tydal","Trøndelag","HIB",35,"37",2,2015,122.610714285714
+"327","Hi_tydal","Trøndelag","HIB",35,"37",3,2015,38.9290322580645
+"328","Hi_tydal","Trøndelag","HIB",35,"37",4,2015,2.92
+"329","Hi_tydal","Trøndelag","HIB",35,"37",5,2015,0
+"330","Hi_tydal","Trøndelag","HIB",35,"37",6,2015,0
+"331","Hi_tydal","Trøndelag","HIB",35,"37",7,2015,0
+"332","Hi_tydal","Trøndelag","HIB",35,"37",8,2015,0
+"333","Hi_tydal","Trøndelag","HIB",35,"37",9,2015,0
+"334","Hi_tydal","Trøndelag","HIB",35,"37",10,2015,0
+"335","Hi_tydal","Trøndelag","HIB",35,"37",11,2015,5.21333333333333
+"336","Hi_tydal","Trøndelag","HIB",35,"37",12,2015,31.8451612903226
+"337","Notodden3","Telemark","3NOB",36,"77",1,2017,40.9612903225806
+"338","Notodden3","Telemark","3NOB",36,"77",2,2017,48.6964285714286
+"339","Notodden3","Telemark","3NOB",36,"77",3,2017,54.0870967741935
+"340","Notodden3","Telemark","3NOB",36,"77",4,2017,1.1
+"341","Notodden3","Telemark","3NOB",36,"77",5,2017,0.303225806451613
+"342","Notodden3","Telemark","3NOB",36,"77",6,2017,0
+"343","Notodden3","Telemark","3NOB",36,"77",7,2017,0
+"344","Notodden3","Telemark","3NOB",36,"77",8,2017,0
+"345","Notodden3","Telemark","3NOB",36,"77",9,2017,0
+"346","Notodden3","Telemark","3NOB",36,"77",10,2017,0
+"347","Notodden3","Telemark","3NOB",36,"77",11,2017,8.91666666666667
+"348","Notodden3","Telemark","3NOB",36,"77",12,2017,42.5741935483871
+"349","Drangedal3","Telemark","3DRB",37,"73",1,2016,85.3451612903226
+"350","Drangedal3","Telemark","3DRB",37,"73",2,2016,83.5758620689655
+"351","Drangedal3","Telemark","3DRB",37,"73",3,2016,95.2870967741935
+"352","Drangedal3","Telemark","3DRB",37,"73",4,2016,0.33
+"353","Drangedal3","Telemark","3DRB",37,"73",5,2016,0
+"354","Drangedal3","Telemark","3DRB",37,"73",6,2016,0
+"355","Drangedal3","Telemark","3DRB",37,"73",7,2016,0
+"356","Drangedal3","Telemark","3DRB",37,"73",8,2016,0
+"357","Drangedal3","Telemark","3DRB",37,"73",9,2016,0
+"358","Drangedal3","Telemark","3DRB",37,"73",10,2016,0
+"359","Drangedal3","Telemark","3DRB",37,"73",11,2016,66.37
+"360","Drangedal3","Telemark","3DRB",37,"73",12,2016,30.0967741935484
+"361","steinkjer_1BBb","Trøndelag","1BBB",38,"25",1,2011,138.009677419355
+"362","steinkjer_1BBb","Trøndelag","1BBB",38,"25",2,2011,168.207142857143
+"363","steinkjer_1BBb","Trøndelag","1BBB",38,"25",3,2011,212.335483870968
+"364","steinkjer_1BBb","Trøndelag","1BBB",38,"25",4,2011,100.346666666667
+"365","steinkjer_1BBb","Trøndelag","1BBB",38,"25",5,2011,0
+"366","steinkjer_1BBb","Trøndelag","1BBB",38,"25",6,2011,0
+"367","steinkjer_1BBb","Trøndelag","1BBB",38,"25",7,2011,0
+"368","steinkjer_1BBb","Trøndelag","1BBB",38,"25",8,2011,0
+"369","steinkjer_1BBb","Trøndelag","1BBB",38,"25",9,2011,0
+"370","steinkjer_1BBb","Trøndelag","1BBB",38,"25",10,2011,0
+"371","steinkjer_1BBb","Trøndelag","1BBB",38,"25",11,2011,0.276666666666667
+"372","steinkjer_1BBb","Trøndelag","1BBB",38,"25",12,2011,48
+"373","Selbu_Flub","Trøndelag","FLB",39,"41",1,2015,37.1064516129032
+"374","Selbu_Flub","Trøndelag","FLB",39,"41",2,2015,17.9892857142857
+"375","Selbu_Flub","Trøndelag","FLB",39,"41",3,2015,0.1
+"376","Selbu_Flub","Trøndelag","FLB",39,"41",4,2015,0.19
+"377","Selbu_Flub","Trøndelag","FLB",39,"41",5,2015,0
+"378","Selbu_Flub","Trøndelag","FLB",39,"41",6,2015,0
+"379","Selbu_Flub","Trøndelag","FLB",39,"41",7,2015,0
+"380","Selbu_Flub","Trøndelag","FLB",39,"41",8,2015,0
+"381","Selbu_Flub","Trøndelag","FLB",39,"41",9,2015,0
+"382","Selbu_Flub","Trøndelag","FLB",39,"41",10,2015,0
+"383","Selbu_Flub","Trøndelag","FLB",39,"41",11,2015,2.04333333333333
+"384","Selbu_Flub","Trøndelag","FLB",39,"41",12,2015,5.52903225806452
+"385","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",1,2016,19.5548387096774
+"386","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",2,2016,4.47241379310345
+"387","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",3,2016,11.1774193548387
+"388","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",4,2016,0.15
+"389","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",5,2016,0
+"390","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",6,2016,0
+"391","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",7,2016,0
+"392","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",8,2016,0
+"393","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",9,2016,0
+"394","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",10,2016,0
+"395","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",11,2016,1.00333333333333
+"396","Stangeskovene Eidskog","Hedmark","SSBB",40,"123",12,2016,2.3
+"397","Fritsøe2","Telemark","2FRB",42,"55",1,2017,1.22903225806452
+"398","Fritsøe2","Telemark","2FRB",42,"55",2,2017,15.7571428571429
+"399","Fritsøe2","Telemark","2FRB",42,"55",3,2017,8.4741935483871
+"400","Fritsøe2","Telemark","2FRB",42,"55",4,2017,0.0133333333333333
+"401","Fritsøe2","Telemark","2FRB",42,"55",5,2017,0
+"402","Fritsøe2","Telemark","2FRB",42,"55",6,2017,0
+"403","Fritsøe2","Telemark","2FRB",42,"55",7,2017,0
+"404","Fritsøe2","Telemark","2FRB",42,"55",8,2017,0
+"405","Fritsøe2","Telemark","2FRB",42,"55",9,2017,0
+"406","Fritsøe2","Telemark","2FRB",42,"55",10,2017,0
+"407","Fritsøe2","Telemark","2FRB",42,"55",11,2017,9.68666666666667
+"408","Fritsøe2","Telemark","2FRB",42,"55",12,2017,36.2451612903226
+"409","Kviteseid3","Telemark","3KVB",44,"67",1,2017,80.5
+"410","Kviteseid3","Telemark","3KVB",44,"67",2,2017,101.717857142857
+"411","Kviteseid3","Telemark","3KVB",44,"67",3,2017,164.412903225806
+"412","Kviteseid3","Telemark","3KVB",44,"67",4,2017,24.3233333333333
+"413","Kviteseid3","Telemark","3KVB",44,"67",5,2017,1.86774193548387
+"414","Kviteseid3","Telemark","3KVB",44,"67",6,2017,0
+"415","Kviteseid3","Telemark","3KVB",44,"67",7,2017,0
+"416","Kviteseid3","Telemark","3KVB",44,"67",8,2017,0
+"417","Kviteseid3","Telemark","3KVB",44,"67",9,2017,0
+"418","Kviteseid3","Telemark","3KVB",44,"67",10,2017,0.174193548387097
+"419","Kviteseid3","Telemark","3KVB",44,"67",11,2017,20.54
+"420","Kviteseid3","Telemark","3KVB",44,"67",12,2017,66.841935483871
+"421","verdal_1vb","Trøndelag","1VBB",45,"23",1,2015,48.2516129032258
+"422","verdal_1vb","Trøndelag","1VBB",45,"23",2,2015,18.4107142857143
+"423","verdal_1vb","Trøndelag","1VBB",45,"23",3,2015,0.1
+"424","verdal_1vb","Trøndelag","1VBB",45,"23",4,2015,0.133333333333333
+"425","verdal_1vb","Trøndelag","1VBB",45,"23",5,2015,0
+"426","verdal_1vb","Trøndelag","1VBB",45,"23",6,2015,0
+"427","verdal_1vb","Trøndelag","1VBB",45,"23",7,2015,0
+"428","verdal_1vb","Trøndelag","1VBB",45,"23",8,2015,0
+"429","verdal_1vb","Trøndelag","1VBB",45,"23",9,2015,0
+"430","verdal_1vb","Trøndelag","1VBB",45,"23",10,2015,0
+"431","verdal_1vb","Trøndelag","1VBB",45,"23",11,2015,1.89666666666667
+"432","verdal_1vb","Trøndelag","1VBB",45,"23",12,2015,3.80967741935484
+"433","steinkjer_2BBb","Trøndelag","2BBB",47,"29",1,2011,137.190322580645
+"434","steinkjer_2BBb","Trøndelag","2BBB",47,"29",2,2011,167.332142857143
+"435","steinkjer_2BBb","Trøndelag","2BBB",47,"29",3,2011,211.193548387097
+"436","steinkjer_2BBb","Trøndelag","2BBB",47,"29",4,2011,98.4433333333333
+"437","steinkjer_2BBb","Trøndelag","2BBB",47,"29",5,2011,0
+"438","steinkjer_2BBb","Trøndelag","2BBB",47,"29",6,2011,0
+"439","steinkjer_2BBb","Trøndelag","2BBB",47,"29",7,2011,0
+"440","steinkjer_2BBb","Trøndelag","2BBB",47,"29",8,2011,0
+"441","steinkjer_2BBb","Trøndelag","2BBB",47,"29",9,2011,0
+"442","steinkjer_2BBb","Trøndelag","2BBB",47,"29",10,2011,0
+"443","steinkjer_2BBb","Trøndelag","2BBB",47,"29",11,2011,0.3
+"444","steinkjer_2BBb","Trøndelag","2BBB",47,"29",12,2011,49.5935483870968

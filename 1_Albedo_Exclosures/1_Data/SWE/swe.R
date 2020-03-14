@@ -10,56 +10,89 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
+##Source functions file
+source('1_Albedo_Exclosures/1_Data/data_functions.R')
+
+
+#INITIAL DATA IMPORT --------------------------------------------------
+
 #Get cleaned site data from adjacent 'Sites' folder and add as DF
 site_data <- read.csv('1_Albedo_Exclosures/1_Data/Sites/cleaned_data/cleaned_data.csv', header = TRUE)
 
-#Initialize blank data frame for storage of average SWE
-avg_swe <- data.frame("Location" = character(), "Treatment" = factor(), "Month" = integer(),"Year" = integer(),"Avg_SWE_mm" = double())
+#Load in SeNorge temp data from 'SeNorge_temp_swe_data' folder (2001+ file)
+senorge_swe <- read.csv('1_Albedo_Exclosures/1_Data/SeNorge_temp_swe_data/tro_hed_tel_utm33_2001_2018.csv', header = TRUE)
 
-#Loop through all SWE data files in 'senorge_data' folder
-swe_files <- list.files(path="1_Albedo_Exclosures/1_Data/SWE/senorge_data", pattern="*.csv", full.names=TRUE, recursive=FALSE)
+#Filter down to relevant columns
+senorge_swe <- senorge_swe[,c(1,4,5,6,10)]
 
-for(t in swe_files){
+#Load in SeNorge sites data from 'SeNorge_temp_swe_data' folder (Localities file)
+sites <- read.csv('1_Albedo_Exclosures/1_Data/SeNorge_temp_swe_data/tro_hed_tel_utm33_localities.csv', header = TRUE)
+
+#Initialize blank data frame for storage of average temps
+avg_swe <- data.frame("LocalityName" = character(), "Region" = character(), "LocalityCode" = character(), "FID" = character(), "Experiment" = character(), "Month" = integer(),"Year" = integer(),"SWE_mm" = double())
+
+#END OF DATA LOADING --------------------------------------------------
+
+
+
+
+#DATA PROCESSING (Calculation of average temps for each site) --------------------------------------------------
+i <- as.integer(0)
+while ( i <= max(senorge_swe$trondelag_) ){
         
-       
-        #Get split filename w/o extension
-        filename <- strsplit( sub( '.csv', '', basename(t) ), '-', fixed = FALSE)
-        filename <- unlist(filename)
+        #Get locality code from senorge site list
+        localityCode <- as.character(sites$LocalityCode[sites$FID == i])
         
-        #Pull variables from filename
-        loc <- filename[1]
-        treatment <- filename[2]
+        #Get LiDAR data year for correct site (via locality code)
+        lidarYear <- as.integer(site_data$LiDAR.data.from.year[site_data$LocalityCode == localityCode])
         
-        #Get Year of LiDAR data from main site data (based on site name and treatment - contained within filename)
-        lidar_year <- site_data$LiDAR.data.from.year[site_data$LocalityName == loc & site_data$Treatment == treatment]
-        
-        #Read in as data frame + clean up into usable format
-        data <- read.csv(t, header = FALSE)
-        data <- data[3:nrow(data),]
-        data <-data.frame(data)
-        
-        #Separate values into distinct columns; filter down to relevant year (matches LiDAR data year)
-        data <- as.data.frame(data) %>% separate(data, into = c('Day','Month','Year','Time','SWE'), sep = '[. ;]' )
-        data <- data %>% filter(Year == lidar_year & is.na(SWE) == FALSE)
-        data$Month <- as.numeric(as.character(data$Month))
-        data$SWE <- as.numeric(as.character(data$SWE))
-        data$Year <- as.numeric(as.character(data$Year))
-        
-        #Get monthly averages
-        i <- as.numeric(1)
-        while( i <= max(data$Month) ){
+        #Do following steps ONLY if LiDAR year isn't empty (i.e. LiDAR exists for the site)
+        if( length(lidarYear) > 0 ){
                 
-                #Get mean SWE for the month
-                mean_swe <- mean(data$SWE[data$Month == i])
+                #Create temporary dataframe to calculate mean temps
+                temp_frame <- data.frame(senorge_swe[senorge_swe$trondelag_ == i & senorge_swe$X_Year == lidarYear,])
                 
-                #Append data to final avg SWE DF
-                row <- data.frame("Location" = loc, "Treatment" = treatment, "Month" = i, "Year" = lidar_year, "Avg_SWE_mm" = mean_swe)
-                avg_swe <- rbind(avg_swe, row)
+                #Calculate mean temps by month
+                m <- as.numeric(1)
+                while( m <= max(senorge_swe$X_Month) ){
+                        
+                        #Get mean temperature for the month
+                        mean_swe <- mean(temp_frame$swe_mm[temp_frame$X_Month == m])
+                        
+                        #Append data to final avg temp DF
+                        loc <- as.character(sites$LocalityNa[sites$FID == i])
+                        reg <- as.character(sites$Region[sites$FID == i])
+                        exp <- as.character(sites$Experiment[sites$FID == i])
+                        row <- data.frame("LocalityName" = loc,
+                                          "Region" = reg,
+                                          "LocalityCode" = localityCode,
+                                          "FID" = i,
+                                          "Experiment" = exp,
+                                          "Month" = m,
+                                          "Year" = lidarYear,
+                                          "SWE_mm" = mean_swe)
+                        
+                        avg_swe <- rbind(avg_swe, row)
+                        
+                        #Iterate
+                        m = m+1
+                }
                 
-                i = i+1
         }
+        
+        #Iterate
+        i = i+1
         
 }
 
-##Write final CSV to directory
+#END OF DATA PROCESSING --------------------------------------------------
+
+
+
+#WRITE FINAL DATAFRAME TO CSV --------------------------------------------------
 write.csv(avg_swe, file = '1_Albedo_Exclosures/1_Data/SWE/monthly_avg_swe_mm.csv', row.names = TRUE)
+
+#PLOT SWE
+ggplot(data = avg_swe, aes(x = avg_swe$Month, y = avg_swe$SWE_mm, color = avg_swe$LocalityCode)) +
+        geom_line()
+

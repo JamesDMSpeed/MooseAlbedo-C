@@ -4,6 +4,7 @@
 #Load relevant packages
 library(ggplot2)
 library(dplyr)
+library(raster)
 library(lidR)
 
 
