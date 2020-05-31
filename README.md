@@ -28,6 +28,7 @@ This component of the project is aimed at determining whether moose exclusion ha
 **Summary**:
 This component of the project seeks to examine the relationship between albedo and moose density in Norwegian successional boreal forests. It uses a forest data product from the NFI (SatSkog), spatial gridded climate data from SeNorge, and spatial herbivore density data from previous SustHerb work to model albedo as a function of moose density.
 
+<br><br>
 **File Structure:**
 ```
 - 2_Albedo_Regional
