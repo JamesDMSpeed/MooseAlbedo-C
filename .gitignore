@@ -49,3 +49,12 @@ rsconnect/
 #*README_files/
 .Rproj.user
 1_Albedo_Exclosures/1_Data/SeNorge_temp_swe_data/tro_hed_tel_utm33_1958_2000.csv
+*.las
+*.las
+*.prj
+*.cpg
+*.dbf
+*.shp
+*.shx
+*.tif
+1_Albedo_Exclosures/Data/SeNorge/tro_hed_tel_utm33_1958_2000.csv
