@@ -12,9 +12,7 @@ output:
 This document contains a summary of albedo estimates produced through 'Approach 3', including the figures listed below:
 
 * *Section 1*. Plots relevant to final albedo estimates.
-* *Section 2*. Mixed effects model.
-* *Section 3*. Detailed summary of each SustHerb site.
-
+* *Section 2*. Mixed effects model + output.
   
 ***
 
@@ -52,6 +50,7 @@ knitr::include_graphics("../../../Approach_3/Output/Analysis/corr_heatmap_approa
 
 ```
 
+***
 
 **Model in R**: 
 Random effect is month nested under site ("LocalityName")
@@ -66,6 +65,8 @@ model <- lmer(Composite_Albedo ~ Treatment +
                       (1 | LocalityName/Month),
               data = model_data)
 ```
+
+***
 
 **Model Output**:
 
@@ -88,6 +89,8 @@ model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Clearcut_Lidar
 tab_model(model, digits = 5, file = "../../../Approach_3/Output/Analysis/model_approach_3.html")
 
 ```
+
+***
 
 **Exploring Model Fit**:
 

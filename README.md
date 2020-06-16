@@ -19,6 +19,7 @@ This component of the project is aimed at determining whether moose exclusion ha
   - Approach_2 (contains scripts and output for the "LiDAR Hull" approach)
   - Approach_3 (contains scripts and output for the "LiDAR CHM" approach)
   - Data (contains all raw data necessary for both approaches)
+  - Reports (contains all R markdown reports for each approach)
   - Universal (contains scripts and output for variables relevant to both approaches - i.e. SWE, temp, etc.)
   - README.md
 ```
