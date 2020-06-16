@@ -26,13 +26,11 @@ This component of the project is aimed at determining whether moose exclusion ha
 
 <br/><br/>
 **Markdown Reports:**
-```
-- Approach 1
-- Approach 2
-- Approach 3
-  - [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach3/tree_volumes_approach_3.html)
-  - [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
-```
+* Approach 1
+* Approach 2
+* Approach 3
+  * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach3/tree_volumes_approach_3.html)
+  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
 
 
 <br/><br/>
