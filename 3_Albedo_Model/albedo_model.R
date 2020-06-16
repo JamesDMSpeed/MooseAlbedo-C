@@ -1,1 +1,0 @@
-##This script contains the 'R' version of Cherubini et al. (2019)'s albedo model

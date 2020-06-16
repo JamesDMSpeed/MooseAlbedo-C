@@ -14,8 +14,10 @@ This component of the project is aimed at determining whether moose exclusion ha
 **File Structure:**
 ```
 - 1_Albedo_Exclosures
+  - Analysis (contains scripts and output for models and analysis)
   - Approach_1 (contains scripts and output for the first approach)
-  - Approach_2 (contains scripts and output for the second approach)
+  - Approach_2 (contains scripts and output for the "LiDAR Hull" approach)
+  - Approach_3 (contains scripts and output for the "LiDAR CHM" approach)
   - Data (contains all raw data necessary for both approaches)
   - Universal (contains scripts and output for variables relevant to both approaches - i.e. SWE, temp, etc.)
   - README.md

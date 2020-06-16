@@ -107,7 +107,19 @@
         
         #DBH and DGL appear to be highly correlated 
         cor.test(t2016$Diameter_at_base_mm, t2016$Diameter_at_150cm_mm)
-        plot(t2016$Diameter_at_base_mm, t2016$Diameter_at_150cm_mm)
+                
+        #Test a Linear Model between DBH and DGL
+        mod <- lm(t2016$Diameter_at_150cm_mm ~ t2016$Diameter_at_base_mm)
+        summary(mod)
+        
+        #Plot data w/ Linear Model "Line of Best Fit"
+        plot(t2016$Diameter_at_base_mm,
+             t2016$Diameter_at_150cm_mm,
+             main = "DGL vs DBH",
+             xlab = "DGL (mm)",
+             ylab = "DBH (mm)") + 
+                abline(mod)
+        
 
 #Volume Calculations Using sitreeE package:
         

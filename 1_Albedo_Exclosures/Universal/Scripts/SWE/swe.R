@@ -59,6 +59,9 @@ while ( i <= max(senorge_swe$trondelag_) ){
                         #Get mean temperature for the month
                         mean_swe <- mean(temp_frame$swe_mm[temp_frame$X_Month == m])
                         
+                        #Round to 3 digits
+                        mean_swe <- round(mean_swe, digits = 3)
+                        
                         #Append data to final avg temp DF
                         loc <- as.character(sites$LocalityNa[sites$FID == i])
                         reg <- as.character(sites$Region[sites$FID == i])
