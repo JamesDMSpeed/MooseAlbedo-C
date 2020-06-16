@@ -8,7 +8,10 @@ How do moose influence climate? The effect of moose browsing on surface albedo i
 ### Does moose exclosure affect estimated surface albedo in Norwegian successional boreal forest?
 
 **Summary**:
-This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses two approaches to model the effects of exclosure on albedo - (1) the first approach involves using Norwegian NFI allometric models to calculate volume for trees in each SustHerb subplot, which is then combined with SWE + Temperature data in an albedo model; (2) the second approach involves using LiDAR data (from Ingrid Snøan's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
+This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses three approaches to model the effects of moose exclosure on albedo:
+1. The first approach involves using Norwegian NFI allometric models to calculate volume for trees in each SustHerb subplot, which is then summed and combined with SWE + Temperature data in an albedo model
+2. The second approach involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
+3. The third approach involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model 
 
 <br/><br/>
 **File Structure:**
