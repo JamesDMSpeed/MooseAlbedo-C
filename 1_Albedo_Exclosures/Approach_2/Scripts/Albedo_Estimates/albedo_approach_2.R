@@ -12,10 +12,8 @@
         library(sp)
         library(raster)
         library(GGally)
-        
-        #Packages for analysis
-        library(lme4)
-
+        library(lattice)
+     
 
 ###END PACKAGES ----------------------------------------------------------------------------------------
 
@@ -292,17 +290,17 @@
                         
                         #Get 2015 herbivore densities and add
                         
-                        #Moose density
-                        md <- hbiomass2015$`hbiomass$Ms_2015`[hbiomass2015$KOMMUNE == kn]
-                        model_data[i, "Moose_Density"] <- md
-                        
-                        #Red deer density
-                        rd <- hbiomass2015$`hbiomass$Rd__2015`[hbiomass2015$KOMMUNE == kn]
-                        model_data[i, "Red_Deer_Density"] <- rd
-                        
-                        #Roe deer density
-                        rdd <- hbiomass2015$`hbiomass$R_d_2015`[hbiomass2015$KOMMUNE == kn]
-                        model_data[i, "Roe_Deer_Density"] <- rdd
+                                #Moose density
+                                md <- hbiomass2015$`hbiomass$Ms_2015`[hbiomass2015$KOMMUNE == kn]
+                                model_data[i, "Moose_Density"] <- md
+                                
+                                #Red deer density
+                                rd <- hbiomass2015$`hbiomass$Rd__2015`[hbiomass2015$KOMMUNE == kn]
+                                model_data[i, "Red_Deer_Density"] <- rd
+                                
+                                #Roe deer density
+                                rdd <- hbiomass2015$`hbiomass$R_d_2015`[hbiomass2015$KOMMUNE == kn]
+                                model_data[i, "Roe_Deer_Density"] <- rdd
                         
                 }
                 
@@ -318,21 +316,78 @@
         ##Explore data w/ plots
                 
                 ##Bar plot of final albedo values, by treatment
-                model_plot1 <- ggplot(data = model_data, aes(x = Treatment, y = Composite_Albedo)) +
-                                        geom_boxplot()
-                
-                #boxplot(model_data$Composite_Albedo~model_data$Treatment + model_data$Month, fill = model_data$Treatment)
+                model_plot1 <- ggplot(data = model_data, aes(x = Treatment, y = Composite_Albedo, fill = Treatment)) +
+                        geom_boxplot() +
+                        ggtitle("Range of albedo estimates for SustHerb study sites") +
+                        labs(x = "Site Treatment", y = "Albedo") +
+                        scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
+                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                              legend.position = "none",
+                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
                 
                 ##Time series points w/ smooth line (grouped by treatment)
-                model_plot2 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, color = Treatment)) +
+                model_plot2 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, color = Treatment, group = Treatment)) +
                         geom_point() +
-                        geom_smooth() +
-                        geom_jitter(width = 0.25)
+                        stat_summary(fun=mean,geom="line",lwd=2,aes(group=Treatment)) +
+                        ggtitle("Monthly albedo estimates for SustHerb study sites") +
+                        labs(x = "Month", y = "Albedo") +
+                        scale_x_discrete(limits=c(1:12)) +                               
+                        scale_color_manual(values=wes_palette(n=2, name="FantasticFox1")) +
+                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                              legend.title = element_text(size = 40),
+                              legend.text = element_text(size = 36),
+                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
                 
                 #Grouped boxplot
                 model_data$Month <- as.factor(model_data$Month)
                 model_plot3 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, fill = Treatment)) +
-                        geom_boxplot()
+                        geom_boxplot() +
+                        ggtitle("Monthly albedo estimates for SustHerb study sites") +
+                        labs(x = "Month", y = "Albedo") +
+                        scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
+                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                              legend.title = element_text(size = 40),
+                              legend.text = element_text(size = 36),
+                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                
+                #Density plot of albedo estimates by treatment
+                model_hist <- ggplot(data = model_data, aes(x = Composite_Albedo, fill = Treatment, group = Treatment)) +
+                        geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
+                        geom_density(alpha= 0.5) +
+                        ggtitle("Frequency of Albedo Values") +
+                        labs(x = "Albedo", y = "Frequency") +
+                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                              legend.title = element_text(size = 40),
+                              legend.text = element_text(size = 36),
+                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                
+                #Density of albedo estimates (log transformed)
+                model_hist_log <- ggplot(data = model_data, aes(x = Composite_Albedo, fill = Treatment, group = Treatment)) +
+                        geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
+                        geom_density(alpha= 0.5) +
+                        ggtitle("Frequency of Albedo Values") +
+                        labs(x = "log(Albedo)", y = "Frequency") +
+                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                              legend.title = element_text(size = 40),
+                              legend.text = element_text(size = 36),
+                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                              axis.title.y = element_text(size = 60, margin = margin(r=40))) +
+                        scale_x_continuous(trans = 'log10')
+                
                 
 #END EXPLORE DATA -----------------------------------------------------------------------------
 
@@ -351,8 +406,8 @@
         
         #Export albedo boxplot as PNG
         png(filename = "1_Albedo_Exclosures/Approach_2/Output/Albedo_Estimates/albedo_boxplot_approach_2.png",
-            width = 1000,
-            height = 1000,
+            width = 2000,
+            height = 2000,
             units = "px",
             bg = "white")
         model_plot1
@@ -360,8 +415,8 @@
         
         #Export time series plot as PNG
         png(filename = "1_Albedo_Exclosures/Approach_2/Output/Albedo_Estimates/albedo_time_series_approach_2.png",
-            width = 1000,
-            height = 1000,
+            width = 3000,
+            height = 2000,
             units = "px",
             bg = "white")
         model_plot2
@@ -369,11 +424,20 @@
         
         #Export grouped boxplot as PNG
         png(filename = "1_Albedo_Exclosures/Approach_2/Output/Albedo_Estimates/albedo_grouped_boxplot_approach_2.png",
-            width = 1000,
-            height = 1000,
+            width = 3000,
+            height = 2000,
             units = "px",
             bg = "white")
         model_plot3
+        dev.off()
+        
+        #Export histogram as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_2/Output/Albedo_Estimates/albedo_histogram_approach_2.png",
+            width = 2500,
+            height = 2000,
+            units = "px",
+            bg = "white")
+        model_hist
         dev.off()
         
 

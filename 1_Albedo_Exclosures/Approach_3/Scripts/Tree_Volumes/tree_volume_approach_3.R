@@ -311,8 +311,7 @@ for(file in files) {
                 
         #Segment individual trees ------------------------------------------------------------------------------------
                 
-                #NOTE: Uses a minimum tree height threshold of 5m 
-                ## (same as in Snøan CHM analysis)
+                #NOTE: Uses a minimum tree height threshold of 2m 
                 algo <- watershed(chm, th = 2)
                 las_watershed  <- lastrees(las_normalized, algo)
                 
@@ -396,7 +395,7 @@ for(file in files) {
                 #plot_label2 <- paste("Clipped CHM", site_name, treatment, sep = " ")
                 #plot(chm2, main = plot_label2)
                 
-                        #Save CHMS in Output folder
+                        #Save CHMs in Output folder
                 
                                 #Define file path
                                 the_path <- "1_Albedo_Exclosures/Approach_3/Output/Tree_Volumes/CHM/"

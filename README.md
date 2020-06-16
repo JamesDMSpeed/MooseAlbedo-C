@@ -2,10 +2,10 @@
 This is the README for John Salisbury's master's project with NTNU.
 <br/><br/>
 ## Project Title:
-How do moose influence climate? The effect of moose browsing on surface albedo in successional boreal forest.
+How do moose influence climate? The effect of moose browsing on surface albedo in successional Norwegian boreal forest.
 <br/><br/>
 ## Question 1:
-### Does moose exclosure affect estimated surface albedo in Norwegian successional boreal forest?
+### Does moose exclosure affect estimated surface albedo in successional Norwegian boreal forest?
 
 **Summary**:
 This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses three approaches to model the effects of moose exclosure on albedo:
@@ -29,16 +29,18 @@ This component of the project is aimed at determining whether moose exclusion ha
 
 <br/><br/>
 **Markdown Reports:**
-* Approach 1
-* Approach 2
-* Approach 3
+* Approach 1:
+* Approach 2:
+  * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach2/tree_volumes_approach_2.html)
+  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach2/albedo_estimates_approach_2.html)
+* Approach 3:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach3/tree_volumes_approach_3.html)
   * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
 
 
 <br/><br/>
 ## Question 2:
-### How does moose browsing affect surface albedo in Norwegian successional boreal forest on a regional scale?
+### How does moose browsing affect surface albedo in successional Norwegian boreal forest on a regional scale?
 
 **Summary**:
 This component of the project seeks to examine the relationship between albedo and moose density in Norwegian successional boreal forests. It uses a forest data product from the NFI (SatSkog), spatial gridded climate data from SeNorge, and spatial herbivore density data from previous SustHerb work to model albedo as a function of moose density.

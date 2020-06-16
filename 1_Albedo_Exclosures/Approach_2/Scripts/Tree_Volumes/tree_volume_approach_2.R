@@ -274,11 +274,18 @@ for(file in files) {
                 las_file <- readLAS(file)
                 #plot(las_file)
         
-                
+        #Set correct Coordinate Reference System (CRS) for LAS file - UTM32
+        
+                proj4string(las_file) <- CRS("+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ")
+        
+        #Define pixel resolution (m2) for CHMs
+        
+                pix_res <- 0.5
+        
         #Normalize data --------------------------------------------------------------------------------------------
 
                 #Generate digital terrain model (using KNN algorithm for interpolation)
-                dtm <- grid_terrain(las_file, algorithm = knnidw(k = 8, p = 2))
+                dtm <- grid_terrain(las_file, res = pix_res, algorithm = knnidw(k = 8, p = 2))
                 
                 #Remove the topography from a point cloud
                 las_normalized <- lasnormalize(las_file, dtm)
@@ -288,8 +295,8 @@ for(file in files) {
                 
         #Generate a Canopy Height Model ------------------------------------------------------------------------------
                 
-                #Create CHM (using 'p2r' algorithm) 
-                chm <- grid_canopy(las_normalized, res = 1, p2r())
+                #Create CHM (using 'pitfree' algorithm, sub-circling tweak, and 0.5m resolution)
+                chm <- grid_canopy(las_normalized, res = pix_res, pitfree(c(0,2,5,10,15), c(0,1), subcircle = 0.2))
                 
                 #Plot raster
                 #plot(chm)
@@ -379,7 +386,7 @@ for(file in files) {
                 
                         #Plot CHM w/ hulls
                         plot_label <- paste(site_name, treatment, sep = " ")
-                        plot(chm, main = plot_label)
+                        #plot(chm, main = plot_label)
                 
                 ##ERROR HANDLER - SOME PLOTS MAY NOT HAVE TREES OVER BETWEEN 1M & 7M
                 if( length(plot_cut@data$X > 0) ){
@@ -409,7 +416,7 @@ for(file in files) {
                         if( !is.na(hulls3) ){
                                 
                                 #Add hulls to plot
-                                plot(hulls3, add = T)
+                                #plot(hulls3, add = T)
                                 
                                 print("Created final hulls")
                                         
@@ -482,6 +489,46 @@ for(file in files) {
                 
                 cat("Completed: ", site_code)
                 
+        #SAVE FINAL CHM W/ HULLS (IF APPLICABLE) TO OUTPUT FOLDER -------------------------------------------------------------
+                
+                #Define file path
+                the_path <- "1_Albedo_Exclosures/Approach_2/Output/Tree_Volumes/Hulls/"
+                
+                #Save INITIAL CHM (Unclipped w/ plot polygon)
+                plot_label <- paste(site_name, treatment, sep = " ")
+                chm_file <- paste(the_path, filename, ".png", sep = '')
+                
+                if( !is.na(hulls3) ){
+                        
+                        png(filename = chm_file,
+                            width = 800,
+                            height = 800,
+                            bg = "white")
+                        
+                        print(levelplot(chm, margin = F,
+                                        ylab='utm32north',
+                                        xlab='utm32east',
+                                        main = paste("Hulls:", plot_label, sep = " "),
+                                        at = seq(from = 0, to = 7, by = 0.25)) +
+                                      layer(sp.polygons(hulls3, col = "green"), packets = 1))
+                        dev.off()
+                
+                } else {
+                       
+                        png(filename = chm_file,
+                            width = 800,
+                            height = 800,
+                            bg = "white")
+                        print(levelplot(chm, margin = F,
+                                        ylab='utm32north',
+                                        xlab='utm32east',
+                                        main = paste("Hulls:", plot_label, sep = " "),
+                                        at = seq(from = 0, to = 7, by = 0.25)))
+                        dev.off()
+                        
+                }
+                        
+                
 }
 
 #END OF LOOP FOR LAS DATA PROCESSING ----------------------------------------------------------------------------------------
@@ -504,10 +551,6 @@ for(file in files) {
         final_data$Treatment <- as.factor(final_data$Treatment)
         
         #Boxplot to visualize difference in volume by treatment
-        ggplot(data = final_data, aes(x = Treatment, y = Summed_crown_volume)) +
-                geom_boxplot()
-        
-        #Boxplot to visualize difference in volume by treatment
         vol_plot <- ggplot(data = final_data, aes(x = Treatment, y = Summed_crown_volume, fill = Treatment)) +
                 geom_boxplot() +
                 ggtitle("Summed tree hull volume for SustHerb\nstudy sites") +
@@ -517,6 +560,38 @@ for(file in files) {
                       axis.title.x = element_text(size = 12, margin = margin(t=12, b = 12)),
                       axis.title.y = element_text(size = 12, margin = margin(r=12))) +
                 scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1"))
+        
+        #Faceted bar plot - total plot volume for each study site, w/ comparison between treatments
+        vol_plot_faceted <- ggplot(data = final_data, aes(x = Treatment, y = Summed_crown_volume, fill = Treatment)) +
+                geom_bar(position="dodge", stat="identity") +
+                facet_wrap(~ Site_name, ncol = 5) +
+                ggtitle("Total plot volume for SustHerb study sites") +
+                labs(x = "Site Treatment", y = bquote("Plot volume"~(m^3))) +
+                scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
+                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                      legend.position = "none",
+                      axis.text.x = element_text(size = 20, margin = margin(t=16)),
+                      axis.text.y = element_text(size = 20, margin = margin(r=16)),
+                      axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
+                      axis.title.y = element_text(size = 50, margin = margin(r=40)),
+                      strip.text.x = element_text(size = 20))
+        
+        #Histogram of volume by treatment
+        vol_hist <- ggplot(data = final_data, aes(x = Summed_crown_volume, fill = Treatment, group = Treatment)) +
+                geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
+                geom_density(alpha= 0.5) +
+                ggtitle("Density plot of volume") +
+                labs(x = "Total plot volume", y = "Density") +
+                scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
+                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                      legend.title = element_text(size = 40),
+                      legend.text = element_text(size = 36),
+                      axis.text.x = element_text(size = 20, margin = margin(t=16)),
+                      axis.text.y = element_text(size = 20, margin = margin(r=16)),
+                      axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
+                      axis.title.y = element_text(size = 50, margin = margin(r=40)),
+                      strip.text.x = element_text(size = 20))
+        
 
 #END OF DATA VISUALIZATION ----------------------------------------------------------------------------------------
 
@@ -542,6 +617,22 @@ for(file in files) {
         vol_plot
         dev.off()
         
+        #Export faceted volume barplot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_2/Output/Tree_Volumes/plot_volumes_faceted_approach_2.png",
+            width = 2000,
+            height = 3000,
+            bg = "white")
+        vol_plot_faceted
+        dev.off()
+        
+        #Export density plot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_2/Output/Tree_Volumes/plot_volumes_density_approach_2.png",
+            width = 2000,
+            height = 2000,
+            bg = "white")
+        vol_hist
+        dev.off()
+        
         
 #END WRITE OUTPUT-------------------------------------------------------------------------
         
@@ -550,31 +641,3 @@ for(file in files) {
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
-
-
-# MISC CODE FOR INDIVIDUAL INSPECTION (REMOVED FROM LOOP) -------------------------------------------------------------
-## Note: This is some leftover code that may be useful for diagnosing/investigating 
-## individual LAS files (outside of the loop above)
-
-        #Inspect the data
-        summary(las_file)
-        lascheck(las_file)
-        
-                #Investigate classification
-                sort(unique(las_file@data$Classification))
-                plot(las_file, color = "Classification")
-                
-                #Any outliers in vegetation?
-                las_veg_class <- lasfilter(las_file, Classification == 5)
-                plot(las_veg_class)
-                
-        
-       
-        #Explore tree volumes
-                hist(tree_volumes$Volume_m3)
-                
-                
-
-                                         
-    
