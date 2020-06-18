@@ -70,9 +70,6 @@ albedoVol <- function(site, localityName, treatment, vol, temp, swe, spruce, pin
                         
                         #Calculate 'composite' albedo values for each month (based on site % of birch/deciduous)
                         b_alb <- b_alb*birch
-                        print(vol)
-                        print(p_alb)
-                        print(pine)
                         
                         #Add 'composites' to dataframe
                         b_albedo[i, "Month"] <- i

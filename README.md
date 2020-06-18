@@ -8,10 +8,11 @@ How do moose influence climate? The effect of moose browsing on surface albedo i
 ### Does moose exclosure affect estimated surface albedo in successional Norwegian boreal forest?
 
 **Summary**:
-This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses three approaches to model the effects of moose exclosure on albedo:
+This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses four approaches to model the effects of moose exclosure on albedo:
 1. The first approach involves using Norwegian NFI allometric models to calculate volume for trees in each SustHerb subplot, which is then summed and combined with SWE + Temperature data in an albedo model
 2. The second approach involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
-3. The third approach involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model 
+3. The third approach involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model
+4. The fourth approach uses an 'age-based' variant of the albedo model (which accepts stand age instead of plot volume as a parameter). Tree species proportions are then used to calculate composite albedo values, as in Approaches 2 & 3.
 
 <br/><br/>
 **File Structure:**
@@ -21,7 +22,8 @@ This component of the project is aimed at determining whether moose exclusion ha
   - Approach_1 (contains scripts and output for the first approach)
   - Approach_2 (contains scripts and output for the "LiDAR Hull" approach)
   - Approach_3 (contains scripts and output for the "LiDAR CHM" approach)
-  - Data (contains all raw data necessary for both approaches)
+  - Approach_4 (contains scripts and output for the "Stand Age" approach)
+  - Data (contains all raw data necessary for all approaches)
   - Reports (contains all R markdown reports for each approach)
   - Universal (contains scripts and output for variables relevant to both approaches - i.e. SWE, temp, etc.)
   - README.md
@@ -36,6 +38,8 @@ This component of the project is aimed at determining whether moose exclusion ha
 * Approach 3:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach3/tree_volumes_approach_3.html)
   * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
+* Approach 4:
+  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach4/albedo_estimates_approach_4.html)
 
 
 <br/><br/>
