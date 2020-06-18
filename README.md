@@ -26,11 +26,12 @@ This component of the project is aimed at determining whether moose exclusion ha
   - Data (contains all raw data necessary for all approaches)
   - Reports (contains all R markdown reports for each approach)
   - Universal (contains scripts and output for variables relevant to both approaches - i.e. SWE, temp, etc.)
-  - README.md
 ```
 
 <br/><br/>
 **Markdown Reports:**
+These R Markdown reports are dynamically generated from the scripts + output for each approach. 
+
 * Approach 1:
 * Approach 2:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach2/tree_volumes_approach_2.html)
@@ -55,12 +56,11 @@ This component of the project seeks to examine the relationship between albedo a
 - 2_Albedo_Regional
   - Approach_1_SatSkog (contains scripts and output for the approach utilizing the SatSkog data product)
   - Data (contains all raw data)
-  - README.md
 ```
 
 <br/><br/>
 ## Other miscellaneous files
 ```
-- 3_Albedo_Model (contains a function with the albedo model from Cherubini et al., which is used in all approaches)
+- 3_Albedo_Model (contains two variants of the albedo model developed by Cherubini et al. - the 'volume' variant and the 'age' variant)
 - 4_Misc (contains other data and scripts that aren't directly relevant to the project)
 ```
