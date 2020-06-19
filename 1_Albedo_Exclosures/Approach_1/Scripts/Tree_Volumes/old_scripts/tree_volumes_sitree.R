@@ -102,25 +102,12 @@
         
 #Key limitation:
 ##   These allometric equations use 'Diameter at Breast Height' (DBH) instead of 'Diameter at Ground Level' (DGL),
-##   which is used for SUSTHERB measurements. There then may be some type of systematic error associated with volume
-##   estimates produced below.
-        
-        #DBH and DGL appear to be highly correlated 
-        cor.test(t2016$Diameter_at_base_mm, t2016$Diameter_at_150cm_mm)
+##   which is used for SUSTHERB measurements. Thus, this analysis removes all trees below 150cm (which don't have a DBH
+##   measurement at 150cm)
                 
-        #Test a Linear Model between DBH and DGL
-        mod <- lm(t2016$Diameter_at_150cm_mm ~ t2016$Diameter_at_base_mm)
-        summary(mod)
-        
-        #Plot data w/ Linear Model "Line of Best Fit"
-        plot(t2016$Diameter_at_base_mm,
-             t2016$Diameter_at_150cm_mm,
-             main = "DGL vs DBH",
-             xlab = "DGL (mm)",
-             ylab = "DBH (mm)") + 
-                abline(mod)
-        
-
+        #Filter to only trees that have DBH measurement at 150cm
+        t2016 <- t2016[!is.na(t2016$Diameter_at_150cm_mm),]
+                
 #Volume Calculations Using sitreeE package:
         
         #Loop through each row of the dataframe (2016, Trøndelag, <6m height) and produce a volume estimate
@@ -130,11 +117,11 @@
                 tree_species <- as.character(t2016[row, "Taxa"])
                 spec_code <- ''
                 
-                #Get 'Diameter at Ground Level' (mm)
-                dgl <- as.numeric(t2016[row, "Diameter_at_base_mm"])
+                #Get 'Diameter at Breast Height' - measurement at 150cm height (mm)
+                d150 <- as.numeric(t2016[row, "Diameter_at_base_mm"])
 
                 #Get height (converted from 'cm' to 'dm' for use in sitree functions)
-                hgt <- as.numeric(t2016[row, "Height_cm"])/10
+                hgt <- as.numeric(t2016[row, "Height_cm"])
                 print(hgt)
                 
                 #Species-specific volume calculations 
@@ -147,13 +134,13 @@
                                         #Spruce (Picea abies) - Specific Allometric Equation from sitree package
                                         
                                                 #With Bark - cm3
-                                                volbark <- GranVol(dbh = dgl,
+                                                volbark <- GranVol(dbh = d150,
                                                                    trh = hgt,
                                                                    bark ="mb",
                                                                    enhet = "c")
                                         
                                                 #Without Bark - cm3
-                                                volnobark <- GranVol(dbh = dgl,
+                                                volnobark <- GranVol(dbh = d150,
                                                                      trh = hgt,
                                                                      bark ="ub",
                                                                      enhet = "c")
@@ -166,13 +153,13 @@
                                         #NOTE: LIMITATION - Juniper does not have a specific allometric function for tree volume (using spruce eq.)
                                         
                                                 #With Bark - cm3
-                                                volbark <- FuruVol(dbh = dgl,
+                                                volbark <- FuruVol(dbh = d150,
                                                                    trh = hgt,
                                                                    bark ="mb",
                                                                    enhet = "c")
                                                 
                                                 #Without Bark - cm3
-                                                volnobark <- FuruVol(dbh = dgl,
+                                                volnobark <- FuruVol(dbh = d150,
                                                                      trh = hgt,
                                                                      bark ="ub",
                                                                      enhet = "c")
@@ -207,14 +194,14 @@
                                         
                                                 #With Bark - cm3
                                                 volbark <- LauvVol(tsl = spec_code,
-                                                                   dbh = dgl,
+                                                                   dbh = d150,
                                                                    trh = hgt,
                                                                    bark ="mb",
                                                                    enhet = "c")
                                                 
                                                 #Without Bark - cm3
                                                 volnobark <- LauvVol(tsl = spec_code,
-                                                                     dbh = dgl,
+                                                                     dbh = d150,
                                                                      trh = hgt,
                                                                      bark ="ub",
                                                                      enhet = "c")
@@ -234,8 +221,9 @@
                 
         }
         
-        #Ensure that 'Volume' column is numeric
-        t2016$Volume <- as.numeric(t2016$Volume)
+        #Ensure that 'Volume' columns are numeric
+        t2016$VolumeB_cm3 <- as.numeric(t2016$VolumeB_cm3)
+        t2016$VolumeNB_cm3 <- as.numeric(t2016$VolumeNB_cm3)
         
 #END VOLUME ESTIMATES FOR EACH TREE -----------------------------------------------------------------------------
         

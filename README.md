@@ -13,6 +13,10 @@ This component of the project is aimed at determining whether moose exclusion ha
 2. The second approach involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
 3. The third approach involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model
 4. The fourth approach uses an 'age-based' variant of the albedo model (which accepts stand age instead of plot volume as a parameter). Tree species proportions are then used to calculate composite albedo values, as in Approaches 2 & 3.
+<br/>
+This component of the project also includes a **longitudinal** analysis of albedo in moose exclosures and open plots. It uses the albedo model developed by Cherubini et al., but will be focused on how moose exclosure affects albedo across successional stages (i.e. years since clearcut):
+1. **Age-based analysis** - this component of the longitudinal analysis uses the 'age-based' variant of the albedo model to calculate monthly albedo for each plot across all years since clearcut
+2. **Volume-based analysis** - this component of the analysis uses the 'volume-based' variant of the albedo model in tandem with the methods used in 'Approach 1' to calculate albedo across all years since clearcut.
 
 <br/><br/>
 **File Structure:**
@@ -23,6 +27,7 @@ This component of the project is aimed at determining whether moose exclusion ha
   - Approach_2 (contains scripts and output for the "LiDAR Hull" approach)
   - Approach_3 (contains scripts and output for the "LiDAR CHM" approach)
   - Approach_4 (contains scripts and output for the "Stand Age" approach)
+  - Approach_Longitudinal (contains scripts and output for longitudinal analysis of albedo)
   - Data (contains all raw data necessary for all approaches)
   - Reports (contains all R markdown reports for each approach)
   - Universal (contains scripts and output for variables relevant to both approaches - i.e. SWE, temp, etc.)
