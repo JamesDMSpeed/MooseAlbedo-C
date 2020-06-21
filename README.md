@@ -13,7 +13,7 @@ This component of the project is aimed at determining whether moose exclusion ha
 2. The second approach involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
 3. The third approach involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model
 4. The fourth approach uses an 'age-based' variant of the albedo model (which accepts stand age instead of plot volume as a parameter). Tree species proportions are then used to calculate composite albedo values, as in Approaches 2 & 3.
-<br/>
+
 This component of the project also includes a **longitudinal** analysis of albedo in moose exclosures and open plots. It uses the albedo model developed by Cherubini et al., but will be focused on how moose exclosure affects albedo across successional stages (i.e. years since clearcut):
 1. **Age-based analysis** - this component of the longitudinal analysis uses the 'age-based' variant of the albedo model to calculate monthly albedo for each plot across all years since clearcut
 2. **Volume-based analysis** - this component of the analysis uses the 'volume-based' variant of the albedo model in tandem with the methods used in 'Approach 1' to calculate albedo across all years since clearcut.
@@ -38,6 +38,8 @@ This component of the project also includes a **longitudinal** analysis of albed
 These R Markdown reports are dynamically generated from the scripts + output for each approach. 
 
 * Approach 1:
+  * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach1/tree_volumes_approach_1.html)
+  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach1/albedo_estimates_approach_1.html)
 * Approach 2:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach2/tree_volumes_approach_2.html)
   * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach2/albedo_estimates_approach_2.html)
@@ -46,6 +48,14 @@ These R Markdown reports are dynamically generated from the scripts + output for
   * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
 * Approach 4:
   * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach4/albedo_estimates_approach_4.html)
+
+Additionally, below are reports for the 'longitudinal' approach:
+
+* Approach Longitudinal:
+
+And finally, here are reports for comparisons between the 4 main approaches:
+
+* Comparisons:
 
 
 <br/><br/>
