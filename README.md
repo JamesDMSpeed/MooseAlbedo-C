@@ -9,10 +9,10 @@ How do moose influence climate? The effect of moose browsing on surface albedo i
 
 **Summary**:
 This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses four approaches to model the effects of moose exclosure on albedo:
-1. The first approach involves using Norwegian NFI allometric models to calculate volume for trees in each SustHerb subplot, which is then summed and combined with SWE + Temperature data in an albedo model
-2. The second approach involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
-3. The third approach involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model
-4. The fourth approach uses an 'age-based' variant of the albedo model (which accepts stand age instead of plot volume as a parameter). Tree species proportions are then used to calculate composite albedo values, as in Approaches 2 & 3.
+1. The **first approach** involves using Norwegian NFI allometric models to calculate volume for trees in each SustHerb subplot, which is then summed and combined with SWE + Temperature data in an albedo model
+2. The **second approach** involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
+3. The **third approach** involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model
+4. The **fourth approach** uses an 'age-based' variant of the albedo model (which accepts stand age instead of plot volume as a parameter). Tree species proportions are then used to calculate composite albedo values, as in Approaches 2 & 3.
 
 This component of the project also includes a **longitudinal** analysis of albedo in moose exclosures and open plots. It uses the albedo model developed by Cherubini et al., but will be focused on how moose exclosure affects albedo across successional stages (i.e. years since clearcut):
 1. **Age-based analysis** - this component of the longitudinal analysis uses the 'age-based' variant of the albedo model to calculate monthly albedo for each plot across all years since clearcut
