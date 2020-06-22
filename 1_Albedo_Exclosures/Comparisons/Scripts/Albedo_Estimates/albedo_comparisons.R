@@ -117,26 +117,11 @@
                                 
                                 #Plot time series
                                 plot_ts_2_3_4 <- ggplot(ts_2_3_4, aes(x = Month, y = Albedo, color = Approach)) +
-                                        geom_point(alpha = 0.3) + 
-                                        geom_jitter(alpha = 0.3) +
-                                        geom_smooth() +
-                                        scale_x_discrete(limits=c(1:12)) +
-                                        ggtitle("Monthly albedo grouped by approach")
-                                
-                                plot_ts_2_3_4
-                        
-                        #INCLUDING APPROACH 1 (which only has n=15)
-                                
-                                #Bind relevant df's
-                                ts_1_2_3_4 <- rbind(col1_alt, col2_alt, col3_alt, col4_alt)
-                                
-                                #Plot time series
-                                plot_ts_1_2_3_4 <- ggplot(ts_1_2_3_4, aes(x = Month, y = Albedo, color = Approach)) +
                                         geom_point(alpha = 0.3, size = 3) + 
                                         geom_jitter(alpha = 0.3, size = 3) +
                                         geom_smooth(size = 3) +
                                         scale_x_discrete(limits=c(1:12)) +
-                                        ggtitle("Monthly albedo grouped by approach") +
+                                        ggtitle("Monthly albedo grouped by approach\n(Approaches 2-4)") +
                                         theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                                               legend.title = element_text(size = 40),
                                               legend.text = element_text(size = 36),
@@ -145,7 +130,7 @@
                                               axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
                                               axis.title.y = element_text(size = 60, margin = margin(r=40)))
                                 
-                                plot_ts_1_2_3_4
+                                plot_ts_2_3_4
                         
                         
         #APPROACH 2 + 3 ----------------------------------------------------------------
@@ -413,13 +398,13 @@
        
         #Time Series
         
-                #All Approaches
-                png(filename = "1_Albedo_Exclosures/Comparisons/Output/Albedo_Estimates/Time_Series/time_series_all_approaches.png",
+                #Approaches 2-4
+                png(filename = "1_Albedo_Exclosures/Comparisons/Output/Albedo_Estimates/Time_Series/time_series_2_3_4.png",
                         width = 2500,
                         height = 2000,
                         units = "px",
                         bg = "white")
-                        plot_ts_1_2_3_4
+                        plot_ts_2_3_4
                 dev.off()
                 
         #Scatterplots

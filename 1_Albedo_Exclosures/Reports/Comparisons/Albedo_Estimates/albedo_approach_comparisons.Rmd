@@ -21,7 +21,7 @@ The figure below provides a rough look at the albedo estimates produced by each 
   
 ```{r pressure, echo=FALSE, out.width = '80%', fig.align="center"}
 
-knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Time_Series/time_series_all_approaches.png")
+knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Time_Series/time_series_2_3_4.png")
 
 ```
 

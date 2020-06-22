@@ -61,7 +61,6 @@ model <- lmer(Composite_Albedo ~ Treatment +
                       Clearcut_Lidar +
                       Moose_Density +
                       Red_Deer_Density +
-                      Roe_Deer_Density +
                       (1 | LocalityName/Month),
               data = model_data)
 ```
