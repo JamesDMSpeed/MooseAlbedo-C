@@ -28,6 +28,7 @@ This component of the project also includes a **longitudinal** analysis of albed
   - Approach_3 (contains scripts and output for the "LiDAR CHM" approach)
   - Approach_4 (contains scripts and output for the "Stand Age" approach)
   - Approach_Longitudinal (contains scripts and output for longitudinal analysis of albedo)
+  - Comparisons (contains scripts and output for comparisons of different approaches)
   - Data (contains all raw data necessary for all approaches)
   - Reports (contains all R markdown reports for each approach)
   - Universal (contains scripts and output for variables relevant to both approaches - i.e. SWE, temp, etc.)
@@ -56,6 +57,7 @@ Additionally, below are reports for the 'longitudinal' approach:
 And finally, here are reports for comparisons between the 4 main approaches:
 
 * Comparisons:
+  * [Albedo Estimates (Approaches 2-4)](https://allyworks.io/moose-albedo/exclosures/comparisons/albedo_approach_comparisons.html)
 
 
 <br/><br/>
