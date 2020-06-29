@@ -30,14 +30,25 @@ knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Time_Serie
 \pagebreak
 
 ## Section 2
-This section contains scatterplots with all albedo estimates produced by each approach. Approach 1 is not included in this comparison, as it uses data from 2016 and only from Trøndelag, which means that it's not directly comparable (in terms of time since clearcut) with the other approaches.
+This section contains scatterplots with all albedo estimates produced by each approach. Approach 1 is not included in this comparison, as it uses data from 2016 and only from Trøndelag, which means that it's not directly comparable (in terms of time) with the other approaches.
 
-```{r, echo=FALSE, out.width = '80%', fig.align="center"}
+### Approach 2 vs 3
+```{r, echo=FALSE, out.width = '60%', fig.align="center"}
 
 knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Scatterplots/approach_2_vs_3.png")
-knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Scatterplots/approach_2_vs_4.png")
-knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Scatterplots/approach_3_vs_4.png")
+knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Differences/diff_approach_2_vs_3.png")
+```
 
+### Approach 2 vs 4
+```{r, echo=FALSE, out.width = '60%', fig.align="center"}
+knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Scatterplots/approach_2_vs_4.png")
+knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Differences/diff_approach_2_vs_4.png")
+```
+
+### Approach 3 vs 4
+```{r, echo=FALSE, out.width = '60%', fig.align="center"}
+knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Scatterplots/approach_3_vs_4.png")
+knitr::include_graphics("../../../Comparisons/Output/Albedo_Estimates/Differences/diff_approach_3_vs_4.png")
 ```
 
 ***

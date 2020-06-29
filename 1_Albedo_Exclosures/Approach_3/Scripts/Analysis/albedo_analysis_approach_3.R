@@ -55,14 +55,14 @@
         #MIXED EFFECTS MODEL #1
                 
                 #Investigate correlation between explanatory variables
-                corr_matrix1 <- ggpairs(data = model_data, columns = 8:12)
+                corr_matrix1 <- ggpairs(data = model_data, columns = 8:13)
                 
                 #Visualize correlation between explanatory variables
-                ggcorr(data = model_data[,8:12])
+                ggcorr(data = model_data[,8:13])
                 
                 ## Run Mixed Effects Model
                 ## NOTE: Random Effect - Site (LocalityName) is the main grouping variable, w/ month nested below
-                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Clearcut_Lidar + Moose_Density + Red_Deer_Density + Roe_Deer_Density + (1 | LocalityName/Month), data = model_data)
+                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Canopy_Height_MAD + Clearcut_Lidar + Moose_Density + Red_Deer_Density + Roe_Deer_Density + (1 | LocalityName/Month), data = model_data)
                 
                 #Summarize model
                 summary(model)
@@ -149,7 +149,7 @@
             height = 1000,
             units = "px",
             bg = "white")
-        ggcorr(data = model_data[,8:12])
+        ggcorr(data = model_data[,8:13])
         dev.off()
         
         #Print residuals scatterplot

@@ -9,6 +9,7 @@
         library(dplyr)
         library(RColorBrewer)
         library(wesanderson)
+        library(plotly)
 
 ###END PACKAGES ----------------------------------------------------------------------------------------
 
@@ -74,7 +75,7 @@
                         col2 <- data.frame("Approach_2_Albedo" = approach2$Composite_Albedo)
                         
                         #Version 2 (for time series)
-                        col2_alt <- data.frame("Month" = approach2$Month, "Region" = approach2$Region, "LocalityCode" = approach2$LocalityCode, "Albedo" = approach2$Composite_Albedo, "Approach" = as.factor(2))
+                        col2_alt <- data.frame("Month" = approach2$Month, "Region" = approach2$Region, "LocalityCode" = approach2$LocalityCode, "Albedo" = approach2$Composite_Albedo, "Approach" = as.factor(2), "Clearcut_Lidar" = approach2$Clearcut_Lidar, "Productivity_Index" = approach2$Productivity_Index)
         
                         
                 #Approach 3 Albedo Values
@@ -83,7 +84,7 @@
                         col3 <- data.frame("Approach_3_Albedo" = approach3$Composite_Albedo)
                 
                         #Version 2 (for time series)
-                        col3_alt <- data.frame("Month" = approach3$Month, "Region" = approach3$Region, "LocalityCode" = approach3$LocalityCode, "Albedo" = approach3$Composite_Albedo, "Approach" = as.factor(3))
+                        col3_alt <- data.frame("Month" = approach3$Month, "Region" = approach3$Region, "LocalityCode" = approach3$LocalityCode, "Albedo" = approach3$Composite_Albedo, "Approach" = as.factor(3), "Clearcut_Lidar" = approach3$Clearcut_Lidar, "Productivity_Index" = approach3$Productivity_Index)
                 
                 
                 #Approach 4 Albedo Values
@@ -92,7 +93,7 @@
                         col4 <- data.frame("Approach_4_Albedo" = approach4$Composite_Albedo)
                         
                         #Version 2 (for time series)
-                        col4_alt <- data.frame("Month" = approach4$Month, "Region" = approach4$Region, "LocalityCode" = approach4$LocalityCode, "Albedo" = approach4$Composite_Albedo, "Approach" = as.factor(4))
+                        col4_alt <- data.frame("Month" = approach4$Month, "Region" = approach4$Region, "LocalityCode" = approach4$LocalityCode, "Albedo" = approach4$Composite_Albedo, "Approach" = as.factor(4), "Clearcut_Lidar" = approach4$Clearcut_Lidar, "Productivity_Index" = approach4$Productivity_Index)
                         
 #END DATA FORMATTING --------------------------------------------------------------------------------               
                         
@@ -131,6 +132,40 @@
                                               axis.title.y = element_text(size = 60, margin = margin(r=40)))
                                 
                                 plot_ts_2_3_4
+                                
+                        #Bubble Plots w/ 3rd variables
+                                
+                                #W/ age (years since clearcut)
+                                ggplot(ts_2_3_4, aes(x = Month, y = Albedo, size = Clearcut_Lidar, color = Approach)) +
+                                        geom_point(alpha = 0.3) + 
+                                        geom_jitter(alpha = 0.3, width = 0.25) +
+                                        geom_smooth(size = 3) +
+                                        scale_x_discrete(limits=c(1:12)) +
+                                        ggtitle("Monthly albedo grouped by approach\n(Approaches 2-4)") +
+                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                              legend.title = element_text(size = 40),
+                                              legend.text = element_text(size = 36),
+                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                
+                                #W/ productivity index
+                                ggplot(ts_2_3_4, aes(x = Month, y = Albedo, size = Productivity_Index, color = Approach)) +
+                                                geom_point(alpha = 0.3) + 
+                                                geom_jitter(alpha = 0.3, width = 0.25) +
+                                                geom_smooth(size = 3) +
+                                                scale_x_discrete(limits=c(1:12)) +
+                                                scale_size(range = c(.01, 15), name="Productivity Index") +
+                                                ggtitle("Monthly albedo grouped by approach\n(Approaches 2-4)") +
+                                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                                      legend.title = element_text(size = 40),
+                                                      legend.text = element_text(size = 36),
+                                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                
                         
                         
         #APPROACH 2 + 3 ----------------------------------------------------------------
@@ -174,6 +209,25 @@
                                 
                                 
                                 plot_cor_2_3
+                                
+                #DIFFERENCE IN ALBEDO BOXPLOT
+                                
+                        #Calculate difference in albedo between Approach 2 and Approach 3
+                        diff_2_3 <- col2 - col3 
+                        names(diff_2_3)[1] <- 'Albedo Difference (App. 2 - App. 3)'
+                        
+                        #Plot as boxplot
+                        plot_d_2_3 <- ggplot(diff_2_3, aes(x = "", y = diff_2_3$`Albedo Difference (App. 2 - App. 3)`)) +
+                                        geom_boxplot() +
+                                        ggtitle("Difference in Albedo Estimates\n(Appr. 2 - Appr. 3)") +
+                                        labs(xlab = "", ylab = "Difference in Albedo") +
+                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                
+                        
 
                 
         #APPROACH 2 + 4 ----------------------------------------------------------------
@@ -216,6 +270,23 @@
                                               axis.title.y = element_text(size = 60, margin = margin(r=40)))
                                 plot_cor_2_4
                 
+                #DIFFERENCE IN ALBEDO BOXPLOT
+                
+                        #Calculate difference in albedo between Approach 2 and Approach 4
+                        diff_2_4 <- col2 - col4 
+                        names(diff_2_4)[1] <- 'Albedo Difference (App. 2 - App. 4)'
+                        
+                        #Plot as boxplot
+                        plot_d_2_4 <- ggplot(diff_2_4, aes(x = "", y = diff_2_4$`Albedo Difference (App. 2 - App. 4)`)) +
+                                geom_boxplot() +
+                                ggtitle("Difference in Albedo Estimates\n(Appr. 2 - Appr. 4)") +
+                                labs(xlab = "", ylab = "Difference in Albedo") +
+                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        
         
         #APPROACH 3 + 4 ----------------------------------------------------------------
                 
@@ -256,6 +327,24 @@
                                               axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
                                               axis.title.y = element_text(size = 60, margin = margin(r=40)))
                                 plot_cor_3_4
+                                
+                #DIFFERENCE IN ALBEDO BOXPLOT
+                                
+                        #Calculate difference in albedo between Approach 3 and Approach 4
+                        diff_3_4 <- col3 - col4 
+                        names(diff_3_4)[1] <- 'Albedo Difference (App. 3 - App. 4)'
+                        
+                        #Plot as boxplot
+                        plot_d_3_4 <- ggplot(diff_3_4, aes(x = "", y = diff_3_4$`Albedo Difference (App. 3 - App. 4)`)) +
+                                geom_boxplot() +
+                                ggtitle("Difference in Albedo Estimates\n(Appr. 3 - Appr. 4)") +
+                                labs(xlab = "", ylab = "Difference in Albedo") +
+                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        
                                 
         
         ##TRØNDELAG ONLY (TO ALLOW COMPARISONS OF APPROACH 1 WITH 2, 3, & 4)-------------------------------------------- 
@@ -434,6 +523,35 @@
                     units = "px",
                     bg = "white")
                 plot_cor_3_4
+                dev.off()
+                
+        #Albedo Differences
+                
+                #2 vs 3
+                png(filename = "1_Albedo_Exclosures/Comparisons/Output/Albedo_Estimates/Differences/diff_approach_2_vs_3.png",
+                    width = 2500,
+                    height = 2000,
+                    units = "px",
+                    bg = "white")
+                plot_d_2_3
+                dev.off()
+                
+                #2 vs 4
+                png(filename = "1_Albedo_Exclosures/Comparisons/Output/Albedo_Estimates/Differences/diff_approach_2_vs_4.png",
+                    width = 2500,
+                    height = 2000,
+                    units = "px",
+                    bg = "white")
+                plot_d_2_4
+                dev.off()
+                
+                #3 vs 4
+                png(filename = "1_Albedo_Exclosures/Comparisons/Output/Albedo_Estimates/Differences/diff_approach_3_vs_4.png",
+                    width = 2500,
+                    height = 2000,
+                    units = "px",
+                    bg = "white")
+                plot_d_3_4
                 dev.off()
                 
         #Trøndelag-only scatterplots (to include Approach 1)

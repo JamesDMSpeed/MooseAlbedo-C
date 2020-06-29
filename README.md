@@ -53,6 +53,7 @@ These R Markdown reports are dynamically generated from the scripts + output for
 Additionally, below are reports for the 'longitudinal' approach:
 
 * Approach Longitudinal:
+  * [Age-based variant of albedo model](https://allyworks.io/moose-albedo/exclosures/approach-longitudinal/albedo_longitudinal_age_variant.html)
 
 And finally, here are reports for comparisons between the 4 main approaches:
 

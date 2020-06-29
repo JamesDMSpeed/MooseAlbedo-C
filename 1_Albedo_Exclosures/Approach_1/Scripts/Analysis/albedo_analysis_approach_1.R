@@ -56,15 +56,15 @@
         #MIXED EFFECTS MODEL #1
                 
                 #Investigate correlation between explanatory variables
-                corr_matrix1 <- ggpairs(data = model_data, columns = 8:12)
+                corr_matrix1 <- ggpairs(data = model_data, columns = 8:13)
                 
                 #Visualize correlation between explanatory variables
-                ggcorr(data = model_data[,8:12])
+                ggcorr(data = model_data[,8:13])
                 
                 ## Run Mixed Effects Model
                 ## NOTE: Random Effect - Site (LocalityName) is the main grouping variable, w/ month nested below
                 ## Moose Density and Roe Deer Density strongly correlated - removed Roe Deer Density
-                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Years_Since_Clearcut + Moose_Density + Red_Deer_Density + (1 | LocalityName/Month), data = model_data)
+                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Canopy_Height_MAD + Canopy_Height_MAD + Years_Since_Clearcut + Moose_Density + Red_Deer_Density + (1 | LocalityName/Month), data = model_data)
                 
                 #Summarize model
                 summary(model)
@@ -77,6 +77,7 @@
                         model_actual <- data.frame("Actual" = model_data$Composite_Albedo)
                         model_meta <- cbind(model_res, model_fitted, model_actual)
                 
+                
                         #Plot of residuals
                         resid <- ggplot(model_meta, aes(Fitted, Residuals)) +
                                 geom_point(size = 4) +
@@ -88,6 +89,7 @@
                                       axis.text.y = element_text(size = 40, margin = margin(r=16)),
                                       axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
                                       axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        resid
                         
                         #Check normality of residuals w/ Q-Q plot
                         qqnorm(model_meta$Residuals)
@@ -104,6 +106,7 @@
                                       axis.text.y = element_text(size = 40, margin = margin(r=16)),
                                       axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
                                       axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        hist
 
                         #Plot actual vs fitted
                         relationship <- ggplot(model_meta, aes(Actual, Fitted)) +
@@ -117,12 +120,8 @@
                                       axis.text.y = element_text(size = 40, margin = margin(r=16)),
                                       axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
                                       axis.title.y = element_text(size = 60, margin = margin(r=40)))
-                                
+                        relationship
 
-                        #plot(model_data$Month, fitted(model))
-                        
-                        #Spaghetti Plot
-                        
                 
 #END ANALYSIS ----------------------------------------------------------------------  
                         
@@ -151,7 +150,7 @@
             height = 1000,
             units = "px",
             bg = "white")
-        ggcorr(data = model_data[,8:12])
+        ggcorr(data = model_data[,8:13])
         dev.off()
         
         #Print residuals scatterplot

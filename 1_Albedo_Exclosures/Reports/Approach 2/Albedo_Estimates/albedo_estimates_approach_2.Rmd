@@ -60,6 +60,7 @@ Random effect is month nested under site ("LocalityName")
 ```{r, echo=TRUE, eval=FALSE}
 model <- lmer(Composite_Albedo ~ Treatment +
                       Productivity_Index +
+                      Canopy_Height_MAD +
                       Clearcut_Lidar +
                       Moose_Density +
                       Red_Deer_Density +

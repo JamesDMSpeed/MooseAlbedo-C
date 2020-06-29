@@ -257,6 +257,7 @@
                 albedo2$Moose_Density = ''
                 albedo2$Red_Deer_Density = ''
                 albedo2$Roe_Deer_Density = ''
+                albedo2$Canopy_Height_MAD = ''
                 
                 #Define 'model_data' df for analysis
                 model_data <- albedo2
@@ -287,6 +288,10 @@
                         ccl <- site_data$ClearCutToLidar[site_data$LocalityCode == loc]
                         model_data[i, "Clearcut_Lidar"] <- ccl
                         
+                        #Get canopy height MAD & add
+                        mad <- site_data$MAD[site_data$LocalityCode == loc]
+                        model_data[i, "Canopy_Height_MAD"] <- mad
+                        
                         #Get 2015 herbivore densities and add
                         
                                 #Moose density
@@ -311,6 +316,7 @@
                 model_data$Moose_Density <- as.numeric(model_data$Moose_Density)
                 model_data$Red_Deer_Density <- as.numeric(model_data$Red_Deer_Density)
                 model_data$Roe_Deer_Density <- as.numeric(model_data$Roe_Deer_Density)
+                model_data$Canopy_Height_MAD <- as.numeric(model_data$Canopy_Height_MAD)
 
         ##Explore data w/ plots
                         
@@ -388,6 +394,38 @@
                         scale_x_continuous(trans = 'log10')
                 
               
+                #3D plots (to visualize 3rd variables)
+                
+                        #Age (Years since clearcut)
+                        age_bubble <- ggplot(model_data, aes(x = Month, y = Composite_Albedo, size = Clearcut_Lidar, color = Treatment)) +
+                                        geom_point(alpha = 0.3) + 
+                                        geom_jitter(alpha = 0.3, width = 0.25) +
+                                        geom_smooth(size = 3) +
+                                        scale_x_discrete(limits=c(1:12)) +
+                                        ggtitle("Monthly albedo grouped by approach\n(Approaches 2-4)") +
+                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                              legend.title = element_text(size = 40),
+                                              legend.text = element_text(size = 36),
+                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        
+                        #Productivity_Index
+                        productivity_bubble <- ggplot(model_data, aes(x = Month, y = Composite_Albedo, size = Productivity_Index, color = Treatment)) +
+                                                        geom_point(alpha = 0.3) + 
+                                                        geom_jitter(alpha = 0.3, width = 0.25) +
+                                                        geom_smooth(size = 3) +
+                                                        scale_x_discrete(limits=c(1:12)) +
+                                                        ggtitle("Monthly albedo grouped by approach\n(Approaches 2-4)") +
+                                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                                              legend.title = element_text(size = 40),
+                                                              legend.text = element_text(size = 36),
+                                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                                
 #END EXPLORE DATA -----------------------------------------------------------------------------
                 
                 
@@ -437,6 +475,24 @@
             units = "px",
             bg = "white")
         model_hist
+        dev.off()
+        
+        #Export age bubble plot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_3/Output/Albedo_Estimates/albedo_age_bubble_approach_3.png",
+            width = 2500,
+            height = 2000,
+            units = "px",
+            bg = "white")
+        age_bubble
+        dev.off()
+        
+        #Export productivity bubble plot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_3/Output/Albedo_Estimates/albedo_age_productivity_bubble_approach_3.png",
+            width = 2500,
+            height = 2000,
+            units = "px",
+            bg = "white")
+        productivity_bubble
         dev.off()
 
 

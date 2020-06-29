@@ -236,6 +236,7 @@
                 albedo2$Moose_Density = ''
                 albedo2$Red_Deer_Density = ''
                 albedo2$Roe_Deer_Density = ''
+                albedo2$Canopy_Height_MAD = ''
                 
                 #Define 'model_data' df for analysis
                 model_data <- albedo2
@@ -267,6 +268,10 @@
                         ccl <- 2016 - ccl
                         model_data[i, "Years_Since_Clearcut"] <- ccl
                         
+                        #Get canopy height MAD & add
+                        mad <- site_data$MAD[site_data$LocalityCode == loc]
+                        model_data[i, "Canopy_Height_MAD"] <- mad
+                        
                         #Get 2015 herbivore densities and add
                         
                                 #Moose density
@@ -291,6 +296,7 @@
                 model_data$Moose_Density <- as.numeric(model_data$Moose_Density)
                 model_data$Red_Deer_Density <- as.numeric(model_data$Red_Deer_Density)
                 model_data$Roe_Deer_Density <- as.numeric(model_data$Roe_Deer_Density)
+                model_data$Canopy_Height_MAD <- as.numeric(model_data$Canopy_Height_MAD)
 
         ##Explore data w/ plots
                         
