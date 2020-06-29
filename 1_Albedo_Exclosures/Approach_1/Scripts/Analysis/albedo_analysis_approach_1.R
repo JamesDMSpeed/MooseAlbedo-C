@@ -64,7 +64,7 @@
                 ## Run Mixed Effects Model
                 ## NOTE: Random Effect - Site (LocalityName) is the main grouping variable, w/ month nested below
                 ## Moose Density and Roe Deer Density strongly correlated - removed Roe Deer Density
-                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Canopy_Height_MAD + Canopy_Height_MAD + Years_Since_Clearcut + Moose_Density + Red_Deer_Density + (1 | LocalityName/Month), data = model_data)
+                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Canopy_Height_MAD + Years_Since_Clearcut + Moose_Density + Red_Deer_Density + (1 | LocalityName/Month), data = model_data)
                 
                 #Summarize model
                 summary(model)
