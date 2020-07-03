@@ -40,15 +40,19 @@ These R Markdown reports are dynamically generated from the scripts + output for
 
 * Approach 1:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach1/tree_volumes_approach_1.html)
-  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach1/albedo_estimates_approach_1.html)
+  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach1/albedo_estimates_approach_1.html)
+  * [Model](https://allyworks.io/moose-albedo/exclosures/approach1/model_approach_1.html)
 * Approach 2:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach2/tree_volumes_approach_2.html)
-  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach2/albedo_estimates_approach_2.html)
+  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach2/albedo_estimates_approach_2.html)
+  * [Model](https://allyworks.io/moose-albedo/exclosures/approach2/model_approach_2.html)
 * Approach 3:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach3/tree_volumes_approach_3.html)
-  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
+  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)
+  * [Model](https://allyworks.io/moose-albedo/exclosures/approach3/model_approach_3.html)
 * Approach 4:
-  * [Albedo Estimates + Model](https://allyworks.io/moose-albedo/exclosures/approach4/albedo_estimates_approach_4.html)
+  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach4/albedo_estimates_approach_4.html)
+  * [Model](https://allyworks.io/moose-albedo/exclosures/approach4/model_approach_4.html)
 
 Additionally, below are reports for the 'longitudinal' approach:
 
@@ -59,6 +63,7 @@ And finally, here are reports for comparisons between the 4 main approaches:
 
 * Comparisons:
   * [Albedo Estimates (Approaches 2-4)](https://allyworks.io/moose-albedo/exclosures/comparisons/albedo_approach_comparisons.html)
+  * [Models + Effect Sizes](https://allyworks.io/moose-albedo/exclosures/comparisons/model_approach_comparisons.html)
 
 
 <br/><br/>
