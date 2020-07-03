@@ -31,6 +31,11 @@
         model_data$Treatment <- as.factor(model_data$Treatment)
         model_data$LocalityCode <- as.factor(model_data$LocalityCode)
         model_data$LocalityName <- as.factor(model_data$LocalityName)
+        
+        
+        #Relevel factors to use 'browsed' as the control/reference
+        model_data$Treatment <- relevel(model_data$Treatment, ref = "open")
+        levels(model_data$Treatment)
 
 
 #END INITIAL DATA IMPORT + FORMATTING --------------------------------------------------------------------------------

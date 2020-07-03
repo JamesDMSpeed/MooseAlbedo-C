@@ -31,7 +31,7 @@
         model_data$Treatment <- as.factor(model_data$Treatment)
         model_data$LocalityCode <- as.factor(model_data$LocalityCode)
         model_data$LocalityName <- as.factor(model_data$LocalityName)
-
+        
 
 #END INITIAL DATA IMPORT + FORMATTING --------------------------------------------------------------------------------
 
