@@ -63,10 +63,17 @@
                 
                 ## Run Mixed Effects Model
                 ## NOTE: Random Effect - Site (LocalityName) is the main grouping variable, w/ month nested below
-                model <- lmer(Composite_Albedo ~ Treatment + Productivity_Index + Month + Month*Productivity_Index + Treatment*Productivity_Index + Age + Moose_Density + Red_Deer_Density + Roe_Deer_Density + (1 | LocalityName/Year/Month), data = model_data)
+                model <- lmer(log(Composite_Albedo) ~ Treatment +
+                                      Productivity_Index +
+                                      Moose_Density +
+                                      Red_Deer_Density +
+                                      (1 | Month/LocalityName) +
+                                      (1 | Year),
+                              data = model_data)
                 
                 #Summarize model
                 summary(model)
+                plot(model)
 
                 #Explore model
                 

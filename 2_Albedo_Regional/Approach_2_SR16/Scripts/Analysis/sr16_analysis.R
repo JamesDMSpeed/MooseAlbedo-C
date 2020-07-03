@@ -1,4 +1,5 @@
-##This is a script to process spatial raster data from the SR16 data product, as well as the large herbivore density data
+## This is a script to process spatial raster data from the NIBIO SR16 spatial data product, large herbivore density data,
+## and seNorge temp + SWE data
 
 
 #PACKAGES ----------------------------------------------------------------------
@@ -41,24 +42,17 @@
                 #Load in Trondheim SatSkog shapefile (SatSkog pictures from 1999)
                 trondheim <- st_read("2_Albedo_Regional/Data/Spatial_Data/SatSkog/Trondheim/5001_25833_satskog_8472bd_SHAPE.shp")
                 
-        #seNorge Gridded Temp + SWE data (NOTE: THESE ARE STORED ON AN EXTERNAL HARD DRIVE)
+        #seNorge Gridded Temp + SWE data for all of Norway (1999 ONLY)
+        ## NOTE: These files were processed from large netCDF files provided by met.no
+        ## Monthly means for each grid cell in Norway (1km2 resolution) have been calculated
+        ## This data has been stored in RasterBrick files (saved to disk as .tif files)
                 
-                #NOTE: These are netCDF files, and require the ncdf4 package to work with
-                ##Using U of Oregon's GEOG607 Tutorial to process these
+                #Load in SWE as RasterBrick
+                swe <- brick("2_Albedo_Regional/Data/seNorge/Output/SWE/swe_means_1999_all_norway.tif")
                 
-                #OTHER DETAILS:
-                        ## Time is in a strange format for these objects - it is recorded in 'seconds since 1900-01-01'
-                        ## However, there are 365 total observations, and the number of seconds between each observation 
-                        ## is equivalent to exactly 24 hours
-                
-                        #Load in gridded temp data for 1999
-                        
-                                temps1999 <- nc_open("/Volumes/JS_Ext_HD/THESIS/SeNorge_Data/seNorge_v2_1_TEMP1d_grid_1999.nc")
-                                
-                        #Load in gridded SWE data for 1999
-                        
-                                swe1999 <- nc_open("/Volumes/JS_Ext_HD/THESIS/SeNorge_Data/swe_1999.nc")
-                             
+                #Load in temp data as RasterBrick
+                temp <- brick("2_Albedo_Regional/Data/seNorge/Output/Temperature/temp_means_1999_all_norway.tif")
+               
 
 #END INITIAL DATA IMPORT ------------------------------------------------------------------------------------------
 
@@ -70,6 +64,31 @@
 
 
 
+#VERIFY COORDINATE REFERENCE SYSTEMS --------------------------------------------------------------------------------
+     
+        #CRS - Herbivore data
+        crs(hd_shp) #UTM33
+                
+        #CRS - SR16 product
+        #crs(trondheim) #UTM33
+        
+        #CRS - SWE & TEMP
+        crs(swe) #UTM33
+        crs(temp) #UTM33
+        
+                #ALL SHOULD BE UTM33 w/ +ellps=WGS84 & +units=m
+                          
+        
+#END VERIFY COORDINATE REFERENCE SYSTEMS --------------------------------------------------------------------------------
+                
+                
+                
+                
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+                
+                
+                
+                
 #HERBIVORE DENSITY DATA --------------------------------------------------------------------------------------------
 
         #INITIAL DATA EXPLORATION

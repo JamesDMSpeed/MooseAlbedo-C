@@ -1,4 +1,4 @@
-##Script to identify model w/ best fit for Approach 1
+##Script to identify model w/ best fit for Approach 4
 
 
 ##PACKAGES ----------------------------------------------------------------------------------------
@@ -24,7 +24,7 @@
 #INITIAL DATA IMPORT + FORMATTING ----------------------------------------------------------------------------------------------
 
         #Import CSV to dataframe
-        model_data <- read.csv('1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_estimates_approach_1.csv', header = TRUE)
+        model_data <- read.csv('1_Albedo_Exclosures/Approach_4/Output/Albedo_Estimates/albedo_estimates_approach_4.csv', header = TRUE)
         
         #Format columns
         model_data$Month <- as.factor(model_data$Month)
@@ -44,15 +44,15 @@
 
 
 #DEFINE + EXAMINE MODELS ----------------------------------------------------------------------------------------------
+#NOTE: Age/clearcut to lidar is not included, as this data was used to produce albedo estimates
         
         #BASE MODEL
         
-                #Base Model
+                #Base model
                 model <- lmer(Composite_Albedo ~
                                       Treatment + 
                                       Productivity_Index +
                                       Canopy_Height_MAD +
-                                      Years_Since_Clearcut +
                                       Moose_Density +
                                       Red_Deer_Density +
                                       (1 | Month/LocalityName),
@@ -60,185 +60,183 @@
                 
                         #Examine model
                         summary(model)
-                        plot(model) #Bit of a fan outwards at higher albedo values
+                        plot(model)
                         
-                #Log transformed model
+                #Log-transformed
                 log_model <- lmer(log(Composite_Albedo) ~
-                                          Treatment + 
-                                          Productivity_Index +
-                                          Canopy_Height_MAD +
-                                          Years_Since_Clearcut +
-                                          Moose_Density +
-                                          Red_Deer_Density +
-                                          (1 | Month/LocalityName),
-                                  data = model_data)
-                
+                                      Treatment + 
+                                      Productivity_Index +
+                                      Canopy_Height_MAD +
+                                      Moose_Density +
+                                      Red_Deer_Density +
+                                      (1 | Month/LocalityName),
+                              data = model_data)
+                        
                         #Examine model
                         summary(log_model)
-                        plot(log_model) #Looks much more evenly distributed
+                        plot(log_model)
         
         
-        #SIMPLIFIED MODEL (removed obviously non-significant terms from base model)
-                        
-                        #Simple model
-                        simple_model <- lmer(Composite_Albedo ~
-                                                     Treatment + 
-                                                     Canopy_Height_MAD +
-                                                     Years_Since_Clearcut +
-                                                     Moose_Density +
-                                                     (1 | Month/LocalityName),
-                                             data = model_data)
-                                
-                                #Examine model
-                                summary(simple_model)
-                                plot(simple_model) #Same as base model - bit of a fan outwards
-                                
-                        #Log-transformed model
-                        log_simple_model <- lmer(log(Composite_Albedo) ~
-                                                        Treatment + 
-                                                        Canopy_Height_MAD +
-                                                        Years_Since_Clearcut +
-                                                        Moose_Density +
-                                                        (1 | Month/LocalityName),
-                                                data = model_data)
-                        
-                                #Examine model
-                                summary(log_simple_model)
-                                plot(log_simple_model) #Looks much more evenly distributed
-                                
-                                
+        #SIMPLIFIED MODEL (based on summary of base model - remove obviously non-significant terms)
+                
+                #Normal
+                simple_model <- lmer(Composite_Albedo ~
+                                             Treatment + 
+                                             Productivity_Index +
+                                             Canopy_Height_MAD +
+                                             Moose_Density +
+                                             (1 | Month/LocalityName),
+                                     data = model_data)
+                
+                        #Examine model
+                        summary(simple_model)
+                        plot(simple_model) #Bit of a fan
+                
+                #Log-transformed
+                log_simple_model <- lmer(log(Composite_Albedo) ~
+                                                 Treatment + 
+                                                 Productivity_Index +
+                                                 Canopy_Height_MAD +
+                                                 Moose_Density +
+                                                 (1 | Month/LocalityName),
+                                         data = model_data)
+                
+                        #Examine model
+                        summary(log_simple_model)
+                        plot(log_simple_model)
                 
         
-        #MODELS W/ INTERACTION EFFECTS
-        #Note: using simplified model here, since effect size of treatment is identical between two models
+        #MODELS W/ INTERACTION TERMS
+        #Note: using simplified model here, since effect size of treatment is almost identical between two models
                 
-                #MI1 - Treatment*Canopy Height
-                        
-                        #Normal 
+                #MI1 - Treatment*Productivity_Index
+                
+                        #Normal
                         mi1 <- lmer(Composite_Albedo ~
-                                            Treatment + 
-                                            Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
-                                            Moose_Density +
-                                            Treatment*Canopy_Height_MAD +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
+                                             Treatment + 
+                                             Productivity_Index +
+                                             Canopy_Height_MAD +
+                                             Moose_Density +
+                                             Treatment*Productivity_Index +
+                                             (1 | Month/LocalityName),
+                                     data = model_data)
                         
                                 #Examine model
                                 summary(mi1)
-                                plot(mi1)
+                                plot(mi1) #Bit of a fan
                         
                         #Log-transformed
                         mi1_log <- lmer(log(Composite_Albedo) ~
-                                            Treatment + 
-                                            Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
-                                            Moose_Density +
-                                            Treatment*Canopy_Height_MAD +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
+                                                 Treatment + 
+                                                 Productivity_Index +
+                                                 Canopy_Height_MAD +
+                                                 Moose_Density +
+                                                 Treatment*Productivity_Index +
+                                                 (1 | Month/LocalityName),
+                                         data = model_data)
                         
                                 #Examine model
                                 summary(mi1_log)
-                                plot(mi1_log) 
-                        
-                #MI2 - Treatment*Moose Density
-                        
+                                plot(mi1_log)
+
+                                
+                #MI2 - Treatment*Canopy_Height_MAD
+                                
                         #Normal
                         mi2 <- lmer(Composite_Albedo ~
                                             Treatment + 
+                                            Productivity_Index +
                                             Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
                                             Moose_Density +
-                                            Treatment*Moose_Density +
+                                            Treatment*Canopy_Height_MAD +
                                             (1 | Month/LocalityName),
                                     data = model_data)
                         
                                 #Examine model
                                 summary(mi2)
-                                plot(mi2)
-                                
-                        #Normal
-                        mi2_log <- lmer(log(Composite_Albedo) ~
-                                            Treatment + 
-                                            Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
-                                            Moose_Density +
-                                            Treatment*Moose_Density +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
+                                plot(mi2) 
                         
-                                #Examine model
-                                summary(mi2_log)
-                                plot(mi2_log)
-                
-                #MI3 - Treatment*Years_Since_Clearcut
-                        
-                        #Normal
-                        mi3 <- lmer(Composite_Albedo ~
-                                            Treatment + 
-                                            Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
-                                            Moose_Density +
-                                            Treatment*Years_Since_Clearcut +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
-                                
-                                #Examine model
-                                summary(mi3)
-                                plot(mi3)
-                                
                         #Log-transformed
-                        mi3_log <- lmer(log(Composite_Albedo) ~
+                        mi2_log <- lmer(log(Composite_Albedo) ~
                                                 Treatment + 
+                                                Productivity_Index +
                                                 Canopy_Height_MAD +
-                                                Years_Since_Clearcut +
                                                 Moose_Density +
-                                                Treatment*Years_Since_Clearcut +
+                                                Treatment*Canopy_Height_MAD +
                                                 (1 | Month/LocalityName),
                                         data = model_data)
                                 
                                 #Examine model
-                                summary(mi3_log)
-                                plot(mi3_log)
-                
+                                summary(mi2_log)
+                                plot(mi2_log)
                                 
-                #MI4 - All interaction effects
+                #MI3 - Treatment*Moose_Density
                                 
                         #Normal
-                        mi4 <- lmer(Composite_Albedo ~
+                        mi3 <- lmer(Composite_Albedo ~
                                             Treatment + 
+                                            Productivity_Index +
                                             Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
                                             Moose_Density +
-                                            Treatment*Canopy_Height_MAD +
-                                            Treatment*Years_Since_Clearcut +
                                             Treatment*Moose_Density +
                                             (1 | Month/LocalityName),
                                     data = model_data)
                         
                                 #Examine model
-                                summary(mi4)
-                                plot(mi4)
-                                
+                                summary(mi3)
+                                plot(mi3) 
+                        
                         #Log-transformed
-                        mi4_log <- lmer(log(Composite_Albedo) ~
+                        mi3_log <- lmer(log(Composite_Albedo) ~
+                                                Treatment + 
+                                                Productivity_Index +
+                                                Canopy_Height_MAD +
+                                                Moose_Density +
+                                                Treatment*Moose_Density +
+                                                (1 | Month/LocalityName),
+                                        data = model_data)
+                        
+                                #Examine model
+                                summary(mi3_log)
+                                plot(mi3_log)
+                           
+                                     
+                #MI4 - All Interaction Effects
+                        
+                        #Normal
+                        mi4 <- lmer(Composite_Albedo ~
                                             Treatment + 
+                                            Productivity_Index +
                                             Canopy_Height_MAD +
-                                            Years_Since_Clearcut +
                                             Moose_Density +
+                                            Treatment*Productivity_Index +
                                             Treatment*Canopy_Height_MAD +
-                                            Treatment*Years_Since_Clearcut +
                                             Treatment*Moose_Density +
                                             (1 | Month/LocalityName),
                                     data = model_data)
                         
                         #Examine model
+                        summary(mi4)
+                        plot(mi4) 
+                        
+                        #Log-transformed
+                        mi4_log <- lmer(log(Composite_Albedo) ~
+                                                Treatment + 
+                                                Productivity_Index +
+                                                Canopy_Height_MAD +
+                                                Moose_Density +
+                                                Treatment*Productivity_Index +
+                                                Treatment*Canopy_Height_MAD +
+                                                Treatment*Moose_Density +
+                                                (1 | Month/LocalityName),
+                                        data = model_data)
+                        
+                        #Examine model
                         summary(mi4_log)
                         plot(mi4_log)
         
-        
-#DEFINE + EXAMINE MODELS ------------------------------------------------------------------------------------------
+                        
+#END DEFINE + EXAMINE MODELS ------------------------------------------------------------------------------------------
                         
                         
                         
@@ -258,7 +256,7 @@
                 #Base models
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "Base Model", "AIC_value" = AIC(model, k = 2)))
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "Base Model Log", "AIC_value" = AIC(log_model, k = 2)))
-                        
+                
                 #Simple models
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "Simple Model", "AIC_value" = AIC(simple_model, k = 2)))
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "Simple Model Log", "AIC_value" = AIC(log_simple_model, k = 2)))
@@ -272,9 +270,8 @@
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "MI3_Log", "AIC_value" = AIC(mi3_log, k = 2)))
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "MI4", "AIC_value" = AIC(mi4, k = 2)))
                 aic_values <- rbind(aic_values, data.frame("Model_name" = "MI4_Log", "AIC_value" = AIC(mi4_log, k = 2)))
-                
-                
-        
+
+
         #Identify model w/ lowest AIC value
         best_model <- aic_values$Model_name[aic_values$AIC_value == min(aic_values$AIC_value)]
         print(best_model)
@@ -292,8 +289,8 @@
 #INVESTIGATE BEST MODEL ----------------------------------------------------------------------------------------------
         
         #Define residuals and fitted values in df for plots
-        model_res <- data.frame("Residuals" = residuals(mi1))
-        model_fitted <- data.frame("Fitted" = fitted(mi1))
+        model_res <- data.frame("Residuals" = residuals(simple_model))
+        model_fitted <- data.frame("Fitted" = fitted(simple_model))
         model_actual <- data.frame("Actual" = model_data$Composite_Albedo)
         model_meta <- cbind(model_res, model_fitted, model_data)
         
@@ -344,10 +341,24 @@
         
                
                 #Canopy Height MAD
-                rv2 <- ggplot(model_meta, aes(Canopy_Height_MAD, Fitted)) +
+                rv1 <- ggplot(model_meta, aes(Canopy_Height_MAD, Fitted)) +
                         geom_point(size = 4) +
                         geom_abline() +
-                        ggtitle("Canopy Height MAD vs Fitted Values") +
+                        ggtitle("Canopy_Height_MAD vs Fitted Values") +
+                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                              legend.title = element_text(size = 40),
+                              legend.text = element_text(size = 36),
+                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                rv1
+                
+                #Moose Density
+                rv2 <- ggplot(model_meta, aes(Moose_Density, Fitted)) +
+                        geom_point(size = 4) +
+                        geom_abline() +
+                        ggtitle("Moose_Density vs Fitted Values") +
                         theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                               legend.title = element_text(size = 40),
                               legend.text = element_text(size = 36),
@@ -357,21 +368,7 @@
                               axis.title.y = element_text(size = 60, margin = margin(r=40)))
                 rv2
                 
-                #Moose Density
-                rv3 <- ggplot(model_meta, aes(Moose_Density, Fitted)) +
-                        geom_point(size = 4) +
-                        geom_abline() +
-                        ggtitle("Moose Density vs Fitted Values") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36),
-                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
-                rv3
-                
-
+        
 #END INVESTIGATE BEST MODEL ------------------------------------------------------------------------------------------
         
         
@@ -384,7 +381,7 @@
 #WRITE OUTPUT -------------------------------------------------------------------------------------------------
                 
         #Print residuals vs fitted
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Model_Selection/best_model_residuals_approach_1.png",
+        png(filename = "1_Albedo_Exclosures/Approach_4/Output/Model_Selection/best_model_residuals_approach_4.png",
             width = 2000,
             height = 2000,
             units = "px",
@@ -393,7 +390,7 @@
         dev.off()
         
         #Print histogram of residuals
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Model_Selection/best_model_residuals_hist_approach_1.png",
+        png(filename = "1_Albedo_Exclosures/Approach_4/Output/Model_Selection/best_model_residuals_hist_approach_4.png",
             width = 2000,
             height = 2000,
             units = "px",
@@ -402,7 +399,7 @@
         dev.off()
         
         #Print actual vs fitted
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Model_Selection/best_model_fitted_actual_approach_1.png",
+        png(filename = "1_Albedo_Exclosures/Approach_4/Output/Model_Selection/best_model_fitted_actual_approach_4.png",
             width = 2000,
             height = 2000,
             units = "px",
@@ -413,7 +410,16 @@
         #Print residuals vs explanatory variables
         
                 #Canopy Height MAD
-                png(filename = "1_Albedo_Exclosures/Approach_1/Output/Model_Selection/best_model_rv1_approach_1.png",
+                png(filename = "1_Albedo_Exclosures/Approach_4/Output/Model_Selection/best_model_rv1_approach_4.png",
+                    width = 2000,
+                    height = 2000,
+                    units = "px",
+                    bg = "white")
+                rv1
+                dev.off()
+                
+                #Moose Density
+                png(filename = "1_Albedo_Exclosures/Approach_4/Output/Model_Selection/best_model_rv2_approach_4.png",
                     width = 2000,
                     height = 2000,
                     units = "px",
@@ -421,18 +427,8 @@
                 rv2
                 dev.off()
                 
-                #Moose Density
-                png(filename = "1_Albedo_Exclosures/Approach_1/Output/Model_Selection/best_model_rv2_approach_1.png",
-                    width = 2000,
-                    height = 2000,
-                    units = "px",
-                    bg = "white")
-                rv3
-                dev.off()
-                
-               
-        
+
         #Print model summary table
-        tab_model(mi1, digits = 5, file = "1_Albedo_Exclosures/Approach_1/Output/Model_Selection/best_model_approach_1.html")
+        tab_model(simple_model, digits = 5, file = "1_Albedo_Exclosures/Approach_4/Output/Model_Selection/best_model_approach_4.html")
         
 #END WRITE OUTPUT ----------------------------------------------------------------------------------------------
