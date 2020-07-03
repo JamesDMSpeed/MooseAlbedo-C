@@ -63,7 +63,8 @@ And finally, here are reports for comparisons between the 4 main approaches:
 
 * Comparisons:
   * [Albedo Estimates (Approaches 2-4)](https://allyworks.io/moose-albedo/exclosures/comparisons/albedo_approach_comparisons.html)
-  * [Models + Effect Sizes](https://allyworks.io/moose-albedo/exclosures/comparisons/model_approach_comparisons.html)
+  * [Effect Sizes of All Approaches](https://allyworks.io/moose-albedo/exclosures/comparisons/model_comparisons_effect_sizes.png)
+  ![Effect Sizes](https://allyworks.io/moose-albedo/exclosures/comparisons/model_comparisons_effect_sizes.png)
 
 
 <br/><br/>
