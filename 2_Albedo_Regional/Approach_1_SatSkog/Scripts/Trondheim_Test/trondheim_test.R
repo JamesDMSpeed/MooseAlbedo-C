@@ -1,6 +1,9 @@
 ## This is a script to process spatial raster data from the SatSkog data product, large herbivore density data,
 ## and seNorge temp + SWE data
 
+#It only uses the 'Trondheim' file of SatSkog data, and is meant to develop a workflow which will allow for processing
+#of all SatSkog files
+
 
 #PACKAGES ----------------------------------------------------------------------
 
@@ -19,6 +22,11 @@
         library(ncdf4)
         library(chron)
         library(reshape2)
+
+        #Packages for analysis
+        library(lme4)
+        library(lmerTest)
+        library(sjPlot)
 
 #END PACKAGES ----------------------------------------------------------------------
 
@@ -200,7 +208,7 @@
                         
                         
                         
-#TRONDHEIM TEST ----------------------------------------------------------------------------------------------
+#EXTRACT SENORGE DATA & CALCULATE ALBEDO FOR EACH POLYGON -------------------------------------------------------------------------
                         
         #Filter SWE & Temp to bounding box around SatSkog data (for quicker analysis)
         
@@ -402,10 +410,10 @@
         spplot(satskog_final_sp["Month_1_Albedo"], col = NA)
         
         #WRITE SF OBJECT TO CSV FOR LATER USE
-        write.csv(satskog, file = '2_Albedo_Regional/Approach_1_SatSkog/Output/Analysis/satskog_with_albedo.csv', row.names = TRUE)
+        write.csv(satskog, file = '2_Albedo_Regional/Approach_1_SatSkog/Output/Trondheim_Test/trondheim_test.csv', row.names = TRUE)
         
         
-#END TRONDHEIM TEST -------------------------------------------------------------------------------------------
+#END EXTRACT SENORGE DATA & CALCULATE ALBEDO FOR EACH POLYGON ---------------------------------------------------------
 
 
 
@@ -414,5 +422,210 @@
 
 
                 
+        
+#EXTRACT HERBIVORE DENSITY DATA & ADD TO EACH POLYGON -----------------------------------------------------------------
 
+        #Use st_join() to get satskog and herbivore densities together
+        sat_herb <- st_join(satskog, hd1999)
+        
+        #Plot moose density as an example
+        plot(sat_herb["Ms_1999"], border = F)
+        
+                #Looks good - clear separation of moose density based on hd1999 shapefile
+        
+#END EXTRACT HERBIVORE DENSITY DATA & ADD TO EACH POLYGON -----------------------------------------------------------------
+        
+        
+        
+        
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\                
+
+
+
+
+#DATA EXPLORATION ----------------------------------------------------------------------------------------------------
+  
+        #Format columns correctly
+        sat_herb$areal_hekt <- as.numeric(gsub(',', '.', sat_herb$areal_hekt))
+        
+        #ALBEDO --------------------------
+        
+                #Create proper df
+
+                        #Create vector of column names from satskog to grab
+                        ts_col <- c("Month_1_Albedo",
+                                    "Month_2_Albedo",
+                                    "Month_3_Albedo",
+                                    "Month_4_Albedo",
+                                    "Month_5_Albedo",
+                                    "Month_6_Albedo",
+                                    "Month_7_Albedo",
+                                    "Month_8_Albedo",
+                                    "Month_9_Albedo",
+                                    "Month_10_Albedo",
+                                    "Month_11_Albedo",
+                                    "Month_12_Albedo")
+                        
+                        #Initialize blank df w/ column names
+                        sat_herb_ts <- data.frame("Albedo" = character(), "Month" = integer())
+                
+                        #Cycle through each column of satskog albedos
+                        for(i in 1:length(ts_col)){
+                                
+                                temp_df <- data.frame(sat_herb[, ts_col[i]][[1]])
+                                names(temp_df)[1] <- "Albedo"
+                                temp_df$Month <- as.integer(i)
+                                
+                                sat_herb_ts <- rbind(sat_herb_ts, temp_df)
+                        }
+                        
+                        #Format columns
+                        sat_herb_ts$Albedo <- as.numeric(sat_herb_ts$Albedo)
+                        sat_herb_ts$Month <- as.integer(sat_herb_ts$Month)
+                        
+                #Scatterplot
+                time_series_albedo_sc <- ggplot(data = sat_herb_ts, aes(x = Month, y = Albedo)) +
+                                                geom_point(alpha = 0.4) +
+                                                geom_jitter(width = 0.2, alpha = 0.4) +
+                                                geom_smooth()
+                time_series_albedo_sc
+                
+                #Bar chart
+                sat_herb_ts$Month <- as.factor(sat_herb_ts$Month)
+                time_series_albedo_bc <- ggplot(data = sat_herb_ts, aes(x = Month, y = Albedo)) +
+                                                        geom_boxplot()
+                time_series_albedo_bc
+                
+                #Histogram
+                histogram(sat_herb_ts$Albedo)
+                
+                
+                
+        #SENORGE DATA--------------------------
+                
+                #SWE
+                
+                        #Format df
+                
+                                #Create vector of column names from satskog to grab
+                                ts_swe <- c("SWE_Month_1",
+                                            "SWE_Month_2",
+                                            "SWE_Month_3",
+                                            "SWE_Month_4",
+                                            "SWE_Month_5",
+                                            "SWE_Month_6",
+                                            "SWE_Month_7",
+                                            "SWE_Month_8",
+                                            "SWE_Month_9",
+                                            "SWE_Month_10",
+                                            "SWE_Month_11",
+                                            "SWE_Month_12")
+                                
+                                #Initialize blank df w/ column names
+                                sat_herb_ts_swe <- data.frame("SWE" = character(), "Month" = integer())
+                                
+                                #Cycle through each column of satskog albedos
+                                for(i in 1:length(ts_swe)){
+                                        
+                                        temp_df <- data.frame(sat_herb[, ts_swe[i]][[1]])
+                                        names(temp_df)[1] <- "SWE"
+                                        temp_df$Month <- as.integer(i)
+                                        
+                                        sat_herb_ts_swe <- rbind(sat_herb_ts_swe, temp_df)
+                                        
+                                }
+                        
+                                #Format columns
+                                sat_herb_ts_swe$SWE <- as.numeric(sat_herb_ts_swe$SWE)
+                                sat_herb_ts_swe$Month <- as.integer(sat_herb_ts_swe$Month)
+                                
+                        #Scatterplot
+                        time_series_swe_sc <- ggplot(data = sat_herb_ts_swe, aes(x = Month, y = SWE)) +
+                                geom_point(alpha = 0.4) +
+                                geom_jitter(width = 0.2, alpha = 0.4) +
+                                geom_smooth()
+                        time_series_swe_sc
+                        
+                        #Bar chart
+                        sat_herb_ts_swe$Month <- as.factor(sat_herb_ts_swe$Month)
+                        time_series_swe_bc <- ggplot(data = sat_herb_ts_swe, aes(x = Month, y = SWE)) +
+                                geom_boxplot()
+                        time_series_swe_bc
+                        
+                        #Histogram
+                        histogram(sat_herb_ts_swe$SWE)
+                
+                #TEMP
+                        
+                        #Format df
+                        
+                                #Create vector of column names from satskog to grab
+                                ts_temp <- c("Temp_Month_1",
+                                            "Temp_Month_2",
+                                            "Temp_Month_3",
+                                            "Temp_Month_4",
+                                            "Temp_Month_5",
+                                            "Temp_Month_6",
+                                            "Temp_Month_7",
+                                            "Temp_Month_8",
+                                            "Temp_Month_9",
+                                            "Temp_Month_10",
+                                            "Temp_Month_11",
+                                            "Temp_Month_12")
+                                
+                                #Initialize blank df w/ column names
+                                sat_herb_ts_temp <- data.frame("Temp" = character(), "Month" = integer())
+                                
+                                #Cycle through each column of satskog albedos
+                                for(i in 1:length(ts_temp)){
+                                        
+                                        temp_df <- data.frame(sat_herb[, ts_temp[i]][[1]])
+                                        names(temp_df)[1] <- "Temp"
+                                        temp_df$Month <- as.integer(i)
+                                        
+                                        sat_herb_ts_temp <- rbind(sat_herb_ts_temp, temp_df)
+                                        
+                                }
+                                
+                                #Format columns
+                                sat_herb_ts_temp$Temp <- as.numeric(sat_herb_ts_temp$Temp)
+                                sat_herb_ts_temp$Month <- as.integer(sat_herb_ts_temp$Month)
+                        
+                        #Scatterplot
+                        time_series_temp_sc <- ggplot(data = sat_herb_ts_temp, aes(x = Month, y = Temp)) +
+                                geom_point(alpha = 0.4) +
+                                geom_jitter(width = 0.2, alpha = 0.4) +
+                                geom_smooth()
+                        time_series_temp_sc
+                        
+                        #Bar chart
+                        sat_herb_ts_temp$Month <- as.factor(sat_herb_ts_temp$Month)
+                        time_series_temp_bc <- ggplot(data = sat_herb_ts_temp, aes(x = Month, y = Temp)) +
+                                geom_boxplot()
+                        time_series_temp_bc
+                        
+                        #Histogram
+                        histogram(sat_herb_ts_temp$Temp)
+        
+                
+#END DATA EXPLORATION ----------------------------------------------------------------------------------------------------
+                        
+                        
+                        
+                        
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\                
+
+
+
+
+#TEST ANALYSIS -------------------------------------------------------------------------------------------------------------
+                        
+        #Get correct form for df
+        
+        #Assess spatial autocorrelation in data
+                        
+        #Model?
+                        
+#END TEST ANALYSIS ---------------------------------------------------------------------------------------------------------- 
+        
         
