@@ -86,6 +86,6 @@ This component of the project seeks to examine the relationship between albedo a
 <br/><br/>
 ## Other miscellaneous files
 ```
-- 3_Albedo_Model (contains two variants of the albedo model developed by Cherubini et al. - the 'volume' variant and the 'age' variant)
+- 3_Albedo_Model (contains the albedo models developed by Cherubini et al.)
 - 4_Misc (contains other data and scripts that aren't directly relevant to the project)
 ```
