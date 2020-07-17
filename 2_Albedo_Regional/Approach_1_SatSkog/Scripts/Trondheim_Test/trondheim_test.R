@@ -7,12 +7,6 @@
 
 #PACKAGES ----------------------------------------------------------------------
 
-        #Data Manipulation + Visualization
-        library(ggplot2)
-        library(raster)
-        library(rasterVis)
-        library(dplyr)
-
         #Spatial Data Packages
         library(sf)
         library(tmap)
@@ -27,6 +21,13 @@
         library(lme4)
         library(lmerTest)
         library(sjPlot)
+        library(spdep)
+
+        #Data Manipulation + Visualization
+        library(ggplot2)
+        library(raster)
+        library(rasterVis)
+        library(dplyr)
 
 #END PACKAGES ----------------------------------------------------------------------
 
@@ -45,6 +46,20 @@
                 #Read in vector data w/ sf package
                 hd_shp <- st_read("2_Albedo_Regional/Data/Herbivore_Densities/NorwayLargeHerbivores.shp")
                 
+                        #Eliminate columns from older dates (to speed up processing)
+                
+                                #Start w/ W__1949
+                                start <- grep("W__1949", colnames(hd_shp))
+                                end <- grep("WP_1989", colnames(hd_shp))
+                                
+                                #Filter out subset
+                                hd_shp <- hd_shp[,c(2:(start - 1), (end + 1):ncol(hd_shp))]
+                
+                        #Fix 'S__' variables (last digit dropped)
+                        names(hd_shp)[grep("S___199", colnames(hd_shp))] <- "S___1999"
+                        names(hd_shp)[grep("S___200", colnames(hd_shp))] <- "S___2009"
+                        names(hd_shp)[grep("S___201", colnames(hd_shp))] <- "S___2015"
+                        
         #SatSkog Spatial Data Product
                 
                 #Load in Trondheim SatSkog shapefile (SatSkog pictures from 1999)
@@ -619,8 +634,112 @@
 
 
 #TEST ANALYSIS -------------------------------------------------------------------------------------------------------------
-                        
+        
         #Get correct form for df
+                        
+                #Add unique 'polygon ID' to each polygon in sat_herb df
+                sat_herb$Polygon_ID <- c(1:nrow(sat_herb))
+                        
+                #Add placeholder columns to re-add month, temp, swe, and albedo
+                sat_herb$Month <- ''
+                sat_herb$SWE <- ''
+                sat_herb$Temperature_K <- ''
+                sat_herb$Albedo <- ''
+                        
+                #Copy sat_herb df to work with
+                        
+                        #Create final df to work with (w/ same structure as sat_herb df)
+                        trondheim_final <- sat_herb[0,]
+                        
+                #For each polygon in sat_herb, append corresponding df (12 rows) to trondheim_final
+                for( i in 1:max(sat_herb$Polygon_ID) ){
+                        
+                        print(i)
+                        
+                        #Create temp_df w/ existing values (12 identical rows)
+                        tdf <- sat_herb[sat_herb$Polygon_ID == i, ]
+                        tdf <- rbind(tdf, tdf[rep(1, 11), ])
+                        
+                        #For the polygon, get vector of albedo values (use st_set_geometry to drop geometry column)
+                        ## Add to temp df
+                        tdf$Albedo <- as.numeric(st_set_geometry(tdf[1, c("Month_1_Albedo",
+                                                               "Month_2_Albedo",
+                                                               "Month_3_Albedo",
+                                                               "Month_4_Albedo",
+                                                               "Month_5_Albedo",
+                                                               "Month_6_Albedo",
+                                                               "Month_7_Albedo",
+                                                               "Month_8_Albedo",
+                                                               "Month_9_Albedo",
+                                                               "Month_10_Albedo",
+                                                               "Month_11_Albedo",
+                                                               "Month_12_Albedo")], NULL))
+                        
+                        #For the polygon, get vector of SWE values (drop geo)
+                        ## Add to temp df
+                        tdf$SWE <- as.numeric(st_set_geometry(tdf[1, c("SWE_Month_1",
+                                                                               "SWE_Month_2",
+                                                                               "SWE_Month_3",
+                                                                               "SWE_Month_4",
+                                                                               "SWE_Month_5",
+                                                                               "SWE_Month_6",
+                                                                               "SWE_Month_7",
+                                                                               "SWE_Month_8",
+                                                                               "SWE_Month_9",
+                                                                               "SWE_Month_10",
+                                                                               "SWE_Month_11",
+                                                                               "SWE_Month_12")], NULL))
+                        
+                        #For the row i, get vector of Temperature values (drop geo)
+                        ## Add to temp df
+                        tdf$Temperature_K <- as.numeric(st_set_geometry(tdf[1, c("Temp_Month_1",
+                                                                                "Temp_Month_2",
+                                                                                "Temp_Month_3",
+                                                                                "Temp_Month_4",
+                                                                                "Temp_Month_5",
+                                                                                "Temp_Month_6",
+                                                                                "Temp_Month_7",
+                                                                                "Temp_Month_8",
+                                                                                "Temp_Month_9",
+                                                                                "Temp_Month_10",
+                                                                                "Temp_Month_11",
+                                                                                "Temp_Month_12")], NULL))
+                        
+                        #Add month (1:12) to temp df
+                        tdf$Month <- as.integer(1:12)
+                        
+                        #Rbind to 'final' df
+                        trondheim_final <- rbind(trondheim_final, tdf)
+                        
+                        
+                }
+
+                        
+                #Drop old columns for temp, SWE, and albedo
+                        
+                        #Get column index for first column to drop
+                        col_min <- grep("SWE_Month_1", colnames(trondheim_final))[1]
+                        col_max <- grep("Month_12_Albedo", colnames(trondheim_final))[1]
+                        
+                        #Drop columns
+                        trondheim_final <- trondheim_final[,c(1:(col_min - 1), (col_max + 1):109)]
+                                
+        #Test for spatial autocorrelation (Using Month 1 (Jan) only, and original dataset)           
+                
+                w <- poly2nb(sat_herb, row.names=sat_herb$Polygon_ID)
+                class(w)
+                summary(w)
+                
+                #Create a 'listw' type spatial weights object
+                ww <- nb2listw(w, style='B', zero.policy = F)
+                
+                #Compute Moran's I metric for spatial autocorrelation
+                ##Note: this is a recommended method w/ Monte-Carlo simulations
+                M1 <- moran.mc(as.numeric(sat_herb$Month_1_Albedo), ww, nsim=99)
+                M1
+                plot(M1)
+                                    
+        
         
         #Assess spatial autocorrelation in data
                         

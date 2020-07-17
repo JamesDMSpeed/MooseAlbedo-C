@@ -1,0 +1,2 @@
+"" "x"
+"1" "No SatSkog data available for this kommune"

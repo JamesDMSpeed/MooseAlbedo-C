@@ -39,122 +39,95 @@
 
 
 
-#INITIAL DATA IMPORT + EXPLORATION ------------------------------------------------------------------------------
+#DATA PROCESSING ------------------------------------------------------------------------------
 
-        #LOAD DATA
+        #Create a list of netCDF files (stored in directory of External HD)
+        files <- list.files(path="/Volumes/JS_Ext_HD/THESIS/SeNorge_Data/Temperature", pattern="*.nc", full.names=TRUE, recursive=FALSE)
 
-                #Load in gridded SWE data for 1999
-                #temp1999 <- nc_open("/Volumes/JS_Ext_HD/THESIS/SeNorge_Data/seNorge_v2_1_TEMP1d_grid_1999.nc")
+        #Loop through and process all seNorge netCDF temperature files
+        for(file in files){
                 
-                #Load in gridded SWE data for 1999 into 3D RasterBrick object
-                data <- brick("/Volumes/JS_Ext_HD/THESIS/SeNorge_Data/seNorge_v2_1_TEMP1d_grid_1999.nc", varname = "mean_temperature")
+                print(file)
                 
-                #Set CRS (UTM 33)
-                crs(data) <- "+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+                #DATA IMPORT + FORMATTING -----------
                 
-                
-        #EXPLORE DATA
-                
-                #View details
-                data
-                
-                #Set 'no data value' to fix error
-                NAvalue(data) <- -9999
-                
-                
-                #Test one layer of brick
-                
-                        #Grab slice from day 180
-                        test <- subset(data, 180)
-
-                        #Plot layer
-                        plot(test)
-                        levelplot(test, margin = F) #Looks good
-                        
-                #Try creating a layer for January average
-                jan_test <- subset(data, 1:31)
-                jan_avg_test <- mean(jan_test)
-                plot(jan_avg_test)
+                        #Read in base file name        
+                        filename <- tools::file_path_sans_ext(basename(file))
                         
                         
-#END INITIAL DATA IMPORT + EXPLORATION ------------------------------------------------------------------------------
+                        #Function to get last n characters of a string
+                        substrRight <- function(x, n){
+                                substr(x, nchar(x)-n+1, nchar(x))
+                        }
                         
+                        #Get last 2 characters of filename string
+                        year <- substrRight(filename, 4)
                         
+                        #Re-add netCDF extension to name (for raster functions below)
+                        filename <- paste("/Volumes/JS_Ext_HD/THESIS/SeNorge_Data/Temperature/", filename, '.nc', sep = '')
                         
+                        #Load in gridded temperature data for 1999 into 3D RasterBrick object
+                        data <- brick(filename, varname = "mean_temperature")
                         
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-
-
-
-#CALCULATE MONTHLY AVG TEMP FOR EACH CELL ------------------------------------------------------------------------------                        
-
-        #For each month, create a RasterBrick subset based on day number
-        #Ex. For January, create a subset from days 1-31
-        jan <- subset(data, 1:31)
-        feb <- subset(data, 32:59)
-        mar <- subset(data, 60:90)
-        apr <- subset(data, 91:120)
-        may <- subset(data, 121:151)
-        jun <- subset(data, 152:181)
-        jul <- subset(data, 182:212)
-        aug <- subset(data, 213:243)
-        sep <- subset(data, 244:273)
-        oct <- subset(data, 274:304)
-        nov <- subset(data, 305:334)
-        dec <- subset(data, 335:365)
-        
-        #For each month, calculate average temp using the mean function
-        jan_mean <- mean(jan)
-        feb_mean <- mean(feb)
-        mar_mean <- mean(mar)
-        apr_mean <- mean(apr)
-        may_mean <- mean(may)
-        jun_mean <- mean(jun)
-        jul_mean <- mean(jul)
-        aug_mean <- mean(aug)
-        sep_mean <- mean(sep)
-        oct_mean <- mean(oct)
-        nov_mean <- mean(nov)
-        dec_mean <- mean(dec)
-        
-        #Stack all monthly mean RasterLayers into brick
-        temp_means <- stack(jan_mean,
-                           feb_mean,
-                           mar_mean,
-                           apr_mean,
-                           may_mean,
-                           jun_mean,
-                           jul_mean,
-                           aug_mean,
-                           sep_mean,
-                           oct_mean,
-                           nov_mean,
-                           dec_mean)
-        
+                        #Set CRS (UTM 33)
+                        crs(data) <- "+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
                         
-#END CALCULATE MONTHLY AVG SWE FOR EACH CELL -------------------------------------------------------------------------- 
-
-
-
+                        #Set 'no data value' to fix error
+                        NAvalue(data) <- -9999
                         
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-
-
-
-#WRITE OUTPUT ------------------------------------------------------------------------------
-        
-        #Save RasterStack file to output folder as GeoTiff file
-        writeRaster(temp_means,
-                    filename = "2_Albedo_Regional/Data/seNorge/Output/Temperature/temp_means_1999_all_norway.tif",
-                    format = "GTiff",
-                    overwrite = T)
-        
-        
-#END WRITE OUTPUT --------------------------------------------------------------------------                        
-    
+                #CALCULATE MONTHLY MEANS -----------
+                        
+                        #For each month, create a RasterBrick subset based on day number
+                        #Ex. For January, create a subset from days 1-31
+                        jan <- subset(data, 1:31)
+                        feb <- subset(data, 32:59)
+                        mar <- subset(data, 60:90)
+                        apr <- subset(data, 91:120)
+                        may <- subset(data, 121:151)
+                        jun <- subset(data, 152:181)
+                        jul <- subset(data, 182:212)
+                        aug <- subset(data, 213:243)
+                        sep <- subset(data, 244:273)
+                        oct <- subset(data, 274:304)
+                        nov <- subset(data, 305:334)
+                        dec <- subset(data, 335:365)
+                        
+                        #For each month, calculate average temp using the mean function
+                        jan_mean <- mean(jan)
+                        feb_mean <- mean(feb)
+                        mar_mean <- mean(mar)
+                        apr_mean <- mean(apr)
+                        may_mean <- mean(may)
+                        jun_mean <- mean(jun)
+                        jul_mean <- mean(jul)
+                        aug_mean <- mean(aug)
+                        sep_mean <- mean(sep)
+                        oct_mean <- mean(oct)
+                        nov_mean <- mean(nov)
+                        dec_mean <- mean(dec)
+                        
+                        #Stack all monthly mean RasterLayers into brick
+                        temp_means <- stack(jan_mean,
+                                            feb_mean,
+                                            mar_mean,
+                                            apr_mean,
+                                            may_mean,
+                                            jun_mean,
+                                            jul_mean,
+                                            aug_mean,
+                                            sep_mean,
+                                            oct_mean,
+                                            nov_mean,
+                                            dec_mean)
                 
+                #WRITE OUTPUT
+                        
+                        #Save RasterStack file to output folder as GeoTiff file
+                        writeRaster(temp_means,
+                                    filename = paste("/Volumes/JS_Ext_HD/THESIS/SeNorge_Output/Temperature/temp_means_", year, "_all_norway.tif", sep = ''),
+                                    format = "GTiff",
+                                    overwrite = T)
+                
+        }
 
-
-        
+#END DATA PROCESSING ------------------------------------------------------------------------------
