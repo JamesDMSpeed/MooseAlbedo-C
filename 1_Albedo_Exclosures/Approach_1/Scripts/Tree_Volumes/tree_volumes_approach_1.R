@@ -43,7 +43,6 @@
         ##  Finally, as in Kolstad et al. (2017), trees over 6m in 2016 are likely leftover from forestry operations - thus they
         ##  are excluded.
         
-        
         #Filter to 'Trøndelag' region only
         ##NOTE: This reduces the number of study sites (LocalityName) to 15 (w/ 30 total plots)
         trondelag <- data[data$Region == 'Trøndelag',]
@@ -62,6 +61,7 @@
         t2016 <- trondelag[trondelag$X_Date >= "2016-01-01" & trondelag$X_Date <= "2016-12-31",]
         
         #Remove rows that are missing diameter-at-base data (3 total)
+        removed <- t2016[is.na(t2016$Diameter_at_base_mm), ]
         t2016 <- t2016[! is.na(t2016$Diameter_at_base_mm), ]
         
         #Convert LocalityCode, Treatment, & Plot to character
@@ -144,7 +144,7 @@
                         else if( species == "Picea abies (Gran)" || species == "Juniperus communis (Einer)"){
                                 
                                 #Biomass (g)
-                                biomass <- (0.020293)*(dgl^2) + (0.006092)*(height^3)
+                                biomass <- (0.020293)*(height^2) + (0.006092)*(dgl^3)
                                 
                                 #Volume (cm3 converted to m3)
                                 volume <- (biomass / s_density) / 1e06
@@ -155,7 +155,7 @@
                         else if( species == "Pinus sylvestris (Furu)" ){
                                 
                                 #Biomass (g)
-                                biomass <- (0.325839)*(dgl^2) + (0.0007434)*(height^3)
+                                biomass <- (0.325839)*(dgl^2) + (0.0007434)*(dgl^3)
                                 
                                 #Volume (cm3 converted to m3)
                                 volume <- (biomass / p_density) / 1e06
@@ -172,7 +172,7 @@
                                 if( treatment == "B" ){
                                         
                                         #Biomass (g)
-                                        biomass <- (0.006664)*(dgl^2) + (0.082983)*(height^2)
+                                        biomass <- (0.006664)*(height^2) + (0.082983)*(dgl^2)
                                         
                                 }
                                 

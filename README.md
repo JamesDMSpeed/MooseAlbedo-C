@@ -36,12 +36,11 @@ This component of the project also includes a **longitudinal** analysis of albed
 
 <br/><br/>
 **Markdown Reports:**
-These R Markdown reports are dynamically generated from the scripts + output for each approach. 
+These interactive R Markdown reports are dynamically generated from the scripts + output for each approach. 
 
 * Approach 1:
-  * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach1/tree_volumes_approach_1.html)
-  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach1/albedo_estimates_approach_1.html)
-  * [Model](https://allyworks.io/moose-albedo/exclosures/approach1/model_approach_1.html)
+  * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach1/final_report_approach_1.html)
+  
 * Approach 2:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach2/tree_volumes_approach_2.html)
   * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach2/albedo_estimates_approach_2.html)
