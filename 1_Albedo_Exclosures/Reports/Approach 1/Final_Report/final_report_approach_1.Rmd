@@ -178,13 +178,10 @@ library(sjPlot)
         
 ```
 
-
 # Overview
 This report contains a summary of 'Approach 1', which uses SustHerb biomass equations to estimate volume (and ultimately, albedo) for relevant study plots. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.
 
-At certain points throughout the report, you may see a "question box" (example below). I've put important questions that I think should be discussed in these boxes, in an attempt to make them clear and easily referenceable.
-
-> Question Box: This is a sample question.
+![](https://allyworks.io/moose-albedo/img/Approach_1_Flowchart.png)
 
 ***
 
@@ -294,10 +291,10 @@ Surface roughness (and therefore forest canopy roughness) may be an important fa
 ```{r echo = FALSE, eval= TRUE, message = FALSE}        
         
         #Add monthly SWE averages from seNorge
-        swe <- read.csv('../../../Universal/Output/SWE/monthly_avg_swe_mm.csv', header = TRUE)
+        swe <- read.csv('../../../Universal/Output/2016_Climate_Data/monthly_avg_swe_2016.csv', header = TRUE)
                 
         #Add monthly temperature averages from seNorge
-        temps <- read.csv('../../../Universal/Output/Temperature/monthly_avg_temp_C.csv', header = TRUE)
+        temps <- read.csv('../../../Universal/Output/2016_Climate_Data/monthly_avg_temp_2016.csv', header = TRUE)
 
                 #Convert temps from celsius (C) to kelvin (K)
                 for( i in 1:length(temps$X)){
@@ -345,7 +342,7 @@ Surface roughness (and therefore forest canopy roughness) may be an important fa
         ggplot(data = temps_filtered, aes(x = Month, y = Avg_Temps_K)) +
                 geom_boxplot() +
                 ggtitle("Avg. Temperature by Month") +
-                labs(x = "Avg. Temperature (K)", y = "Count")
+                labs(x = "Month", y = "Avg. Temperature (K)")
 
 
         
@@ -475,9 +472,11 @@ Without more detailed and impractical data (such as measurements of trunk diamet
 
 There is abundant literature which focuses on converting tree volume to biomass (for carbon accounting purposes). However, I have not been able to find relevant literature related to converting tree *biomass to volume*. My first thought was that if we knew wood density for each tree species of interest, we could use the simple equation $Volume = mass / density$ to estimate volume from biomass. 
 
-However, using wood density in this manner may be fundamentally flawed. [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618) found that vertical wood density gradients are present in Norwegian species of interest - that is, wood density changes throughout the vertical length of a given tree trunk. Thus, attempting to calculate tree volume from a single wood density value may produce innacurate volume estimates and introduce substantial error into subsequent steps of the approach. Despite this issue, there didn't seem to be a better way to calculate volume for each tree from available data. 
+However, using wood density in this manner may be substantially flawed. [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618) found that vertical wood density gradients are present in Norwegian species of interest - that is, wood density changes throughout the vertical length of a given tree trunk. Thus, attempting to calculate tree volume from a single wood density value may produce innacurate volume estimates and introduce substantial error into subsequent steps of the approach. Despite this issue, there didn't seem to be a better way to calculate volume for each tree from available data. 
 
 For the wood densities (also sometimes referred to as 'specific gravities'), I chose to use the "**measured densities**" from [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618). These densities were produced by measuring the density of 2-3cm disks taken at a 1m interval for the entire length of 327 pine, 317 spruce, and 192 birch specimens (harvested in Finland, not Norway). For each species, densities were averaged to produce a corresponding "measured density".
+
+It is important to note that DBH of trees sampled by [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618) ranged from 5-48 cm. Additionally, the minimum age of trees sampled was estimated to be 20 years old. These sample characteristics ultimately represent another source of error - most of the trees in the SustHerb dataset are much smaller and younger, and therefore, may have completely different densities than those provided by [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618).
 
 **Key point: best option to calculate volume seemed to be $Volume = mass/density$. Densities taken from [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618)**
 
@@ -624,9 +623,9 @@ I created a correlation matrix to investigate possible correlations between cont
 
 
 ## Model
-Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I chose to use a **linear mixed effects model** to model estimated albedo as a function of treatment (moose exclusion). The model was implemented via the *lme4* package in R w/ *lmer* function). As discussed in the 'correlation matrix' section, *Roe Deer Density* was removed as a potential variable due to strong correlation with moose density. I specified the "LocalityName" variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month.
+Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I believe we'll need to use a **linear mixed effects model** to model estimated albedo as a function of treatment (moose exclusion). I gave a "first attempt" at a model below - this model was implemented via the *lme4* package in R w/ *lmer* function). As discussed in the 'correlation matrix' section, *Roe Deer Density* was removed as a potential variable due to strong correlation with moose density. I specified the "LocalityName" variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month. 
 
-To select a 'best' model, I started off with a base model with all of the variables of interest, and then eliminated terms that weren't significant. From this 'filtered' model, I created several other models with different interaction terms. I then used the *AIC function* to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).
+To select a 'best' model, I started off with a base model with all of the variables of interest, and then eliminated terms that weren't significant. From this 'filtered' model, I created several other versions based on what I thought might be best. I then used the *AIC function* to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).
 
 ```{r echo = FALSE, eval= TRUE, message = FALSE}
 
@@ -666,7 +665,7 @@ tab_model(model, digits = 5)
 
 ```
 
-> Is there a better approach to identify a 'best' model?
+> Is this model correctly specified? Should I be using a non-linear mixed effects model (nlme) instead?
 
 ## Diagnosis
 It certainly looks like something strange is happening with the residuals. Not sure why there is this linear trend at lower fitted values:
@@ -680,7 +679,19 @@ plot(model)
 
 ***
 
- 
+#Next Steps?
+
+#### Better Model Selection
+After looking at the **residuals plot** for the model in the previous section, I'm not convinced that I'm using the correct model. It's clear that the amount of variation in albedo estimates varies substantially by month (ex. the variation in albedo is much greater in December than in July). Do I need to set a specific 'covariance structure' to account for this?
+
+Also, I'm a bit confused about specifying "Month" as a fixed effect vs random effect. We're interested in seeing how treatment (moose exclusion) affects albedo for each month - therefore, it's necessary to add "Month" as a fixed effect together with treatment. However, would it be relevant to add "Month" as a random effect as well/instead? For a given plot, the data from Month 1 will likely be more similar to data from Month 2 than data from Month 8 (i.e. there is non-independence in data across months). How do we handle this?
+
+#### Backfitted Models to Improve Sample Size
+I'd really like to use the backfitted height-only biomass models produced by [Kolstad et al. (2017)](https://link.springer.com/article/10.1007/s10021-017-0202-4) to estimate volume (and ultimately, albedo) for a greater number of SustHerb sites, as well as for additional years (not just 2016). I'm planning on doing this, but haven't gotten around to it yet.
+
+#### Variation in Albedo
+I'd also like to investigate how treatment (i.e. moose exclusion) affects **variation** in surface albedo. This isn't a parameter I'd considered looking at before, but it would certainly be interesting if moose exclusion has some type of effect on how much albedo varies across a landscape (and may have important climate implications, too). Maybe MAD would be a good metric to look at?
+
  
  
  

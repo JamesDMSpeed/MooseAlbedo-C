@@ -269,10 +269,10 @@ div.tocify {
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>This report contains a summary of 'Approach 1', which uses SustHerb biomass equations to estimate volume (and ultimately, albedo) for relevant study plots. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.</p>
-<p>At certain points throughout the report, you may see a &quot;question box&quot; (example below). I've put important questions that I think should be discussed in these boxes, in an attempt to make them clear and easily referenceable.</p>
-<blockquote>
-<p>Question Box: This is a sample question.</p>
-</blockquote>
+<div class="figure">
+<img src="https://allyworks.io/moose-albedo/img/Approach_1_Flowchart.png" />
+
+</div>
 <hr />
 </div>
 <div id="data" class="section level1">
@@ -466,8 +466,9 @@ Sorbus aucuparia (Rogn)
 <h5>Converting from biomass to volume:</h5>
 <p>Without more detailed and impractical data (such as measurements of trunk diameter at evenly-spaced intervals along each tree), other methods of calculating volume didn't seem to be possible. However, <a href="https://link.springer.com/article/10.1007/s10021-017-0202-4">Kolstad et al. (2017)</a> previously produced species-specific, locally-calibrated allometric biomass models. I thought that we could use these models to calculate biomass (g) for each tree in the dataset, and then somehow convert that biomass to volume (m3).</p>
 <p>There is abundant literature which focuses on converting tree volume to biomass (for carbon accounting purposes). However, I have not been able to find relevant literature related to converting tree <em>biomass to volume</em>. My first thought was that if we knew wood density for each tree species of interest, we could use the simple equation <span class="math inline">\(Volume = mass / density\)</span> to estimate volume from biomass.</p>
-<p>However, using wood density in this manner may be fundamentally flawed. <a href="https://jukuri.luke.fi/handle/10024/532618">Repola (2006)</a> found that vertical wood density gradients are present in Norwegian species of interest - that is, wood density changes throughout the vertical length of a given tree trunk. Thus, attempting to calculate tree volume from a single wood density value may produce innacurate volume estimates and introduce substantial error into subsequent steps of the approach. Despite this issue, there didn't seem to be a better way to calculate volume for each tree from available data.</p>
+<p>However, using wood density in this manner may be substantially flawed. <a href="https://jukuri.luke.fi/handle/10024/532618">Repola (2006)</a> found that vertical wood density gradients are present in Norwegian species of interest - that is, wood density changes throughout the vertical length of a given tree trunk. Thus, attempting to calculate tree volume from a single wood density value may produce innacurate volume estimates and introduce substantial error into subsequent steps of the approach. Despite this issue, there didn't seem to be a better way to calculate volume for each tree from available data.</p>
 <p>For the wood densities (also sometimes referred to as 'specific gravities'), I chose to use the &quot;<strong>measured densities</strong>&quot; from <a href="https://jukuri.luke.fi/handle/10024/532618">Repola (2006)</a>. These densities were produced by measuring the density of 2-3cm disks taken at a 1m interval for the entire length of 327 pine, 317 spruce, and 192 birch specimens (harvested in Finland, not Norway). For each species, densities were averaged to produce a corresponding &quot;measured density&quot;.</p>
+<p>It is important to note that DBH of trees sampled by <a href="https://jukuri.luke.fi/handle/10024/532618">Repola (2006)</a> ranged from 5-48 cm. Additionally, the minimum age of trees sampled was estimated to be 20 years old. These sample characteristics ultimately represent another source of error - most of the trees in the SustHerb dataset are much smaller and younger, and therefore, may have completely different densities than those provided by <a href="https://jukuri.luke.fi/handle/10024/532618">Repola (2006)</a>.</p>
 <p><strong>Key point: best option to calculate volume seemed to be <span class="math inline">\(Volume = mass/density\)</span>. Densities taken from <a href="https://jukuri.luke.fi/handle/10024/532618">Repola (2006)</a></strong></p>
 </div>
 <div id="handling-less-common-species" class="section level5">
@@ -591,8 +592,8 @@ Sorbus aucuparia (Rogn)
 </div>
 <div id="model-1" class="section level2">
 <h2>Model</h2>
-<p>Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I chose to use a <strong>linear mixed effects model</strong> to model estimated albedo as a function of treatment (moose exclusion). The model was implemented via the <em>lme4</em> package in R w/ <em>lmer</em> function). As discussed in the 'correlation matrix' section, <em>Roe Deer Density</em> was removed as a potential variable due to strong correlation with moose density. I specified the &quot;LocalityName&quot; variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month.</p>
-<p>To select a 'best' model, I started off with a base model with all of the variables of interest, and then eliminated terms that weren't significant. From this 'filtered' model, I created several other models with different interaction terms. I then used the <em>AIC function</em> to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).</p>
+<p>Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I believe we'll need to use a <strong>linear mixed effects model</strong> to model estimated albedo as a function of treatment (moose exclusion). I gave a &quot;first attempt&quot; at a model below - this model was implemented via the <em>lme4</em> package in R w/ <em>lmer</em> function). As discussed in the 'correlation matrix' section, <em>Roe Deer Density</em> was removed as a potential variable due to strong correlation with moose density. I specified the &quot;LocalityName&quot; variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month.</p>
+<p>To select a 'best' model, I started off with a base model with all of the variables of interest, and then eliminated terms that weren't significant. From this 'filtered' model, I created several other versions based on what I thought might be best. I then used the <em>AIC function</em> to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).</p>
 <pre class="r"><code>#Initial model:
 lmer(Composite_Albedo ~
      Treatment*Month +
@@ -629,10 +630,10 @@ p
 (Intercept)
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.51283
+0.26765
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.35482 – 0.67083
+0.15180 – 0.38351
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -643,10 +644,10 @@ p
 Treatment [UB]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00123
+0.00084
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.04247 – 0.04492
+-0.02900 – 0.03067
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.956
@@ -657,13 +658,13 @@ Treatment [UB]
 Month [2]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.00915
+0.13363
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.05226 – 0.03397
+0.10420 – 0.16305
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.678
+<strong>&lt;0.001
 </td>
 </tr>
 <tr>
@@ -671,10 +672,10 @@ Month [2]
 Month [3]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.08628
+0.08296
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.12940 – -0.04317
+0.05354 – 0.11239
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -685,10 +686,10 @@ Month [3]
 Month [4]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.17822
+-0.12209
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.22133 – -0.13511
+-0.15151 – -0.09266
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -699,10 +700,10 @@ Month [4]
 Month [5]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.23565
+-0.13776
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27877 – -0.19254
+-0.16719 – -0.10834
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -713,10 +714,10 @@ Month [5]
 Month [6]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.23566
+-0.13776
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27878 – -0.19255
+-0.16719 – -0.10834
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -727,10 +728,10 @@ Month [6]
 Month [7]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.23566
+-0.13776
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27878 – -0.19255
+-0.16719 – -0.10834
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -741,10 +742,10 @@ Month [7]
 Month [8]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.23566
+-0.13776
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27878 – -0.19255
+-0.16719 – -0.10834
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -755,10 +756,10 @@ Month [8]
 Month [9]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.23566
+-0.13776
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27878 – -0.19255
+-0.16719 – -0.10834
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -769,10 +770,10 @@ Month [9]
 Month [10]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.23519
+-0.13714
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27830 – -0.19208
+-0.16657 – -0.10772
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -783,10 +784,10 @@ Month [10]
 Month [11]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.20117
+-0.05638
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.24428 – -0.15806
+-0.08581 – -0.02696
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -797,13 +798,13 @@ Month [11]
 Month [12]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.10948
+-0.01899
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.15259 – -0.06636
+-0.04842 – 0.01043
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>&lt;0.001
+0.206
 </td>
 </tr>
 <tr>
@@ -811,13 +812,13 @@ Month [12]
 Canopy_Height_MAD
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.00625
+-0.00230
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.02637 – 0.01386
+-0.01633 – 0.01173
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.542
+0.748
 </td>
 </tr>
 <tr>
@@ -825,13 +826,13 @@ Canopy_Height_MAD
 Years_Since_Clearcut
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.01403
+0.00397
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.02767 – -0.00038
+-0.00605 – 0.01399
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>0.044</strong>
+0.437
 </td>
 </tr>
 <tr>
@@ -839,13 +840,13 @@ Years_Since_Clearcut
 Moose_Density
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00088
+-0.00031
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00029 – 0.00147
+-0.00074 – 0.00012
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>0.003</strong>
+0.160
 </td>
 </tr>
 <tr>
@@ -853,13 +854,13 @@ Moose_Density
 Treatment [UB] * Month<br>[2]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00006
+-0.00122
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06091 – 0.06104
+-0.04283 – 0.04039
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.998
+0.954
 </td>
 </tr>
 <tr>
@@ -867,13 +868,13 @@ Treatment [UB] * Month<br>[2]
 Treatment [UB] * Month<br>[3]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00046
+-0.00104
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06051 – 0.06143
+-0.04265 – 0.04057
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.988
+0.961
 </td>
 </tr>
 <tr>
@@ -881,13 +882,13 @@ Treatment [UB] * Month<br>[3]
 Treatment [UB] * Month<br>[4]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00028
+-0.00070
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06070 – 0.06125
+-0.04231 – 0.04092
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.993
+0.974
 </td>
 </tr>
 <tr>
@@ -895,13 +896,13 @@ Treatment [UB] * Month<br>[4]
 Treatment [UB] * Month<br>[5]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00015
+-0.00085
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06082 – 0.06113
+-0.04246 – 0.04076
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.996
+0.968
 </td>
 </tr>
 <tr>
@@ -909,13 +910,13 @@ Treatment [UB] * Month<br>[5]
 Treatment [UB] * Month<br>[6]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00015
+-0.00085
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06082 – 0.06113
+-0.04246 – 0.04076
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.996
+0.968
 </td>
 </tr>
 <tr>
@@ -923,13 +924,13 @@ Treatment [UB] * Month<br>[6]
 Treatment [UB] * Month<br>[7]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00015
+-0.00085
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06082 – 0.06113
+-0.04246 – 0.04076
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.996
+0.968
 </td>
 </tr>
 <tr>
@@ -937,13 +938,13 @@ Treatment [UB] * Month<br>[7]
 Treatment [UB] * Month<br>[8]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00015
+-0.00085
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06082 – 0.06113
+-0.04246 – 0.04076
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.996
+0.968
 </td>
 </tr>
 <tr>
@@ -951,13 +952,13 @@ Treatment [UB] * Month<br>[8]
 Treatment [UB] * Month<br>[9]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00015
+-0.00085
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06082 – 0.06113
+-0.04246 – 0.04076
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.996
+0.968
 </td>
 </tr>
 <tr>
@@ -965,13 +966,13 @@ Treatment [UB] * Month<br>[9]
 Treatment [UB] * Month<br>[10]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00015
+-0.00078
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06082 – 0.06112
+-0.04240 – 0.04083
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.996
+0.971
 </td>
 </tr>
 <tr>
@@ -979,13 +980,13 @@ Treatment [UB] * Month<br>[10]
 Treatment [UB] * Month<br>[11]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00044
+-0.00067
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06053 – 0.06141
+-0.04229 – 0.04094
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.989
+0.975
 </td>
 </tr>
 <tr>
@@ -993,13 +994,13 @@ Treatment [UB] * Month<br>[11]
 Treatment [UB] * Month<br>[12]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00072
+-0.00077
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06025 – 0.06169
+-0.04238 – 0.04084
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.982
+0.971
 </td>
 </tr>
 <tr>
@@ -1026,7 +1027,7 @@ Random Effects
 ICC
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">
-0.21
+0.24
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
@@ -1048,12 +1049,12 @@ Observations
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">
-0.650 / 0.723
+0.796 / 0.845
 </td>
 </tr>
 </table>
 <blockquote>
-<p>Is there a better approach to identify a 'best' model?</p>
+<p>Is this model correctly specified? Should I be using a non-linear mixed effects model (nlme) instead?</p>
 </blockquote>
 </div>
 <div id="diagnosis" class="section level2">
@@ -1061,6 +1062,22 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <p>It certainly looks like something strange is happening with the residuals. Not sure why there is this linear trend at lower fitted values:</p>
 <p><img src="final_report_approach_1_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <hr />
+</div>
+</div>
+<div id="next-steps" class="section level1">
+<h1>Next Steps?</h1>
+<div id="better-model-selection" class="section level4">
+<h4>Better Model Selection</h4>
+<p>After looking at the <strong>residuals plot</strong> for the model in the previous section, I'm not convinced that I'm using the correct model. It's clear that the amount of variation in albedo estimates varies substantially by month (ex. the variation in albedo is much greater in December than in July). Do I need to set a specific 'covariance structure' to account for this?</p>
+<p>Also, I'm a bit confused about specifying &quot;Month&quot; as a fixed effect vs random effect. We're interested in seeing how treatment (moose exclusion) affects albedo for each month - therefore, it's necessary to add &quot;Month&quot; as a fixed effect together with treatment. However, would it be relevant to add &quot;Month&quot; as a random effect as well/instead? For a given plot, the data from Month 1 will likely be more similar to data from Month 2 than data from Month 8 (i.e. there is non-independence in data across months). How do we handle this?</p>
+</div>
+<div id="backfitted-models-to-improve-sample-size" class="section level4">
+<h4>Backfitted Models to Improve Sample Size</h4>
+<p>I'd really like to use the backfitted height-only biomass models produced by <a href="https://link.springer.com/article/10.1007/s10021-017-0202-4">Kolstad et al. (2017)</a> to estimate volume (and ultimately, albedo) for a greater number of SustHerb sites, as well as for additional years (not just 2016). I'm planning on doing this, but haven't gotten around to it yet.</p>
+</div>
+<div id="variation-in-albedo" class="section level4">
+<h4>Variation in Albedo</h4>
+<p>I'd also like to investigate how treatment (i.e. moose exclusion) affects <strong>variation</strong> in surface albedo. This isn't a parameter I'd considered looking at before, but it would certainly be interesting if moose exclusion has some type of effect on how much albedo varies across a landscape (and may have important climate implications, too). Maybe MAD would be a good metric to look at?</p>
 </div>
 </div>
 

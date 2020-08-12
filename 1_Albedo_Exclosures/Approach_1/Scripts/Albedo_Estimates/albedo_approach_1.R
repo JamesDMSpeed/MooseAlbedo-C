@@ -42,10 +42,10 @@
         ## SENORGE SWE/TEMP DATA
                 
                 #Add monthly SWE averages from seNorge
-                swe <- read.csv('1_Albedo_Exclosures/Universal/Output/SWE/monthly_avg_swe_mm.csv', header = TRUE)
+                swe <- read.csv('1_Albedo_Exclosures/Universal/Output/2016_Climate_Data/monthly_avg_swe_2016.csv', header = TRUE)
                 
                 #Add monthly temperature averages from seNorge
-                temps <- read.csv('1_Albedo_Exclosures/Universal/Output/Temperature/monthly_avg_temp_C.csv', header = TRUE)
+                temps <- read.csv('1_Albedo_Exclosures/Universal/Output/2016_Climate_Data/monthly_avg_temp_2016.csv', header = TRUE)
                 
                         #Convert temps from celsius (C) to kelvin (K)
                         for( i in 1:length(temps$X)){
@@ -55,6 +55,10 @@
                 
                         #Rename column from C to K
                         colnames(temps)[9] <- "Avg_Temps_K"
+                
+                #Isolate to 2016 data only only
+                swe <- swe[swe$Year == "2016",]
+                temps <- temps[temps$Year == "2016",]
                         
         #HERBIVORE DENSITY DATA
                         

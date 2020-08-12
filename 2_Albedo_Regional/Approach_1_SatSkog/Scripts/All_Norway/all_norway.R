@@ -563,6 +563,5 @@
         
 #END SHAPEFIILE PROCESSING ----------------------------------------------------------------------------------------------
         
-oslo <- st_read("2_Albedo_Regional/Data/Spatial_Data/Output/Oslo/Oslo_processed.shp")
-        
+
         

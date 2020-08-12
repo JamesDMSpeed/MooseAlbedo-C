@@ -54,13 +54,13 @@
         
                 #Base Model
                 model <- lmer(Composite_Albedo ~
-                                      Treatment + 
+                                      Treatment*Month + 
                                       Productivity_Index +
                                       Canopy_Height_MAD +
                                       Clearcut_Lidar +
                                       Moose_Density +
                                       Red_Deer_Density +
-                                      (1 | Month/LocalityName),
+                                      (1 | LocalityName),
                               data = model_data)
                 
                         #Examine model
@@ -69,13 +69,13 @@
         
                 #Log transformed model
                 log_model <- lmer(log(Composite_Albedo) ~
-                                          Treatment + 
+                                          Treatment*Month + 
                                           Productivity_Index +
                                           Canopy_Height_MAD +
                                           Clearcut_Lidar +
                                           Moose_Density +
                                           Red_Deer_Density +
-                                          (1 | Month/LocalityName),
+                                          (1 | LocalityName),
                                   data = model_data)
                 
                         #Examine model
@@ -87,11 +87,11 @@
         
                 #Normal
                 simple_model <- lmer(Composite_Albedo ~
-                                             Treatment + 
+                                             Treatment*Month + 
                                              Productivity_Index +
                                              Clearcut_Lidar +
                                              Moose_Density +
-                                             (1 | Month/LocalityName),
+                                             (1 | LocalityName),
                                      data = model_data)
                 
                         #Examine model
@@ -101,11 +101,11 @@
                 #Log-transformed
                 
                 log_simple_model <- lmer(log(Composite_Albedo) ~
-                                                 Treatment + 
+                                                 Treatment*Month + 
                                                  Productivity_Index +
                                                  Clearcut_Lidar +
                                                  Moose_Density +
-                                                 (1 | Month/LocalityName),
+                                                 (1 | LocalityName),
                                          data = model_data)
                 
                         #Examine model
@@ -120,12 +120,12 @@
         
                         #Normal
                         mi1 <- lmer(Composite_Albedo ~
-                                            Treatment + 
+                                            Treatment*Month + 
                                             Productivity_Index +
                                             Clearcut_Lidar +
                                             Moose_Density +
                                             Treatment*Productivity_Index +
-                                            (1 | Month/LocalityName),
+                                            (1 | LocalityName),
                                     data = model_data)
                         
                                 #Examine model
@@ -134,12 +134,12 @@
                         
                         #Log-transformed
                         mi1_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
+                                                Treatment*Month + 
                                                 Productivity_Index +
                                                 Clearcut_Lidar +
                                                 Moose_Density +
                                                 Treatment*Productivity_Index +
-                                                (1 | Month/LocalityName),
+                                                (1 | LocalityName),
                                         data = model_data)
                         
                                 #Examine model
@@ -151,12 +151,12 @@
                 
                         #Normal
                         mi2 <- lmer(Composite_Albedo ~
-                                            Treatment + 
+                                            Treatment*Month + 
                                             Productivity_Index +
                                             Clearcut_Lidar +
                                             Moose_Density +
                                             Treatment*Clearcut_Lidar +
-                                            (1 | Month/LocalityName),
+                                            (1 | LocalityName),
                                     data = model_data)
                         
                                 #Examine model
@@ -165,12 +165,12 @@
                         
                         #Log-transformed
                         mi2_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
+                                                Treatment*Month + 
                                                 Productivity_Index +
                                                 Clearcut_Lidar +
                                                 Moose_Density +
                                                 Treatment*Clearcut_Lidar +
-                                                (1 | Month/LocalityName),
+                                                (1 | LocalityName),
                                         data = model_data)
                         
                                 #Examine model
@@ -182,12 +182,12 @@
                 
                         #Normal
                         mi3 <- lmer(Composite_Albedo ~
-                                            Treatment + 
+                                            Treatment*Month + 
                                             Productivity_Index +
                                             Clearcut_Lidar +
                                             Moose_Density +
                                             Treatment*Moose_Density +
-                                            (1 | Month/LocalityName),
+                                            (1 | LocalityName),
                                     data = model_data)
                         
                                 #Examine model
@@ -196,12 +196,12 @@
                         
                         #Log-transformed
                         mi3_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
+                                                Treatment*Month + 
                                                 Productivity_Index +
                                                 Clearcut_Lidar +
                                                 Moose_Density +
                                                 Treatment*Moose_Density +
-                                                (1 | Month/LocalityName),
+                                                (1 | LocalityName),
                                         data = model_data)
                         
                                 #Examine model
@@ -213,14 +213,14 @@
                 
                         #Normal
                         mi4 <- lmer(Composite_Albedo ~
-                                            Treatment + 
+                                            Treatment*Month + 
                                             Productivity_Index +
                                             Clearcut_Lidar +
                                             Moose_Density +
                                             Treatment*Productivity_Index +
                                             Treatment*Clearcut_Lidar +
                                             Treatment*Moose_Density +
-                                            (1 | Month/LocalityName),
+                                            (1 | LocalityName),
                                     data = model_data)
                         
                                 #Examine model
@@ -229,14 +229,14 @@
                         
                         #Log-transformed
                         mi4_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
+                                                Treatment*Month + 
                                                 Productivity_Index +
                                                 Clearcut_Lidar +
                                                 Moose_Density +
                                                 Treatment*Productivity_Index +
                                                 Treatment*Clearcut_Lidar +
                                                 Treatment*Moose_Density +
-                                                (1 | Month/LocalityName),
+                                                (1 | LocalityName),
                                         data = model_data)
                         
                                 #Examine model

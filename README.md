@@ -83,6 +83,12 @@ This component of the project seeks to examine the relationship between albedo a
 ```
 
 <br/><br/>
+**Markdown Reports:**
+These interactive R Markdown reports are dynamically generated from the scripts + output for each approach. 
+
+* SatSkog Approach:
+  * [Initial Report](https://allyworks.io/moose-albedo/regional/final_report_regional.html)
+<br/><br/>
 ## Other miscellaneous files
 ```
 - 3_Albedo_Model (contains the albedo models developed by Cherubini et al.)
