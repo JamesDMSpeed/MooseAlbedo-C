@@ -48,243 +48,75 @@
 
 #DEFINE + EXAMINE MODELS ----------------------------------------------------------------------------------------------
         
-        #BASE MODEL
         
-                #Base Model
-                model <- lmer(Composite_Albedo ~
-                                      Treatment + 
-                                      Productivity_Index +
-                                      Canopy_Height_MAD +
-                                      Clearcut_Lidar +
-                                      Moose_Density +
-                                      Red_Deer_Density +
-                                      (1 | Month/LocalityName),
-                              data = model_data)
-                
-                        #Examine model
-                        summary(model)
-                        plot(model) #Bit of a fan outwards at higher albedo values
-                
-                #Log transformed model
-                log_model <- lmer(log(Composite_Albedo) ~
-                                          Treatment + 
-                                          Productivity_Index +
-                                          Canopy_Height_MAD +
-                                          Clearcut_Lidar +
-                                          Moose_Density +
-                                          Red_Deer_Density +
-                                          (1 | Month/LocalityName),
-                                  data = model_data)
-                        
-                        #Examine model
-                        summary(log_model)
-                        plot(log_model) 
-                
-                
+        #Define model
+        model <- lmer(Composite_Albedo ~
+                              Treatment*Month +
+                              Productivity_Index +
+                              Canopy_Height_MAD +
+                              Clearcut_Lidar +
+                              Moose_Density +
+                              Red_Deer_Density +
+                              Roe_Deer_Density +
+                              Treatment*Productivity_Index +
+                              Treatment*Canopy_Height_MAD +
+                              Treatment*Clearcut_Lidar +
+                              Treatment*Moose_Density +
+                              Treatment*Red_Deer_Density +
+                              Productivity_Index*Canopy_Height_MAD +
+                              Productivity_Index*Clearcut_Lidar +
+                              Productivity_Index*Moose_Density +
+                              Productivity_Index*Red_Deer_Density +
+                              Canopy_Height_MAD*Clearcut_Lidar +
+                              Canopy_Height_MAD*Moose_Density +
+                              Canopy_Height_MAD*Red_Deer_Density +
+                              Clearcut_Lidar*Moose_Density +
+                              Clearcut_Lidar*Red_Deer_Density +
+                              Moose_Density*Red_Deer_Density +
+                              (1 | LocalityName),
+                      data = model_data)
         
-        #SIMPLIFIED MODEL (removed obviously non-significant terms from base model)
-                        
-                #Normal
-                simple_model <- lmer(Composite_Albedo ~
-                                             Treatment + 
-                                             Productivity_Index +
-                                             Canopy_Height_MAD +
-                                             Clearcut_Lidar +
-                                             Moose_Density +
-                                             (1 | Month/LocalityName),
-                                     data = model_data)
-                        
-                        #Examine model
-                        summary(simple_model)
-                        plot(simple_model) #Bit of a fan
-                        
-                #Log-transformed
-                log_simple_model <- lmer(log(Composite_Albedo) ~
-                                                 Treatment + 
-                                                 Productivity_Index +
-                                                 Canopy_Height_MAD +
-                                                 Clearcut_Lidar +
-                                                 Moose_Density +
-                                                 (1 | Month/LocalityName),
-                                         data = model_data)
+        #Explore model
+        summary(model)
+        plot(model)
+        qqnorm(resid(model))
+        tab_model(model)
         
-                        #Examine model
-                        summary(log_simple_model)
-                        plot(log_simple_model)
-                        
+        #Residuals + qqplot of base model don't look great - what's going on?
         
-        #MODELS W/ INTERACTION TERMS
-        #Note: using simplified model here, since effect size of treatment is almost identical between two models
-                
-                #MI1 - Treatment*Productivity_Index
-                        
-                        #Normal
-                        mi1 <- lmer(Composite_Albedo ~
-                                             Treatment + 
-                                             Productivity_Index +
-                                             Canopy_Height_MAD +
-                                             Clearcut_Lidar +
-                                             Moose_Density +
-                                             Treatment*Productivity_Index +
-                                             (1 | Month/LocalityName),
-                                     data = model_data)
-                        
-                                #Examine model
-                                summary(mi1)
-                                plot(mi1) #Bit of a fan
-                        
-                        #Log-transformed
-                        mi1_log <- lmer(log(Composite_Albedo) ~
-                                                 Treatment + 
-                                                 Productivity_Index +
-                                                 Canopy_Height_MAD +
-                                                 Clearcut_Lidar +
-                                                 Moose_Density +
-                                                 Treatment*Productivity_Index +
-                                                 (1 | Month/LocalityName),
-                                         data = model_data)
-                        
-                                #Examine model
-                                summary(mi1_log)
-                                plot(mi1_log)
-                        
-                
-                #MI2 - Treatment*Canopy_Height_MAD
-                                
-                        #Normal
-                        mi2 <- lmer(Composite_Albedo ~
-                                            Treatment + 
-                                            Productivity_Index +
-                                            Canopy_Height_MAD +
-                                            Clearcut_Lidar +
-                                            Moose_Density +
-                                            Treatment*Canopy_Height_MAD +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
-                        
-                                #Examine model
-                                summary(mi2)
-                                plot(mi2) 
-                        
-                        #Log-transformed
-                        mi2_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
-                                                Productivity_Index +
-                                                Canopy_Height_MAD +
-                                                Clearcut_Lidar +
-                                                Moose_Density +
-                                                Treatment*Canopy_Height_MAD +
-                                                (1 | Month/LocalityName),
-                                        data = model_data)
-                        
-                                #Examine model
-                                summary(mi2_log)
-                                plot(mi2_log)
-                                
-                                
-                #MI3 - Treatment*Clearcut_Lidar
-                        
-                        #Normal
-                        mi3 <- lmer(Composite_Albedo ~
-                                            Treatment + 
-                                            Productivity_Index +
-                                            Canopy_Height_MAD +
-                                            Clearcut_Lidar +
-                                            Moose_Density +
-                                            Treatment*Clearcut_Lidar +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
-                                
-                                #Examine model
-                                summary(mi3)
-                                plot(mi3) 
-                                
-                        #Log-transformed
-                        mi3_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
-                                                Productivity_Index +
-                                                Canopy_Height_MAD +
-                                                Clearcut_Lidar +
-                                                Moose_Density +
-                                                Treatment*Clearcut_Lidar +
-                                                (1 | Month/LocalityName),
-                                        data = model_data)
-                                
-                                #Examine model
-                                summary(mi3_log)
-                                plot(mi3_log)
-                               
-                                 
-                #MI4 - Treatment*MooseDensity
-                                
-                        #Normal
-                        mi4 <- lmer(Composite_Albedo ~
-                                            Treatment + 
-                                            Productivity_Index +
-                                            Canopy_Height_MAD +
-                                            Clearcut_Lidar +
-                                            Moose_Density +
-                                            Treatment*Moose_Density +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
-                                
-                                #Examine model
-                                summary(mi4)
-                                plot(mi4) 
-                                
-                        #Log-transformed
-                        mi4_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
-                                                Productivity_Index +
-                                                Canopy_Height_MAD +
-                                                Clearcut_Lidar +
-                                                Moose_Density +
-                                                Treatment*Moose_Density +
-                                                (1 | Month/LocalityName),
-                                        data = model_data)
-                                
-                                #Examine model
-                                summary(mi4_log)
-                                plot(mi4_log)
-                                
-                                
-                #MI5 - All Interaction Terms
-                        
-                        #Normal
-                        mi5 <- lmer(Composite_Albedo ~
-                                            Treatment + 
-                                            Productivity_Index +
-                                            Canopy_Height_MAD +
-                                            Clearcut_Lidar +
-                                            Moose_Density +
-                                            Treatment*Productivity_Index +
-                                            Treatment*Canopy_Height_MAD +
-                                            Treatment*Clearcut_Lidar +
-                                            Treatment*Moose_Density +
-                                            (1 | Month/LocalityName),
-                                    data = model_data)
-                                
-                                #Examine model
-                                summary(mi5)
-                                plot(mi5) 
-                                
-                        #Log-transformed
-                        mi5_log <- lmer(log(Composite_Albedo) ~
-                                                Treatment + 
-                                                Productivity_Index +
-                                                Canopy_Height_MAD +
-                                                Clearcut_Lidar +
-                                                Moose_Density +
-                                                Treatment*Productivity_Index +
-                                                Treatment*Canopy_Height_MAD +
-                                                Treatment*Clearcut_Lidar +
-                                                Treatment*Moose_Density +
-                                                (1 | Month/LocalityName),
-                                        data = model_data)
-                                
-                                #Examine model
-                                summary(mi5_log)
-                                plot(mi5_log)
+        
+        #Simplified model (removed obviously non-significant terms + interactions)
+        model2 <- lmer(Composite_Albedo ~
+                               Treatment*Month +
+                               Canopy_Height_MAD +
+                               Moose_Density +
+                               Red_Deer_Density +
+                               Treatment*Canopy_Height_MAD +
+                               Productivity_Index*Red_Deer_Density +
+                               Canopy_Height_MAD*Clearcut_Lidar +
+                               Clearcut_Lidar*Moose_Density +
+                               Clearcut_Lidar*Red_Deer_Density +
+                               (1 | LocalityName),
+                       data = model_data)
+        
+        #Explore simplified model
+        summary(model2)
+        plot(model2)
+        qqnorm(resid(model2))
+        
+        #Very simple model (primary variables of interest only)
+        model3 <- lmer(Composite_Albedo ~
+                               Treatment*Month +
+                               Clearcut_Lidar +
+                               Moose_Density +
+                               Canopy_Height_MAD +
+                               (1 | LocalityName),
+                       data = model_data)
+        
+        #Explore simplified model
+        summary(model3)
+        plot(model3)
+        qqnorm(resid(model3))
                                 
 #END DEFINE + EXAMINE MODELS ------------------------------------------------------------------------------------------
                         
@@ -298,34 +130,8 @@
 
 #AIC MODEL SELECTION ----------------------------------------------------------------------------------------------
         
-        #Define dataframe to hold AIC criterion
-        aic_values <- data.frame("Model_name" = character(), "AIC_value" = double())
-        
-        #Run AIC and add values to df
-
-                #Base models
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "Base Model", "AIC_value" = AIC(model, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "Base Model Log", "AIC_value" = AIC(log_model, k = 2)))
-                
-                #Simple models
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "Simple Model", "AIC_value" = AIC(simple_model, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "Simple Model Log", "AIC_value" = AIC(log_simple_model, k = 2)))
-                
-                #Interaction effect models
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI1", "AIC_value" = AIC(mi1, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI1_Log", "AIC_value" = AIC(mi1_log, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI2", "AIC_value" = AIC(mi2, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI2_Log", "AIC_value" = AIC(mi2_log, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI3", "AIC_value" = AIC(mi3, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI3_Log", "AIC_value" = AIC(mi3_log, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI4", "AIC_value" = AIC(mi4, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI4_Log", "AIC_value" = AIC(mi4_log, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI5", "AIC_value" = AIC(mi5, k = 2)))
-                aic_values <- rbind(aic_values, data.frame("Model_name" = "MI5_Log", "AIC_value" = AIC(mi5_log, k = 2)))
-
-        #Identify model w/ lowest AIC value
-        best_model <- aic_values$Model_name[aic_values$AIC_value == min(aic_values$AIC_value)]
-        print(best_model)
+        #Compare base model w/ simplified model
+        AIC(model, model2, model3) #MODEL 3 has lowest AIC value
                      
         
 #END AIC MODEL SELECTION ----------------------------------------------------------------------------------------------

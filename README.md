@@ -42,9 +42,8 @@ These interactive R Markdown reports are dynamically generated from the scripts 
   * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach1/final_report_approach_1.html)
   
 * Approach 2:
-  * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach2/tree_volumes_approach_2.html)
-  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach2/albedo_estimates_approach_2.html)
-  * [Model](https://allyworks.io/moose-albedo/exclosures/approach2/model_approach_2.html)
+  * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach2/final_report_approach_2.html)
+
 * Approach 3:
   * [Plot Volumes](https://allyworks.io/moose-albedo/exclosures/approach3/tree_volumes_approach_3.html)
   * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach3/albedo_estimates_approach_3.html)

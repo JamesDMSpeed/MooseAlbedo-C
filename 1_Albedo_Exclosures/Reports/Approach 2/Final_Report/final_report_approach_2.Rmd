@@ -15,6 +15,7 @@ output:
       before_body: markdown_intro.html
 ---
 
+
 ```{r echo = FALSE, results = "asis", message = FALSE, include = FALSE}
 
 #Packages
@@ -228,9 +229,9 @@ library(concaveman)
     
 
 # Overview
-This report contains a summary of 'Approach 2', which uses existing SustHerb LiDAR data from [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) to estimate volume (and ultimately, albedo) for relevant study plots. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.
+This report contains a summary of 'Approach 2', which uses existing SustHerb LiDAR data from [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) and a 'convex hull' method to estimate volume (and ultimately, albedo) for relevant study plots. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.
 
-![](https://allyworks.io/moose-albedo/img/Approach_2_Flowchart.png)
+![](https://allyworks.io/moose-albedo/img/Approach_1_Flowchart.png)
 
 ***
 
@@ -240,6 +241,7 @@ This report contains a summary of 'Approach 2', which uses existing SustHerb LiD
 
 #### SustHerb Data
 I chose to use data from SustHerb sites in Trøndelag, Telemark, and Hedmark **(n = 37)**. LiDAR data for these sites was previously processed by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) - thus, I was able to use this LiDAR data as a starting point for my analysis. It is important to note that the following SustHerb sites are missing from my analysis (as they were missing from the analysis conducted by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) and therefore, don't have existing LiDAR data):
+
 * **Hedmark**: "DD1", "DD2", "JCD1", "JCD2", "M1.1", "M1.2", "M2.1", "M2.2", "M3.1", "M3.2", "OIA1", "OIA2", "OL1", "OL2", "SK1", "SK2"
 * **Telemark**: "Notodden 1 B", "Notodden 1 UB", "Notodden 4 B", "Notodden 4 UB"
 
@@ -256,7 +258,11 @@ Site productivity is likely an important variable to control for when attempting
 #### Herbivore Densities
 Densities of various herbivores may have important effects on vegetation states within forest ecosystems, and therefore, it is likely relevant to control for relevant herbivore densities in our final analysis. In addition to moose, both red deer and roe deer are important herbivores in Norwegian boreal forests. Thus, I decided to include densities of moose, red deer, and roe deer in the final model for this approach.
 
-[Speed et al. (2019)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0217166) and [Austrheim et al. (2011)](https://bioone.org/journals/Wildlife-Biology/volume-17/issue-3/10-038/Spatio-temporal-variation-in-large-herbivore-pressure-in-Norway-during/10.2981/10-038.full) calculated metabolic biomass (kg/km2) of many different large herbivores in each Norwegian municipality (for 1949, 1959, 1969, 1979, 1989, 1999, 2009, and 2015), which allows us to include herbivore densities as covariates in our final model. Because this specific approach is using tree data from 2016, I decided to use herbivore data from the closest possible year (2015). For each Sustherb site, I pulled herbivore densities for the corresponding Norwegian kommune based on "Kommune ID".
+[Speed et al. (2019)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0217166) and [Austrheim et al. (2011)](https://bioone.org/journals/Wildlife-Biology/volume-17/issue-3/10-038/Spatio-temporal-variation-in-large-herbivore-pressure-in-Norway-during/10.2981/10-038.full) calculated metabolic biomass (kg/km2) of many different large herbivores in each Norwegian municipality (for 1949, 1959, 1969, 1979, 1989, 1999, 2009, and 2015), which allows us to include herbivore densities as covariates in our final model.
+
+For simplicity's sake, I decided to use herbivore data from 2015 for all SustHerb sites in this approach. However, some sites have LiDAR data closer to 2009 than to 2015 (ex. "namdalseid_1kub" has LiDAR data from 2010). It might be worth it to re-do the analysis and grab herbivore densities from the year closest to that of the LiDAR data for each site. I could then include "herbivore data year" as a categorical variable in the final model, if necessary.
+
+> What is your opinion of using 2015 data for all sites? Should I re-do the analysis as described above?
 
 #### Forest Canopy Height MAD
 Surface roughness (and therefore forest canopy roughness) may be an important factor in surface albedo. [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) used airborne laser measurements (LiDAR) to examine the effects of moose exclusion on boreal forest canopy, and found that moose exclusion significantly altered forest canopy height mean absolute deviation (MAD), which is a metric for canopy roughness. Therefore, I decided to include the LiDAR-derived canopy MAD measurements produced by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) in the final analysis for this approach.
@@ -362,7 +368,7 @@ tree_data <- tree_data[,2:7]
         swe_filtered$Month <- as.numeric(swe_filtered$Month)
         ggplot(data = swe_filtered, aes(x = Month, y = SWE_mm, color = LocalityName)) +
                         geom_line() +
-                        ggtitle("Monthly Avg. SWE at SustHerb Sites") +
+                        ggtitle("Monthly Avg. SWE at SustHerb Sites (n = 37)") +
                         labs(x = "Month", y = "SWE (mm)") +
                         scale_x_continuous(limits = c(0,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
                         theme(
@@ -372,7 +378,7 @@ tree_data <- tree_data[,2:7]
         ggplot(data = swe_filtered, aes(x = Month, y = SWE_mm, color = LocalityName)) +
                 geom_line() +
                 facet_wrap(~ Year) +
-                ggtitle("Monthly Avg. SWE at SustHerb Sites\n(by Corresponding Year of LiDAR Data)") +
+                ggtitle("Monthly Avg. SWE at SustHerb Sites (n = 37)\n(by Corresponding Year of LiDAR Data)") +
                 labs(x = "Month", y = "SWE (mm)") +
                 scale_x_continuous(limits = c(0,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
                 theme(
@@ -382,13 +388,13 @@ tree_data <- tree_data[,2:7]
         swe_filtered$Month <- as.factor(swe_filtered$Month)
         ggplot(data = swe_filtered, aes(x = Month, y = SWE_mm)) +
                 geom_boxplot() +
-                ggtitle("Monthly Avg. SWE at SustHerb Sites (by Month)") +
+                ggtitle("Monthly Avg. SWE at SustHerb Sites by Month (n = 37)") +
                 labs(x = "Month", y = "SWE (mm)")
         
         ggplot(data = swe_filtered, aes(x = SWE_mm)) +
                 geom_histogram() +
                 facet_wrap(~ Month) +
-                ggtitle("Monthly Avg. SWE at SustHerb Sites (by Month)") +
+                ggtitle("Monthly Avg. SWE at SustHerb Sites by Month (n = 37)") +
                 labs(x = "Avg. SWE (mm)", y = "Count")
         
 ```
@@ -400,7 +406,7 @@ tree_data <- tree_data[,2:7]
         temps_filtered$Month <- as.numeric(temps_filtered$Month)
         ggplot(data = temps_filtered, aes(x = Month, y = Avg_Temps_K, color = LocalityName)) +
                         geom_line() +
-                        ggtitle("Monthly Avg. Temperature at SustHerb Sites") +
+                        ggtitle("Monthly Avg. Temperature at SustHerb Sites (n = 37)") +
                         labs(x = "Month", y = "Temperature (K)") +
                         scale_x_continuous(limits = c(0,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
                         theme(
@@ -410,7 +416,7 @@ tree_data <- tree_data[,2:7]
         ggplot(data = temps_filtered, aes(x = Month, y = Avg_Temps_K, color = LocalityName)) +
                 geom_line() +
                 facet_wrap(~ Year) +
-                ggtitle("Monthly Avg. Temperature at SustHerb Sites\n(by Corresponding Year of LiDAR Data)") +
+                ggtitle("Monthly Avg. Temperature at SustHerb Sites (n = 37)\n(by Corresponding Year of LiDAR Data)") +
                 labs(x = "Month", y = "Temperature (K)") +
                 scale_x_continuous(limits = c(0,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
                 theme(
@@ -420,13 +426,13 @@ tree_data <- tree_data[,2:7]
         temps_filtered$Month <- as.factor(temps_filtered$Month)
         ggplot(data = temps_filtered, aes(x = Month, y = Avg_Temps_K)) +
                 geom_boxplot() +
-                ggtitle("Monthly Avg. Temperature at SustHerb Sites (by Month)") +
+                ggtitle("Monthly Avg. Temperature at SustHerb Sites by Month (n = 37)") +
                 labs(x = "Month", y = "Avg. Temperature (K)")
         
         ggplot(data = temps_filtered, aes(x = Avg_Temps_K)) +
                 geom_histogram() +
                 facet_wrap(~ Month) +
-                ggtitle("Monthly Avg. Temperature at SustHerb Sites (by Month)") +
+                ggtitle("Monthly Avg. Temperature at SustHerb Sites by Month (n = 37") +
                 labs(x = "Avg. Temperature (K)", y = "Count")
 
 
@@ -470,8 +476,9 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
                 
                 #Truls Holm
                 productivity$LocalityName[productivity$LocalityName == "truls holm"] <- "truls_holm"
-        
+
         #Create corrected version of checklist
+        checklist2 <- as.vector('')
         for(i in 1:length(checklist)){
                 checklist2[i] <- site_data$LocalityName[site_data$LocalityCode == checklist[i]]
         }
@@ -483,10 +490,9 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
         prod_display
         
         ggplot(data = prod_display, aes(x = Productivity)) +
-                geom_histogram(aes(y=..density..), bins = 20, alpha=1, position="identity") +
-                geom_density(alpha= 0.5) +
+                geom_histogram() +
                 ggtitle("Productivity Index Across SustHerb Sites") +
-                labs(x = "Productivity Index (0-1)", y = "Density")
+                labs(x = "Productivity Index", y = "Count")
         
 ```
 
@@ -502,9 +508,6 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
         #Isolate 2015 data
         hbiomass2015 <- cbind(hbiomass[,c(1:10)], hbiomass$Ms_2015, hbiomass$Rd__2015, hbiomass$R_d_2015)
         
-        #Isolate 2009 data
-        hbiomass2009 <- cbind(hbiomass[,c(1:10)], hbiomass$Ms_2009, hbiomass$Rd__2009, hbiomass$R_d_2009)
-        
         #Get list of Kommune IDs
         site_data$DistrictID <- as.factor(site_data$DistrictID)
         kommunes <- levels(site_data$DistrictID)
@@ -518,36 +521,24 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
                                         "Herbivore_Data_Year" = integer())
         herb_dens_display[nrow(herb_dens_display)+37,] <- NA
         
-        checklist2 <- as.vector(checklist2)
-        
         for(i in 1:length(checklist2)){
                 
                 #Get LocalityName
                 herb_dens_display[i, "LocalityName"] <- checklist2[i]
                 
                 #District ID
-                d_id <- site_data$DistrictID[site_data$LocalityName == checklist2[i]]
+                d_id <- as.character(site_data$DistrictID[site_data$LocalityName == checklist2[i]][1])
                 
                 #Get LiDAR year
                 lidar_yr <- site_data$LiDAR.data.from.year[site_data$LocalityName == checklist2[i]][1]
                 herb_dens_display[i, "Lidar_Year"] <- lidar_yr
                 
-                #Get closest herbivore density year (from lidar year) & add year + densities
-                if(lidar_yr <= 2011){
-                        
-                        herb_dens_display[i, "Herbivore_Data_Year"] <- 2009
-                        herb_dens_display[i, "Moose_Density"] <- hbiomass_filt_2009$Moose_Density[hbiomass_filt_2009$KOMMUNE == d_id]
-                        herb_dens_display[i, "Red_Deer_Density"] <- hbiomass_filt_2009$Red_Deer_Density[hbiomass_filt_2009$KOMMUNE == d_id]
-                        herb_dens_display[i, "Roe_Deer_Density"] <- hbiomass_filt_2009$Roe_Deer_Density[hbiomass_filt_2009$KOMMUNE == d_id]
+                #Assign Herbivore Density Info
+                herb_dens_display[i, "Herbivore_Data_Year"] <- 2015
+                herb_dens_display[i, "Moose_Density"] <- hbiomass2015$`hbiomass$Ms_2015`[hbiomass2015$KOMMUNE == d_id]
+                herb_dens_display[i, "Red_Deer_Density"] <- hbiomass2015$`hbiomass$Rd__2015`[hbiomass2015$KOMMUNE == d_id]
+                herb_dens_display[i, "Roe_Deer_Density"] <- hbiomass2015$`hbiomass$R_d_2015`[hbiomass2015$KOMMUNE == d_id]
                 
-                } else if (lidar_yr > 2011){
-                        
-                        herb_dens_display[i, "Herbivore_Data_Year"] <- 2015
-                        herb_dens_display[i, "Moose_Density"] <- hbiomass_filt_2015$Moose_Density[hbiomass_filt_2015$KOMMUNE == d_id]
-                        herb_dens_display[i, "Red_Deer_Density"] <- hbiomass_filt_2015$Red_Deer_Density[hbiomass_filt_2015$KOMMUNE == d_id]
-                        herb_dens_display[i, "Roe_Deer_Density"] <- hbiomass_filt_2015$Roe_Deer_Density[hbiomass_filt_2015$KOMMUNE == d_id]
-                
-                }
 
         }
         
@@ -588,7 +579,7 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
         
         ggplot(data = herb_dens_plot, aes(x = Herbivore, y = Density)) +
                 geom_boxplot() +
-                ggtitle("Herbivore Densities Across Kommunes With SustHerb Sites") +
+                ggtitle("Herbivore Densities Across SustHerb Sites (n = 37)") +
                 labs(x = "Herbivore", y = "Metabolic Density (kg/km2)")
                 
         
@@ -601,112 +592,70 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
 ## Reasoning 
 
 ##### Using LiDAR to calculate volumes of convex hulls around trees:
-**The goal with this step was to calculate the volumes of convex hulls around each tree in a given plot**, which could then be summed and used as the 'volume' parameter in the volume-based albedo model developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403). Established methods could be used to identify and delineate inidividual trees within a LiDAR footprint of each SustHerb plot (specifically, by using the [lidR package](https://github.com/Jean-Romain/lidR) and associated methods). For each delineated tree, I thought it could be possible to use the methods in [Tao et al. (2014)](https://www.sciencedirect.com/science/article/pii/S0168192314001750) to calculate 
+**The goal with this step was to calculate the volumes of "convex hulls" around each tree in a given plot**, which could then be summed and used as the 'volume' parameter in the volume-based albedo model developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403). Established methods could be used to identify and delineate inidividual trees within a LiDAR footprint of each SustHerb plot (specifically, by using the [lidR package](https://github.com/Jean-Romain/lidR) and associated methods).
 
+For each set of LiDAR points associated with a given delineated tree, I thought it might then be possible to use the methods somewhat similar to those used by [Yan et al. (2019)](https://www.sciencedirect.com/science/article/pii/S0168192314001750) to construct a "3D convex hull" (i.e. a convex geometry with as few points as possible) around those LiDAR points and ultimately, estimate the volume of the tree. I believe this is similar to a tree "crown volume" metric.
 
-
-. By using These volumes would then be summed at the plot level and used to estimate albedo for each plot. Initially, I wanted to use species-specific *allometric tree volume equations*, which were developed by the Norwegian National Forest Inventory (NFI) for use in Norway. In fact, these equations were used to calculate forest stand volume for the test plots on which the volume parameter of the [SatSkog data product](https://www.nibio.no/tema/skog/kart-over-skogressurser/satskog) is based upon. FYI - the albedo model developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) is based upon the SatSkog product. The equations are available in the form of an R package called ["sitreeE"](https://www.rdocumentation.org/packages/sitreeE/versions/0.0-5), but are based on volume tables developed by [Braastad (1966)](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Braastad+%281966%29&btnG=), [Brantseg (1967)](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=+Brantseg+%281967%29&btnG=), and [Vestjordet (1967)](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=+Vestjordet+%281967%29&btnG=).
-
-However, after testing these equations on the dataset, I found that most estimates of volume (especially those for trees <150cm in height) were negative or obviously erroneous. It seems that the NFI allometric volume equations only perform well for trees that have a certain height or diameter, and wouldn't be useful for the dataset that we have.
-
-I also investigated other allometric volume equations specific to Norwegian tree species of interest. The online database [GlobAllomeTree](http://www.globallometree.org/) contains many relevant equations. However, most of these equations require a *diameter at breast height (DBH)* measurement, as opposed to a DGL measurement (which is what a majority of trees in the dataset have). Additionally, a review by [Zianis et al. (2005)](https://www.researchgate.net/publication/232304857_Biomass_and_stem_volume_equations_of_tree_species_in_Europe) shows that almost all allometric volume equations for species of interest are limited to trees with a diameter of several centimeters or a height of 1.5 meters.
-
-**Key point: using existing allometric volume equations doesn't seem possible for this approach.**
-
-##### Converting from biomass to volume:
-Without more detailed and impractical data (such as measurements of trunk diameter at evenly-spaced intervals along each tree), other methods of calculating volume didn't seem to be possible. However, [Kolstad et al. (2017)](https://link.springer.com/article/10.1007/s10021-017-0202-4) previously produced species-specific, locally-calibrated allometric biomass models. I thought that we could use these models to calculate biomass (g) for each tree in the dataset, and then somehow convert that biomass to volume (m3). 
-
-There is abundant literature which focuses on converting tree volume to biomass (for carbon accounting purposes). However, I have not been able to find relevant literature related to converting tree *biomass to volume*. My first thought was that if we knew wood density for each tree species of interest, we could use the simple equation $Volume = mass / density$ to estimate volume from biomass. 
-
-However, using wood density in this manner may be substantially flawed. [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618) found that vertical wood density gradients are present in Norwegian species of interest - that is, wood density changes throughout the vertical length of a given tree trunk. Thus, attempting to calculate tree volume from a single wood density value may produce innacurate volume estimates and introduce substantial error into subsequent steps of the approach. Despite this issue, there didn't seem to be a better way to calculate volume for each tree from available data. 
-
-For the wood densities (also sometimes referred to as 'specific gravities'), I chose to use the "**measured densities**" from [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618). These densities were produced by measuring the density of 2-3cm disks taken at a 1m interval for the entire length of 327 pine, 317 spruce, and 192 birch specimens (harvested in Finland, not Norway). For each species, densities were averaged to produce a corresponding "measured density".
-
-It is important to note that DBH of trees sampled by [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618) ranged from 5-48 cm. Additionally, the minimum age of trees sampled was estimated to be 20 years old. These sample characteristics ultimately represent another source of error - most of the trees in the SustHerb dataset are much smaller and younger, and therefore, may have completely different densities than those provided by [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618).
-
-**Key point: best option to calculate volume seemed to be $Volume = mass/density$. Densities taken from [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618)**
-
-##### Handling less-common species
-The dataset includes observations of two species - *Juniperus communis* and *Salix caprea* - which don't have corresponding allometric equations and are less common than the main species of interest. For the purposes of this approach, I essentially categorized *J. communis* to be the same as *Picea abies* - the allometric biomass equations and wood densities specific to *P. abies* are used on all observations of *J. communis*. I didn't have a great justification for lumping *J. communis* together with *P. abies* as opposed to *Pinus sylvestris* - only that *J. communis* is coniferous and may have smaller needles which are more similar to those of *P. abies*.
-
-I also categorized *S. caprea* together with *Betula sp.* - the allometric equations and wood densities specific to *Betula sp.* are used on all observations of *S. caprea*. Again, I didn't really have a great justification for lumping *S. caprea* together with *Betula sp.* instead of *Sorbus aucuparia* - only that *S. caprea* and *Betula sp.* are both deciduous.
-
-> What is your opinion regarding my grouping of *J. communis* with *P. abies* and *S. caprea* with *Betula sp.*, as described above? Any suggestions?
-
+I could then sum the crown volumes for each delineated tree in a plot to produce a plot-level estimate of volume (I guess in this approach, the "type" of volume metric would be "summed crown volume"). These volumes would then be summed at the plot level and used to estimate albedo for each plot. 
 
 ## Methods
 
-1. Looped through each individual tree observation in the filtered dataset
-2. Calculated biomass (g) for each tree using the locally-calibrated allometric equations developed by [Kolstad et al. (2017)](https://link.springer.com/article/10.1007/s10021-017-0202-4):
-    + *Betula pubescens, Betula pendula, & Salix caprea*:
-        + $Biomass = 0.078843(dgl^2)+0.009197(height^2)$
-    + *Picea abies & Juniperus communis*
-        + $Biomass = 0.020293(height^2)+0.006092(dgl^3)$
-    + *Pinus sylvestris*
-        + $Biomass = 0.325839(dgl^2)+0.0007434(dgl^3)$
-    + *Sorbus aucuparia* (in browsed plots)
-        + $Biomass = 0.006664(height^2)+0.082983(dgl^2)$
-    + *Sorbus aucuparia* (in exclosures)
-        + $Biomass = 0.0053962(height^2)$
-3. From biomass (g) for each tree, I calculated volume (cm3) by using the simple equation: $Volume = mass/density$. I chose to use average 'measured densities' for *Betula sp.*, *P. abies*, and *P. sylvestris*, which were calculated by [Repola (2006)](https://jukuri.luke.fi/handle/10024/532618). Densities were converted from kg/m3 to g/cm3 for this step:
-    + *Betula pubescens, Betula pendula, Salix caprea, & Sorbus aucuparia*:
-        + Density: 475.0 kg/m3
-    + *Picea abies & Juniperus communis*
-        + Density: 385.3 kg/m3
-    + *Pinus sylvestris*
-        + Density: 412.6 kg/m3
-4. Volume (cm3) was converted to m3 for use in the albedo model
-5. The volumes (m3) of each tree were aggregated and summed by plot, in order to produce plot-level volume estimates. **Note:** a given plot-level volume estimate is the sum of all corresponding circular subplots. It is therefore NOT directly comparable to the volumes estimated by the other approaches in this project. 
+1. Read in LAS files from Snøan (2019) (n = 37)
+2. For each LAS file:
+    + Projected to UTM32 CRS
+    + Generated a digital terrain model (DTM) for the file
+        + Used a k-nearest neighbors algorithm and a pixel resolution of 0.5m2
+    + Used the DTM to "normalize" the LiDAR data (i.e. remove surface topography)
+    + Generated a canopy height model (CHM) from the "normalized" LAS file
+        + Used the lidR package [wiki](https://github.com/Jean-Romain/lidR/wiki/Segment-individual-trees-and-compute-metrics) to reduce pits in the CHM (i.e. used the pitfree alogrithm)
+    + Used the watershed algorithm and LAS_trees function to segment and delineate individual trees (with a minimum tree height threshold of 1m)
+    + Filtered out LiDAR points associated with trees >7m in height, as in Snøan (2019)
+    + Clipped filtered LAS file to 20x20m square (based on plot coordinates)
+    + For each remaining tree, used the [rLiDAR package](https://cran.r-project.org/web/packages/rLiDAR/rLiDAR.pdf) to calculate a convex hull around the LiDAR points associated with that tree
+        + The volume of this hull was set to be the volume of the associated tree
+    + Summed the volumes of all trees in the plot to produce a **plot-level volume estimate**
     
-
+    
 ## Results
 
 #### Volume {.tabset}
 
+
 ##### Boxplot
-```{r echo = FALSE, eval= TRUE, message = FALSE}
 
-        ggplot(data = subplot_sums, aes(x = Treatment, y = Volume_m3, fill = Treatment)) +
-                geom_boxplot() +
-                ggtitle("Range of plot volumes for SustHerb study sites") +
-                labs(x = "Site Treatment", y = bquote("Summed plot volume"~(m^3)))
+![](https://allyworks.io/moose-albedo/img/plot_volumes_approach_2.png)
 
-```
 
-##### Histogram
-```{r echo = FALSE, eval= TRUE, message = FALSE}
+##### Density Plot
+![](https://allyworks.io/moose-albedo/img/plot_volumes_density_approach_2.png)
 
-        ggplot(data = subplot_sums, aes(x = Volume_m3, fill = Treatment, group = Treatment)) +
-                geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
-                geom_density(alpha= 0.5) +
-                ggtitle("Density plot of plot volumes") +
-                labs(x = "Summed plot volume (m3)", y = "Density")
-
-```
 
 ##### By Study Site
-```{r echo = FALSE, eval= TRUE, message = FALSE}
+![](https://allyworks.io/moose-albedo/img/plot_volumes_faceted_approach_2.png)
 
-        ggplot(data = subplot_sums, aes(x = Treatment, y = Volume_m3, fill = Treatment)) +
-                geom_bar(position="dodge", stat="identity") +
-                facet_wrap(~ LocalityName, ncol = 5) +
-                ggtitle("Plot volumes for SustHerb study sites") +
-                labs(x = "Site Treatment", y = bquote("Summed plot volume"~(m^3)))
 
-        ggplot(data = agg_trees, aes(x = Treatment, y = Volume_m3, fill = Taxa)) +
-                geom_bar(position="stack", stat="identity") +
-                facet_wrap(~ LocalityName, ncol = 5) +
-                ggtitle("Plot volumes for SustHerb study sites (by taxa)") +
-                labs(x = "Site Treatment", y = bquote("Summed plot volume"~(m^3)))
+##### Tree Hulls
+I've provided a few images here which show the 2D footprints of the associated 3D convex hulls for each tree in a plot (hull footprints are illustrated with green lines). It appears that 2 things are happening with this approach:
 
-```
+* (1) Individual trees are not well delineated, and instead, are often grouped together into large convex hulls. This seems to be particularly apparent in exclosures, where the canopy is denser and harder to delineate. Ultimately, this approach is probably overestimating tree volumes in exclosures.
+* (2) Small trees in open plots (which are kept small through browsing) are not picked up by this method. Therefore, it is likely that the method underestimates tree volumes in open plots.
+
+![](https://allyworks.io/moose-albedo/img/bratsberg_ub.png)
+
+![](https://allyworks.io/moose-albedo/img/drangedal1_ub.png)
+
+![](https://allyworks.io/moose-albedo/img/drangedal4_ub.png)
+
+![](https://allyworks.io/moose-albedo/img/notodden5_b.png)
+
+![](https://allyworks.io/moose-albedo/img/sl_tydal_b.png)
 
 ***
 
 #Albedo Estimates {.tabset .tabset-fade .tabset-pills}
 
 ## Reasoning
-I used the forest **volume-based version of the albedo model** developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) together with snow-water equivalent and temperature data from [seNorge](http://www.senorge.no/) (described earlier) to produce plot-level albedo estimates for the year 2016. The albedo model produces monthly estimates for spruce, pine, and birch forest (which encompasses all other deciduous species). 
+I used the forest **volume-based version of the albedo model** developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) together with snow-water equivalent and temperature data from [seNorge](http://www.senorge.no/) (described earlier) to produce plot-level albedo estimates for the years corresponding with those in which LiDAR measurements were recorded for each plot. The albedo model produces monthly estimates for spruce, pine, and birch forest (which encompasses all other deciduous species). 
 
 I decided that it might be useful to create a **composite albedo** value for each plot (for each month), which would allow for simple comparison of albedos at the plot level. For a given plot in a given month, the first step in creating a composite albedo value is to multiply each species-specific albedo value (produced by the model) with the corresponding species proportions for the plot. This produces three 'fractional albedo' values, which are then summed to produce a 'composite albedo' value:
 
@@ -716,14 +665,15 @@ $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;al
 
 ## Method
 1. For a given plot, I ran a function to produce 12 albedo estimates (one for each month of the year)
-    + This function incorporated the summed volume (m3) estimate for the plot, as well as 12 values for both average snow-water equivalent (mm) and temperature (K). It used the albedo model form described earlier with species-specific coefficients to produce species-specific albedo estimates for each month of a single year.
+    + This function incorporated the summed volume (m3) estimate for the plot, as well as 12 values for both average snow-water equivalent (mm) and temperature (K). Snow-water equivalent and temperature data were produced from the year corresponding to that in which the LiDAR measurements of the plot were obtained. The function used the albedo model form described earlier with species-specific coefficients to produce species-specific albedo estimates for each month of a single year.
     + The function then used the relative proportion of spruce, pine, and birch trees to calculate composite albedos (as described in the reasoning section).
-2. For each plot, the function produced a total of *12 composite albedo estimates* (one for each month of the year). Thus, the final albedo dataset contains **360 albedo estimates** (12 per plot, 180 per treatment).
+2. For each plot, the function produced a total of *12 composite albedo estimates* (one for each month of the year). Thus, the final albedo dataset contains **888 albedo estimates** (12 per plot, 444 per treatment).
 
 ## Results
 ``` {r echo = FALSE, eval= TRUE, message = FALSE}
 
-        model_data <- read.csv("../../../Approach_1/Output/Albedo_Estimates/albedo_estimates_approach_1.csv")
+        model_data <- read.csv("../../../Approach_2/Output/Albedo_Estimates/albedo_estimates_approach_2.csv")
+
 ```
 
 ### Albedo {.tabset}
@@ -734,7 +684,7 @@ $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;al
         model_data$Month <- as.factor(model_data$Month)
         ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, fill = Treatment)) +
                 geom_boxplot() +
-                ggtitle("Monthly albedo estimates for SustHerb study sites") +
+                ggtitle("Monthly albedo estimates for SustHerb study sites (n = 37)") +
                 labs(x = "Month", y = "Albedo")
 
 ```
@@ -744,68 +694,68 @@ $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;al
 
         model_data$Month <- as.integer(model_data$Month)
         ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, color = Treatment)) +
-                geom_point(alpha = 0.7) +
-                geom_line(alpha = 0.3) +
+                geom_line(alpha = 0.8) +
                 scale_x_continuous(breaks = c(1,12), limits = c(1,12)) +
                 scale_y_continuous(breaks = c(0.0,0.2,0.4,0.6), limits = c(0,0.6)) +
-                facet_wrap(~ LocalityName, ncol = 5) +
+                facet_wrap(~ LocalityName, ncol = 8) +
                 ggtitle("Monthly albedo estimates for SustHerb study sites (by site)") +
                 labs(x = "Month", y = "Albedo")
 
 ```
-
 
 ***
 
 #Model {.tabset .tabset-fade .tabset-pills}
 
 ## Correlation Matrix
-I created a correlation matrix to investigate possible correlations between continuous explanatory variables (which would ultimately affect the stability of the final model). It appears that *Roe Deer Density* has a relatively strong correlation with moose density.
+I created a correlation matrix to investigate possible correlations between continuous explanatory variables (which would ultimately affect the stability of the final model). It appears that *Roe Deer Density* is moderately correlated with moose density, but I'm not sure if this correlation is strong enough to warrant removal from the final model.
+
 ```{r echo = FALSE, eval= TRUE, message = FALSE}
 
-        ggpairs(data = model_data, columns = c(8:12)) 
+        ggpairs(data = model_data, columns = c(8:13)) 
 
 ```
 
 
 ## Model
-Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I believe we'll need to use a **linear mixed effects model** to model estimated albedo as a function of treatment (moose exclusion). I gave a "first attempt" at a model below - this model was implemented via the *lme4* package in R w/ *lmer* function). As discussed in the 'correlation matrix' section, *Roe Deer Density* was removed as a potential variable due to strong correlation with moose density. I specified the "LocalityName" variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month. 
+Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I believe we'll need to use a **linear mixed effects model** to model estimated albedo as a function of treatment (moose exclusion). I gave a "first attempt" at a model below - this model was implemented via the *lme4* package in R w/ *lmer* function). I specified the "LocalityName" variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month. 
 
-To select a 'best' model, I started off with a base model with all of the variables of interest, and then eliminated terms that weren't significant. From this 'filtered' model, I created several other versions based on what I thought might be best. I then used the *AIC function* to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).
+To select a 'best' model, I started off with a base model with all of the variables of interest (as well as 2-way interaction terms), and then created a 'filtered' model by eliminating terms that weren't significant. I also created a 'simple' model, which only included variables that I thought would be most relevant. I then used the *AIC function* to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).
 
 ```{r echo = FALSE, eval= TRUE, message = FALSE}
 
-#Import CSV to dataframe
-model_data <- read.csv('../../../Approach_1/Output/Albedo_Estimates/albedo_estimates_approach_1.csv', header = TRUE)
-        
         #Format columns
         model_data$Month <- as.factor(model_data$Month)
         model_data$Treatment <- as.factor(model_data$Treatment)
         model_data$LocalityCode <- as.factor(model_data$LocalityCode)
         model_data$LocalityName <- as.factor(model_data$LocalityName)
+        
+        #Relevel factors to use 'browsed' as the control/reference
+        model_data$Treatment <- relevel(model_data$Treatment, ref = "open")
+
 ```
 
 ```{r echo = TRUE, eval = FALSE, message = FALSE}
 #Initial model:
 lmer(Composite_Albedo ~
-     Treatment*Month +
-     Canopy_Height_MAD +
-     Years_Since_Clearcut +
-     Moose_Density +
-     (1 | LocalityName),
-data = model_data)
+               Treatment*Month +
+               Clearcut_Lidar +
+               Moose_Density +
+               Canopy_Height_MAD +
+               (1 | LocalityName),
+        data = model_data)
 ```
 
 ```{r echo = FALSE, eval = TRUE, message = FALSE}
         
 #Output
 model <- lmer(Composite_Albedo ~
-                     Treatment*Month +
-                     Canopy_Height_MAD +
-                     Years_Since_Clearcut +
-                     Moose_Density +
-                     (1 | LocalityName),
-                data = model_data)
+                       Treatment*Month +
+                       Clearcut_Lidar +
+                       Moose_Density +
+                       Canopy_Height_MAD +
+                       (1 | LocalityName),
+               data = model_data)
         
 tab_model(model, digits = 5)
 
@@ -825,7 +775,13 @@ plot(model)
 
 ***
 
- 
+# Next Steps?
+
+##### Abandon this approach?
+It seems that this approach may not be suitable for the purposes of calculating albedo across SustHerb study sites. 
+
+***
+
  
  
  

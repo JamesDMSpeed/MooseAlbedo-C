@@ -99,3 +99,9 @@ blockquote {
 #overview img {
 	border: 1px solid #eee;
 }
+
+#tree-hulls .figure {
+	display: inline-block;
+	width: 49%;
+	margin: auto;
+}
