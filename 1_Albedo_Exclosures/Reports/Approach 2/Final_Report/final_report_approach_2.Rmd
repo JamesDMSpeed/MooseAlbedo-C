@@ -231,7 +231,7 @@ library(concaveman)
 # Overview
 This report contains a summary of 'Approach 2', which uses existing SustHerb LiDAR data from [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) and a 'convex hull' method to estimate volume (and ultimately, albedo) for relevant study plots. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.
 
-![](https://allyworks.io/moose-albedo/img/Approach_1_Flowchart.png)
+![](https://allyworks.io/moose-albedo/img/Approach_2_Flowchart.png)
 
 ***
 
