@@ -99,3 +99,12 @@ blockquote {
 #overview img {
 	border: 1px solid #eee;
 }
+
+#chm-examples .figure {
+	display: inline-block;
+	width: 49%;
+}
+
+#chm-examples > p:nth-of-type(3) {
+	margin-top: 2em;
+}
