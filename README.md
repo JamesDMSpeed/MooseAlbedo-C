@@ -48,8 +48,7 @@ These interactive R Markdown reports are dynamically generated from the scripts 
   * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach3/final_report_approach_3.html)
 
 * Approach 4:
-  * [Albedo Estimates](https://allyworks.io/moose-albedo/exclosures/approach4/albedo_estimates_approach_4.html)
-  * [Model](https://allyworks.io/moose-albedo/exclosures/approach4/model_approach_4.html)
+  * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach4/final_report_approach_4.html)
 
 Additionally, below are reports for the 'longitudinal' approach:
 
