@@ -1,0 +1,147 @@
+---
+output:
+  html_document:
+    self_contained: false
+    lib_dir: libs
+    css: styles.css
+    toc: true
+    df_print: paged
+    number_sections: false
+    theme: paper
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    includes:
+      before_body: markdown_intro.html
+---
+
+
+```{r echo = FALSE, results = "asis", message = FALSE, include = FALSE}
+
+#Packages
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(sp)
+library(raster)
+library(lattice)
+library(lme4)
+library(sjPlot)
+library(RColorBrewer)
+library(wesanderson)
+library(rasterVis)
+
+#INITIAL DATA IMPORT + FORMATTING ----------------------------------------------------------------------------------------------
+
+        #Approach 1
+        approach1 <- read.csv('../../../Approach_1/Output/Albedo_Estimates/albedo_estimates_approach_1.csv', header = TRUE)
+        approach1$Approach <- "Approach_1"
+
+        #Approach 2
+        approach2 <- read.csv('../../../Approach_2/Output/Albedo_Estimates/albedo_estimates_approach_2.csv', header = TRUE)
+        approach2$Approach <- "Approach_2"
+        
+        #Approach 3
+        approach3 <- read.csv('../../../Approach_3/Output/Albedo_Estimates/albedo_estimates_approach_3.csv', header = TRUE)
+        approach3$Approach <- "Approach_3"
+        
+        #Approach 4
+        approach4 <- read.csv('../../../Approach_4/Output/Albedo_Estimates/albedo_estimates_approach_4.csv', header = TRUE)
+        approach4$Approach <- "Approach_4"
+        
+        #Merged (2-4)
+        all <- rbind(approach2, approach3, approach4)
+        all$Approach <- as.factor(all$Approach)
+        
+        
+#END INITIAL DATA IMPORT + FORMATTING ----------------------------------------------------------------------------------------------
+
+```
+                                
+  
+
+# Overview
+This report compares the different approaches used to examine the effect of moose exclusion on surface albedo in Norwegian forests. In particular, it looks at the albedo estimates produced by Approaches 2-4 (since they use the same tree + climate data and are therefore directly comparable), as well as the albedo estimates produced by Approach 1 (which only uses data from Trøndelag in 2016).
+
+***
+
+# Albedo Estimates {.tabset}
+Because Approaches 2-4 use seNorge and SustHerb data from the same years (which corresponds to the years in which LiDAR data was obtained for each site), these approaches should be directly comparable. As a reminder, Approach 1 only uses seNorge and SustHerb data from 2016, as 2016 is the only year with detailed DGL measurements (which are necessary to use SustHerb biomass models). Therefore, it isn't directly comparable with Approaches 2-4.
+
+## Approach 1 {.tabset .tabset-fade .tabset-pills}
+
+### Boxplot
+``` {r echo = FALSE, eval= TRUE, message = FALSE}
+
+        approach1$Month <- as.factor(approach1$Month)
+        ggplot(data = approach1, aes(x = Month, y = Composite_Albedo, fill = Treatment)) +
+                geom_boxplot() +
+                ggtitle("Monthly albedo estimates for Trøndelag study sites in 2016 (n = 15)") +
+                labs(x = "Month", y = "Albedo")
+        
+```
+
+### Scatterplot
+``` {r echo = FALSE, eval= TRUE, message = FALSE}
+
+        approach1$Month <- as.numeric(approach1$Month)
+        ggplot(data = approach1, aes(x = Month, y = Composite_Albedo, color = Treatment)) +
+                geom_point(alpha = 0.3) +
+                geom_smooth(se = F, lwd = 0.5, span = 0.3) +
+                facet_grid(~ Approach) +
+                ggtitle("Monthly albedo estimates for Trøndelag study sites in 2016 (n = 15)\n (by Approach)") +
+                labs(x = "Month", y = "Albedo") +
+                theme(
+                        legend.position = "bottom"
+                )
+        
+```
+
+
+
+## Approaches 2-4 {.tabset .tabset-fade .tabset-pills}
+
+### Boxplot
+``` {r echo = FALSE, eval= TRUE, message = FALSE}
+
+        all$Month <- as.factor(all$Month)
+        ggplot(data = all, aes(x = Month, y = Composite_Albedo, fill = Treatment)) +
+                geom_boxplot() +
+                facet_grid(~ Approach) +
+                ggtitle("Monthly albedo estimates for SustHerb study sites (n = 37)\n (by Approach)") +
+                labs(x = "Month", y = "Albedo") +
+                theme(
+                        legend.position = "bottom"
+                )
+        
+```
+
+### Scatterplot
+``` {r echo = FALSE, eval= TRUE, message = FALSE}
+
+        all$Month <- as.numeric(all$Month)
+        ggplot(data = all, aes(x = Month, y = Composite_Albedo, color = Treatment)) +
+                geom_point(alpha = 0.3) +
+                geom_smooth(se = F, lwd = 0.5, span = 0.3) +
+                facet_grid(~ Approach) +
+                ggtitle("Monthly albedo estimates for SustHerb study sites (n = 37)\n (by Approach)") +
+                labs(x = "Month", y = "Albedo") +
+                theme(
+                        legend.position = "bottom"
+                )
+        
+```
+
+***
+
+
+#Next Steps?
+
+### Another Way to Compare?
+Is there a better way that I can compare these approaches? I'd like to be able to directly compare Approach 1 (i.e. biomass models) with Approaches 2-4, but since these approaches use different data, I'm not sure if this is feasible.
+
+### Pick an Approach?
+Would it be better to pick an approach for further analysis? Is there a way in which we could identify the approach that may be most accurate?
+
+

@@ -9,7 +9,7 @@ How do moose influence climate? The effect of moose browsing on surface albedo i
 
 **Summary**:
 This component of the project is aimed at determining whether moose exclusion has an impact on surface albedo in Norwegian successional boreal forests. It uses four approaches to model the effects of moose exclosure on albedo:
-1. The **first approach** involves using Norwegian NFI allometric models to calculate volume for trees in each SustHerb subplot, which is then summed and combined with SWE + Temperature data in an albedo model
+1. The **first approach** involves using SustHerb allometric biomass models to estimate volume for trees in each SustHerb subplot, which is then summed and combined with SWE + Temperature data in an albedo model
 2. The **second approach** involves using LiDAR data (from Ingrid Snøan's master's project) to calculate invidual tree-crown volume for all trees in a given LiDAR footprint, using that summed volume in an albedo model, and then using subplot species proportions to calculate a composite albedo value.
 3. The **third approach** involves using the same approach as #2, except that plot volume is obtained by summing the volumes of all pixels produced by the plot canopy height model
 4. The **fourth approach** uses an 'age-based' variant of the albedo model (which accepts stand age instead of plot volume as a parameter). Tree species proportions are then used to calculate composite albedo values, as in Approaches 2 & 3.
@@ -40,7 +40,7 @@ These interactive R Markdown reports are dynamically generated from the scripts 
 
 * Approach 1:
   * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach1/final_report_approach_1.html)
-  
+
 * Approach 2:
   * [Initial Report](https://allyworks.io/moose-albedo/exclosures/approach2/final_report_approach_2.html)
 
@@ -53,23 +53,20 @@ These interactive R Markdown reports are dynamically generated from the scripts 
 Additionally, below are reports for the 'longitudinal' approach:
 
 * Approach Longitudinal:
-  * [Age-based variant of albedo model](https://allyworks.io/moose-albedo/exclosures/approach-longitudinal/albedo_longitudinal_age_variant.html)
+  * *Age-based variant of albedo model (pending)*
 
-And finally, here are reports for comparisons between the 4 main approaches:
+And finally, here are reports for comparisons between the approaches:
 
 * Comparisons:
-  * [Albedo Estimates (Approaches 2-4)](https://allyworks.io/moose-albedo/exclosures/comparisons/albedo_approach_comparisons.html)
-  * [Effect Sizes of All Approaches](https://allyworks.io/moose-albedo/exclosures/comparisons/model_comparisons_effect_sizes.png)
-  <br/><br/>
-  <img src="https://allyworks.io/moose-albedo/exclosures/comparisons/model_comparisons_effect_sizes.png" style="display: block; margin: 2em auto; width: 80%" alt="Effect sizes">
-
+  * [Initial Report](https://allyworks.io/moose-albedo/exclosures/comparisons/final_report_comparisons.html)
+ 
 
 <br/><br/>
 ## Question 2:
 ### How does moose browsing affect surface albedo in successional Norwegian boreal forest on a regional scale?
 
 **Summary**:
-This component of the project seeks to examine the relationship between albedo and moose density in Norwegian successional boreal forests. It uses a forest data product from the NFI (SatSkog), spatial gridded climate data from SeNorge, elevation models from the Norwegian Mapping Authority, and spatial herbivore density data from previous SustHerb work to model albedo as a function of moose density.
+This component of the project seeks to examine the relationship between albedo and moose density in Norwegian successional boreal forests. It uses a forest data product from NIBIO (SatSkog), spatial gridded climate data from SeNorge, and spatial herbivore density data from previous SustHerb work to model albedo as a function of moose density.
 
 <br><br>
 **File Structure:**
