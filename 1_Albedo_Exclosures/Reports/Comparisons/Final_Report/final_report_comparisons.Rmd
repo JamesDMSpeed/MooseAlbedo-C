@@ -54,6 +54,160 @@ library(rasterVis)
         all <- rbind(approach2, approach3, approach4)
         all$Approach <- as.factor(all$Approach)
         
+        #Simplified and merged (1-4)
+        app_1_ps <- approach1[,c(1:7,9:14)]
+        app_234_ps <- all[,c(1:7,9:14)]
+        all_ps <- rbind(app_1_ps, app_234_ps)
+        
+        #CALCULATE TREATMENT DIFF (EXCL-OPEN)
+        #Steps below for Approach 1 and Approaches 2-4 separately
+        
+                #APPROACH 1
+        
+                        #Initialize df
+                        app_1_diff <- data.frame("Month" = integer(),
+                                               "LocalityName" = character(),
+                                               "Region" = character(),
+                                               "Approach" = character(),
+                                               "Diff" = double())
+                        
+                        #Get LocalityName's
+                        approach1$LocalityName <- as.factor(approach1$LocalityName)
+                        app_1_locs <- levels(approach1$LocalityName)
+                        approach1$LocalityName <- as.character(approach1$LocalityName)
+                        
+                        #Construct approach1 'diff' df
+                        for(k in 1:length(app_1_locs)){
+                        
+                                loc <- app_1_locs[k]
+                                
+                                #Define/reset temp df
+                                tmp <- data.frame("Month" = integer(),
+                                               "LocalityName" = character(),
+                                               "Region" = character(),
+                                               "Approach" = character(),
+                                               "Diff" = double())
+                                
+                                        #Loop through months
+                                        for(i in 1:12){
+                                                
+                                                #Month
+                                                tmp[i, "Month"] <- i
+                                                
+                                                #LocalityName
+                                                tmp[i, "LocalityName"] <- loc
+                                                
+                                                #Region 
+                                                tmp[i, "Region"] <- all_ps$Region[all_ps$LocalityName == loc][1]
+                                                
+                                                #Approach
+                                                tmp[i, "Approach"] <- "Approach_1"
+                                                
+                                                #Diff
+                                                
+                                                        #Exclosure value
+                                                        excl <- all_ps$Composite_Albedo[all_ps$Month == i &
+                                                                                        all_ps$LocalityName == loc &
+                                                                                        all_ps$Treatment == "UB" &
+                                                                                        all_ps$Approach == "Approach_1"]
+                                                
+                                                        #Open value
+                                                        open <- all_ps$Composite_Albedo[all_ps$Month == i &
+                                                                                        all_ps$LocalityName == loc &
+                                                                                        all_ps$Treatment == "B" &
+                                                                                        all_ps$Approach == "Approach_1"]
+                                                        
+                                                        #Diff
+                                                        diff <- excl - open
+                                                        
+                                                        #Assign
+                                                        tmp[i, "Diff"] <- diff
+                                                        
+                                        }
+
+                                #Rbind
+                                app_1_diff <- rbind(app_1_diff, tmp)
+                                
+                        }
+        
+        
+                        
+                #APPROACH 2-4
+                        
+                        #Initialize blank dataframe
+                        all_diff <- data.frame("Month" = integer(),
+                                               "LocalityName" = character(),
+                                               "Region" = character(),
+                                               "Approach" = character(),
+                                               "Diff" = double())
+                        
+                        all_ps$LocalityName <- as.factor(all_ps$LocalityName)
+                        locs <- levels(all_ps$LocalityName)
+                        
+                        all_ps$LocalityName <- as.character(all_ps$LocalityName)
+        
+                        for(k in 1:length(locs)){
+                                
+                                loc <- locs[k]
+                                
+                                #Define/reset temp df
+                                tmp <- data.frame("Month" = integer(),
+                                               "LocalityName" = character(),
+                                               "Region" = character(),
+                                               "Approach" = character(),
+                                               "Diff" = double())
+                                
+                                #Loop through approaches
+                                for(j in 2:4){
+                                        
+                                        app <- paste("Approach_", j, sep = "")
+                                        
+                                        #Loop through months
+                                        for(i in 1:12){
+                                                
+                                                #Month
+                                                tmp[i, "Month"] <- i
+                                                
+                                                #LocalityName
+                                                tmp[i, "LocalityName"] <- loc
+                                                
+                                                #Region 
+                                                tmp[i, "Region"] <- all_ps$Region[all_ps$LocalityName == loc][1]
+                                                
+                                                #Approach
+                                                tmp[i, "Approach"] <- app
+                                                
+                                                #Diff
+                                                
+                                                        #Exclosure value
+                                                        excl <- all_ps$Composite_Albedo[all_ps$Month == i &
+                                                                                        all_ps$LocalityName == loc &
+                                                                                        all_ps$Treatment == "exclosure" &
+                                                                                        all_ps$Approach == app]
+                                                
+                                                        #Open value
+                                                        open <- all_ps$Composite_Albedo[all_ps$Month == i &
+                                                                                        all_ps$LocalityName == loc &
+                                                                                        all_ps$Treatment == "open" &
+                                                                                        all_ps$Approach == app]
+                                                        
+                                                        #Diff
+                                                        diff <- excl - open
+                                                        
+                                                        #Assign
+                                                        tmp[i, "Diff"] <- diff
+                                        }
+                                        
+                                        #Rbind
+                                        all_diff <- rbind(all_diff, tmp)
+                                        
+                                }
+                                
+                        }
+        
+        #RBIND both df's
+        all_diff <- rbind(app_1_diff, all_diff)
+        
         
 #END INITIAL DATA IMPORT + FORMATTING ----------------------------------------------------------------------------------------------
 
@@ -135,13 +289,57 @@ Because Approaches 2-4 use seNorge and SustHerb data from the same years (which 
 
 ***
 
+# Treatment Difference {.tabset}
+By calculating the mean difference in albedo between open plots and exclosure (for each month), we might be able to compare Approach 1 with Approaches 2-4.
+
+## Boxplot
+``` {r echo = FALSE, eval= TRUE, message = FALSE}
+
+        all_diff$Month <- as.factor(all_diff$Month)
+        ggplot(data = all_diff, aes(x = Month, y = Diff, fill = Approach)) +
+                geom_boxplot() +
+                facet_grid(~ Approach) +
+                ggtitle("Monthly difference in albedo (by approach)") +
+                labs(x = "Month", y = "Albedo Difference\n(Excl. - Open)") +
+                theme(
+                        legend.position = "none"
+                )
+        
+```
+
+## Mean Difference
+``` {r echo = FALSE, eval= TRUE, message = FALSE}
+
+        #Calculate mean differences by approach
+        mean_diff <- aggregate(all_diff$Diff, by = list(Approach = all_diff$Approach, Month = all_diff$Month), FUN = mean)
+        colnames(mean_diff)[3] <- "Diff"
+
+        mean_diff$Month <- as.integer(mean_diff$Month)
+        ggplot(data = mean_diff, aes(x = Month, y = Diff, color = Approach)) +
+                geom_point() +
+                geom_line() +
+                facet_grid(~ Approach) +
+                ggtitle("Monthly mean difference in albedo (by approach)") +
+                scale_x_continuous(limits = c(1,12), breaks = c(1,12)) +
+                labs(x = "Month", y = "Mean Albedo Difference\n(Excl. - Open)") +
+                theme(
+                        legend.position = "none"
+                )
+        
+```
+
+
+
+
+
+***
 
 #Next Steps?
 
-### Another Way to Compare?
+#### Another Way to Compare?
 Is there a better way that I can compare these approaches? I'd like to be able to directly compare Approach 1 (i.e. biomass models) with Approaches 2-4, but since these approaches use different data, I'm not sure if this is feasible.
 
-### Pick an Approach?
+#### Pick an Approach?
 Would it be better to pick an approach for further analysis? Is there a way in which we could identify the approach that may be most accurate?
 
 

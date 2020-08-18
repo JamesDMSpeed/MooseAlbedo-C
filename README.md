@@ -57,7 +57,7 @@ Additionally, below are reports for the 'longitudinal' approach:
 
 And finally, here are reports for comparisons between the approaches:
 
-* Comparisons:
+* **Comparisons (Appr. 1-4):**
   * [Initial Report](https://allyworks.io/moose-albedo/exclosures/comparisons/final_report_comparisons.html)
  
 

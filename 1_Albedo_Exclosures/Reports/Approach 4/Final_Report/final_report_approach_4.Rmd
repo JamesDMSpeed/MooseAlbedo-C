@@ -466,6 +466,42 @@ $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;al
 
 ```
 
+#### By Age
+``` {r echo = FALSE, eval= TRUE, message = FALSE, fig.height = 11}
+
+        model_data$Month <- as.integer(model_data$Month)
+        model_data$Month <- as.factor(model_data$Month)
+
+        years <- data.frame(model_data$Clearcut_Lidar)
+        years <- levels(as.factor(years$model_data.Clearcut_Lidar))
+        plot_text <- vector()
+        
+        for(i in 1:length(years)){
+                plot_text[i] <- (nrow(model_data[model_data$Clearcut_Lidar == years[i],]) / 12) / 2
+        }
+        
+        plot_text <- as.data.frame(plot_text)
+        plot_text <- cbind(plot_text, as.data.frame(years))
+        colnames(plot_text)[1] <- "n"
+        colnames(plot_text)[2] <- "Clearcut_Lidar"
+        plot_text$Clearcut_Lidar <- as.integer(plot_text$Clearcut_Lidar)
+
+        ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, color = Treatment)) +
+                geom_boxplot() +
+                scale_y_continuous(breaks = c(0.0,0.2,0.4,0.6), limits = c(0,0.6)) +
+                geom_text(data = plot_text, aes(x=11, y = 0.58, label = paste("n = ", n, sep="")), 
+                    colour="black") +
+                facet_wrap(~ Clearcut_Lidar, ncol = 3) +
+                ggtitle("Monthly albedo estimates for SustHerb study sites\n(faceted by # of years since clearcut)") +
+                labs(x = "Month", y = "Albedo") +
+                theme(
+                        legend.position = "bottom"
+                )
+                
+
+```
+
+
 ***
 
 #Model {.tabset .tabset-fade .tabset-pills}

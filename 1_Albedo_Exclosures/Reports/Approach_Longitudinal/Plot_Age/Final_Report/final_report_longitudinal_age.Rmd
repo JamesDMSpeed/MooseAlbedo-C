@@ -18,209 +18,43 @@ output:
 
 ```{r echo = FALSE, results = "asis", message = FALSE, include = FALSE}
 
-#Packages
-library(dplyr)
+#Packages for general data manipulation + visualization
 library(ggplot2)
-library(knitr)
-library(kableExtra)
+library(dplyr)
+library(RColorBrewer)
+library(wesanderson)
 library(sp)
 library(raster)
 library(GGally)
 library(lattice)
 library(lme4)
 library(sjPlot)
-library(ggplot2)
-library(RColorBrewer)
-library(wesanderson)
-library(rasterVis)
-library(lidR)
-library(geometry)
-library(concaveman)
 
-#INITIAL DATA IMPORT + FORMATTING ----------------------------------------------------------------------------------------------
+#INITIAL DATA IMPORT + FORMATTING ----------------------------------------------------------------------
 
-        #Get 'cleaned' site data from adjacent 'Sites' folder
-        site_data <- read.csv('../../../Data/SustHerb_Site_Data/cleaned_data/cleaned_data.csv', header = TRUE)
+        ## SITE DATA
         
-        #Load Plot Coordinates
-
-                #Read in Regional coordinates
-                plotcoords_trond <- read.csv('../../../Data/Site_Coordinates/troendelag_20m_flater_pkt.csv',header=T,sep=';', dec=',')
-                plotcoords_hed_ask <- read.csv('../../../Data/Site_Coordinates/Koordinater_20x20_Hedmark_Akershus.csv',header=T,sep=';', dec=',')
-                plotcoords_tel <- read.csv('../../../Data/Site_Coordinates/Koordinater_20x20_Telemark_formatted.csv',header=T,sep=';', dec=',', encoding = "UTF-8")
+                #Get 'cleaned' site data from adjacent 'Sites' folder
+                site_data <- read.csv('../../../../Data/SustHerb_Site_Data/cleaned_data/cleaned_data.csv', header = TRUE)
+        
+        
+        ## SENORGE SWE/TEMP DATA (2001 - 2018 - NEED TO PULL ADDITIONAL SENORGE DATA FOR 2019 AND 2020)
+        
+                #Add monthly SWE averages from seNorge
+                swe <- read.csv('../../../../Universal/Output/SWE/monthly_avg_swe_mm_all_years.csv', header = TRUE)
                 
-                ##Exclude sites without LiDAR data
-                ##  (exclusions based on Ingrid Snøan's 'HedmarkTroendelagTelemarkSustherbSites' file)
+                #Add monthly temperature averages from seNorge
+                temps <- read.csv('../../../../Universal/Output/Temperature/monthly_avg_temp_C_all_years.csv', header = TRUE)
                 
-                        #Hedmark Exclusions
-                        hed_excl <- c("DD1", "DD2", "JCD1", "JCD2", "M1.1", "M1.2", "M2.1", "M2.2", "M3.1", "M3.2", "OIA1", "OIA2", "OL1", "OL2", "SK1", "SK2")
-                        plotcoords_hed_ask <- plotcoords_hed_ask[!plotcoords_hed_ask$Uthegningi %in% hed_excl,]
+                        #Convert temps from celsius (C) to kelvin (K)
+                        for( i in 1:length(temps$X)){
+                                #K = C + 273.15
+                                temps[i, "Avg_Temp_C"] <- temps[i, "Avg_Temp_C"] + 273.15
+                        }
                         
-                        #Telemark Exclusions
-                        tel_excl <- c("Notodden 1 B", "Notodden 1 UB", "Notodden 4 B", "Notodden 4 UB")
-                        plotcoords_tel <- plotcoords_tel[!plotcoords_tel$flatenavn %in%  tel_excl,]
-                
-                #Create df to hold all coordinates
-                plotcoords <- data.frame("Name" = '', "utm32north" = '', "utm32east" = '')
-                
-                        #Bind Trøndelag coordinates to main coordinates df
-                        
-                                #Filter down to relevant columns
-                                plotcoords_trond_opt <- plotcoords_trond[, c(3:5)]
-
-                                #Convert site codes to uppercase (to match 'site_data' format)
-                                plotcoords_trond_opt$Name <- toupper(plotcoords_trond_opt$Name)
-                                
-                                #Rename columns
-                                colnames(plotcoords_trond_opt)[2] <- "utm32east"
-                                colnames(plotcoords_trond_opt)[3] <- "utm32north"
-                                
-                                #Correct extra space in '1NSUB' label
-                                plotcoords_trond_opt$Name[plotcoords_trond_opt$Name == ' 1NSUB'] <- '1NSUB'
-                
-                                #Row bind with main coordinates df
-                                plotcoords <- plotcoords_trond_opt
-                                
-                        #Bind Askerhus + Hedmark coordinates to main coordinates df
-                                
-                                #Filter down to relevant columns
-                                plotcoords_hed_ask_opt <- plotcoords_hed_ask[, c(6, 14:15)]
-                                
-                                #Rename 'Name' column
-                                colnames(plotcoords_hed_ask_opt)[1] <- "Name"
-                                
-                                #Swap 'coordinate codes' with SustHerb site codes
-                                #Note: Using Ingrid's coordinate references here (number order b/t B and UB is a bit wonky)
-                                
-                                        #Didrik Holmsen UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'DH1'] <- 'DHUB'
-                                        
-                                        #Didrik Holmsen B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'DH2'] <- 'DHB'
-                                        
-                                        #Fet3 UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'FK1'] <- 'FKUB'
-                                        
-                                        #Fet3 B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'FK2'] <- 'FKB'
-                                        
-                                        #Halvard Pramhus UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'HP2'] <- 'HPUB'
-                                        
-                                        #Halvard Pramhus B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'HP1'] <- 'HPB'
-                                        
-                                        #Stig Dahlen UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'SD1'] <- 'SDUB'
-                                        
-                                        #Stig Dahlen B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'SD2'] <- 'SDB'
-                                        
-                                        #Stangeskovene Aurskog UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'SSA2'] <- 'SSAUB'
-                                        
-                                        #Stangeskovene Aurskog B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'SSA1'] <- 'SSAB'
-                                        
-                                        #Stangeskovene Eidskog UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'SSB2'] <- 'SSBUB'
-                                        
-                                        #Stangeskovene Eidskog B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'SSB1'] <- 'SSBB'
-                                        
-                                        #Eidskog UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'STSKN1'] <- 'STSKNUB'
-                                        
-                                        #Eidskog B
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'STSKN2'] <- 'STSKNB'
-                                        
-                                        #Truls Holm UB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'TH2'] <- 'THUB'
-                                        
-                                        #Truls Holm BB
-                                        plotcoords_hed_ask_opt$Name[plotcoords_hed_ask_opt$Name == 'TH1'] <- 'THB'
-                                        
-                                        
-                                        
-                                        
-                                #Row bind with main coordinates df
-                                plotcoords <- rbind(plotcoords, plotcoords_hed_ask_opt)
-                                
-                        #Bind Telemark coordinates to main coordinates df
-                                
-                                #Filter down to relevant columns
-                                plotcoords_tel_opt <- plotcoords_tel[, c(4, 9:10)]
-                                
-                                #Correct column names
-                                colnames(plotcoords_tel_opt)[1] <- "Name"
-
-                                #Remove unicode 'replacement character' in "Fritsoe" (to match site_data)
-                                plotcoords_tel_opt$Name <- gsub('\uFFFD', 'o', plotcoords_tel_opt$Name)
-                                
-                                #Corrections to spelling (to match 'site_data' and allow for loop below)
-                                        
-                                        #Column to lowercase
-                                        plotcoords_tel_opt$Name <- tolower(plotcoords_tel_opt$Name)
-                                        
-                                        #Fritsoe
-                                        plotcoords_tel_opt$Name <- gsub('fritzoe', 'fritsoe', plotcoords_tel_opt$Name)
-                                        
-                                        #Cappelen
-                                        plotcoords_tel_opt$Name <- gsub('cappelen', 'nome_cappelen', plotcoords_tel_opt$Name)
-                                
-                                        #Furesdal (Note: remove number '1' to match 'site_data')
-                                        plotcoords_tel_opt$Name <- gsub('fyresdal 1', 'furesdal', plotcoords_tel_opt$Name)
-                                
-                                #Replace full name w/ relevant site code
-                                        
-                                        for(i in 1:nrow(plotcoords_tel_opt)){
-                                                
-                                                #Split string
-                                                s <- strsplit(plotcoords_tel_opt[i, "Name"], split = " ")
-                                                
-                                                #Perform code below for all except furesdal
-                                                if( s[[1]][1] == "furesdal" ){
-                                                        
-                                                        #Grab 'furesdal' string
-                                                        s2 <- s[[1]][1]
-                                                        
-                                                        #Identify treatment
-                                                        st <- s[[1]][2]
-                                                        
-                                                } else {
-                                                        
-                                                        #Join site name + number
-                                                        s2 <- paste(s[[1]][1], s[[1]][2], sep = "")
-                                                        
-                                                        #Identify treatment
-                                                        st <- s[[1]][3]
-                                                        
-                                                }
-                                                
-                                                if( st == "ub" ){
-                                                        tr <- "exclosure"
-                                                } else if ( st == "b" ){
-                                                        tr <- "open"
-                                                }
-                                                
-                                                #Get relevant site code
-                                                ## Some sites not in site_data (these are given NA)
-                                                if( (s2 %in% site_data$LocalityName) == T ) {
-                                                        sc <- site_data$LocalityCode[site_data$LocalityName == s2 & site_data$Treatment == tr]
-                                                } else {
-                                                        sc <- NA
-                                                }
-                                                
-                                                #Replace existing name w/ site code (or NA)
-                                                plotcoords_tel_opt[i, "Name"] <- sc
-                                                
-                                        }
-
-                                #Row bind with main coordinates df
-                                plotcoords <- rbind(plotcoords, plotcoords_tel_opt)
-                
-
-#END INITIAL DATA IMPORT + FORMATTING --------------------------------------------------------------------------------
+                        #Rename column from C to K
+                        colnames(temps)[5] <- "Avg_Temps_K"
+                      
 
 ```
                                 
@@ -230,9 +64,9 @@ library(concaveman)
     
 
 # Overview
-This report contains a summary of 'Approach 3', which uses existing SustHerb LiDAR data from [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) and a 'volume under CHM' method to estimate volume (and ultimately, albedo) for relevant study plots. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.
+This report contains a summary of the 'age-based' longitudinal analysis, which uses multi-year SustHerb tree data and the 'age-based' albedo model developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) to examine albedo at relevant study plots across several years. The report covers each step of the analysis and discusses potential limitations/assumptions associated with each step.
 
-![](https://allyworks.io/moose-albedo/img/Approach_3_Flowchart.png)
+![](https://allyworks.io/moose-albedo/img/Longitudinal_Age_Flowchart.png)
 
 ***
 
@@ -241,17 +75,17 @@ This report contains a summary of 'Approach 3', which uses existing SustHerb LiD
 ### Data Selection {.tabset .tabset-fade .tabset-pills}
 
 #### SustHerb Data
-I chose to use data from SustHerb sites in Trøndelag, Telemark, and Hedmark **(n = 37)**. LiDAR data for these sites was previously processed by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) - thus, I was able to use this LiDAR data as a starting point for my analysis. It is important to note that the following SustHerb sites are missing from my analysis (as they were missing from the analysis conducted by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) and therefore, don't have existing LiDAR data):
+I chose to use data from SustHerb sites in Trøndelag, Telemark, and Hedmark **(n = 37)**. It is important to note that the following SustHerb sites are missing from my analysis (as they were missing from the analysis conducted by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) and therefore, don't have existing LiDAR data):
 
 * **Hedmark**: "DD1", "DD2", "JCD1", "JCD2", "M1.1", "M1.2", "M2.1", "M2.2", "M3.1", "M3.2", "OIA1", "OIA2", "OL1", "OL2", "SK1", "SK2"
 * **Telemark**: "Notodden 1 B", "Notodden 1 UB", "Notodden 4 B", "Notodden 4 UB"
 
-Additional variables for each plot that were included in the final model/analysis include "Years Since Exclosure" and "Number of Years Between Clearcut and LiDAR Measurement".
+I chose to exclude these sites in order to maintain consistency with other approaches.
 
 #### seNorge Climate Data
 The albedo model developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) accepts *two climate parameters*: (1) monthly average snow-water equivalent (mm) and (2) monthly average temperature (K). seNorge provides this data across the entire country of Norway in the form of spatially-gridded daily estimates with a 1km2 resolution. Thus, it was possible to use obtain relevant time series data for each study site used in this approach.
 
-For each study site, I pulled snow-water equivalent and temperature data from the corresponding year of LiDAR measurement - so, for example, if a plot was measured with LiDAR in 2016, then I pulled climate data corresponding to that plot from 2016. Monthly averages of temperature (C) and snow-water equivalent (mm) were calculated from each time series. Temperature was converted to K for use with the albedo model. **The total number of temperature observations is therefore 444 (12 months x 37 sites). The total number of snow-water equivalent observations is also 444 (12 months x 37 sites)**.
+For each study site, I pulled snow-water equivalent and temperature data from each year where tree data for that site existed - so, for example, if a study site had tree data for 2013, 2014, and 2015, I pulled corresponding seNorge data for those years. Monthly averages of temperature (C) and snow-water equivalent (mm) were calculated from each time series. Temperature was converted to K for use with the albedo model.
 
 #### Productivity Index
 Site productivity is likely an important variable to control for when attempting to determine the effect of moose exclusion on forest surface albedo. Therefore, I decided to include data from the site productivity index that was developed by [Kolstad et al. (2017)](https://link.springer.com/article/10.1007/s10021-017-0202-4). This index is based upon a standardized value for mean annual increment in aboveground biomass. 
@@ -265,9 +99,6 @@ For simplicity's sake, I decided to use herbivore data from 2015 for all SustHer
 
 > What is your opinion of using 2015 data for all sites? Should I re-do the analysis as described above?
 
-#### Forest Canopy Height MAD
-Surface roughness (and therefore forest canopy roughness) may be an important factor in surface albedo. [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) used airborne laser measurements (LiDAR) to examine the effects of moose exclusion on boreal forest canopy, and found that moose exclusion significantly altered forest canopy height mean absolute deviation (MAD), which is a metric for canopy roughness. Therefore, I decided to include the LiDAR-derived canopy MAD measurements produced by [Snøan (2019)](https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2618099?locale-attribute=no) in the final analysis for this approach.
-
 ### Data Summary {.tabset .tabset-fade .tabset-pills}
 
 #### SustHerb Dataset {.tabset}
@@ -279,6 +110,17 @@ Surface roughness (and therefore forest canopy roughness) may be an important fa
 
         #Taxa Table
         simple_sites
+
+```
+
+##### Age
+```{r echo = FALSE, eval= TRUE, message = FALSE}
+
+        age_df <- simple_sites[simple_sites$Treatment == "open",]
+        ggplot(data = age_df, aes(x = ClearCutToLidar)) +
+                geom_histogram(bins = 15) +
+                ggtitle("Age of SustHerb Sites (n = 37)") +
+                labs(x = "Age (Years)", y = "Count")
 
 ```
 
@@ -588,76 +430,12 @@ productivity$LocalityName <- tolower(productivity$LocalityName)
 
 ***
 
-#Volume Calculations {.tabset .tabset-fade .tabset-pills}
-
-## Reasoning 
-
-##### Using LiDAR to calculate "volume under CHM":
-**The goal with this step was to calculate the total volume under a canopy height model (CHM) for each SustHerb plot**, which could then be used as the 'volume' parameter in the volume-based albedo model developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403). Established methods could be used to construct a CHM for the corresponding LiDAR footprint of each SustHerb plot (specifically, by using the [lidR package](https://github.com/Jean-Romain/lidR) and associated methods).
-
-The CHM produced by this method can be exported as a pixelated raster grid, where each pixel has a spatial resolution of 1m2 and an associated z value (i.e. height). I thought that, for a given CHM, I could calculate the volume of each pixel (1m x 1m x z-value) and then sum all pixel volumes to produce a plot-level estimate of volume. This volume could then be plugged into the albedo model.
-
-In contrast to Approach 2, this method doesn't have a specific height threshold as to what LiDAR points are delineated as trees. I thought that this method would be more effective than Approach 2 at capturing the small trees that have been heavily browsed in some open plots. However, because this approach doesn't use any kind of height threshold, it's possible that other types of vegetation (ex. field-layer vegetation) will be included in each plot-level estimate.
-
-## Methods
-
-1. Read in LAS files from Snøan (2019) (n = 37)
-2. For each LAS file:
-    + Projected to UTM32 CRS
-    + Generated a digital terrain model (DTM) for the file
-        + Used a k-nearest neighbors algorithm and a pixel resolution of 0.5m2
-    + Used the DTM to "normalize" the LiDAR data (i.e. remove surface topography)
-    + Generated a canopy height model (CHM) from the "normalized" LAS file
-        + Used the lidR package [wiki](https://github.com/Jean-Romain/lidR/wiki/Segment-individual-trees-and-compute-metrics) to reduce pits in the CHM (i.e. used the pitfree alogrithm)
-    + Used the watershed algorithm and LAS_trees function to segment and delineate individual trees (with a minimum tree height threshold of 2m)
-    + Filtered out LiDAR points associated with trees >7m in height, as in Snøan (2019)
-    + Clipped filtered LAS file to 20x20m square (based on plot coordinates)
-    + Created new raster CHM with pixels of 1m2 resolution
-    + Calculated volume of each pixel (1m x 1m x z-value)
-    + Summed the volumes of all pixels in the plot to produce a **plot-level volume estimate**
-    
-    
-## Results
-
-#### Volume {.tabset}
-
-
-##### Boxplot
-
-![](https://allyworks.io/moose-albedo/img/plot_volumes_approach_3.png)
-
-
-##### Density Plot
-![](https://allyworks.io/moose-albedo/img/plot_volumes_density_approach_3.png)
-
-
-##### By Study Site
-![](https://allyworks.io/moose-albedo/img/plot_volumes_faceted_approach_3.png)
-
-
-##### CHM Examples
-I've provided a few images here which show (1) the original CHM for a given plot + the polygon used to clip it to 20m2, and (2) the second version of the CHM (generated after removal of trees >7m and clipping).
-
-**Drangedal 4 (Exclosure):**
-
-![](https://allyworks.io/moose-albedo/img/drangedal4_ub_1.png)
-
-![](https://allyworks.io/moose-albedo/img/drangedal4_ub_2.png)
-
-**Furesdal (Exclosure):**
-
-![](https://allyworks.io/moose-albedo/img/furesdal_ub_1.png)
-
-![](https://allyworks.io/moose-albedo/img/furesdal_ub_2.png)
-
-***
-
 #Albedo Estimates {.tabset .tabset-fade .tabset-pills}
 
 ## Reasoning
-I used the forest **volume-based version of the albedo model** developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) together with snow-water equivalent and temperature data from [seNorge](http://www.senorge.no/) (described earlier) to produce plot-level albedo estimates for the years corresponding with those in which LiDAR measurements were recorded for each plot. The albedo model produces monthly estimates for spruce, pine, and birch forest (which encompasses all other deciduous species). 
+I used the forest **age-based version of the albedo model** developed by [Hu et al. (2018)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018MS001403) together with snow-water equivalent and temperature data from [seNorge](http://www.senorge.no/) (described earlier) to produce plot-level albedo estimates for the years corresponding with those in which LiDAR measurements were recorded for each plot (i.e. the "age" value for each plot was set to be the number of years between initial clearcut and LiDAR measurement). **I chose this to allow for direct comparison of albedo estimates from this approach with those from Approaches 2 and 3.**
 
-I decided that it might be useful to create a **composite albedo** value for each plot (for each month), which would allow for simple comparison of albedos at the plot level. For a given plot in a given month, the first step in creating a composite albedo value is to multiply each species-specific albedo value (produced by the model) with the corresponding species proportions for the plot. This produces three 'fractional albedo' values, which are then summed to produce a 'composite albedo' value:
+The albedo model produces monthly estimates for spruce, pine, and birch forest (which encompasses all other deciduous species). I decided that it might be useful to create a **composite albedo** value for each plot (for each month), which would allow for simple comparison of albedos at the plot level. For a given plot in a given month, the first step in creating a composite albedo value is to multiply each species-specific albedo value (produced by the model) with the corresponding species proportions for the plot. This produces three 'fractional albedo' values, which are then summed to produce a 'composite albedo' value:
 
 $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;albedo\\A = species\mbox{-}specific\;albedo\\S = species\;proportion\\i = month\;(1\mbox{-}12);\;j = plot;\;k = species\;(spruce,\;pine,\;birch)$$
 
@@ -665,14 +443,14 @@ $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;al
 
 ## Method
 1. For a given plot, I ran a function to produce 12 albedo estimates (one for each month of the year)
-    + This function incorporated the summed volume (m3) estimate for the plot, as well as 12 values for both average snow-water equivalent (mm) and temperature (K). Snow-water equivalent and temperature data were produced from the year corresponding to that in which the LiDAR measurements of the plot were obtained. The function used the albedo model form described earlier with species-specific coefficients to produce species-specific albedo estimates for each month of a single year.
+    + This function incorporated the age of the plot (i.e. number of years between clearcut and LiDAR measurement), as well as 12 values for both average snow-water equivalent (mm) and temperature (K). Snow-water equivalent and temperature data were produced from the year corresponding to that in which the LiDAR measurements of the plot were obtained. The function used the albedo model form described earlier with species-specific coefficients to produce species-specific albedo estimates for each month of a single year.
     + The function then used the relative proportion of spruce, pine, and birch trees to calculate composite albedos (as described in the reasoning section).
 2. For each plot, the function produced a total of *12 composite albedo estimates* (one for each month of the year). Thus, the final albedo dataset contains **888 albedo estimates** (12 per plot, 444 per treatment).
 
 ## Results
 ``` {r echo = FALSE, eval= TRUE, message = FALSE}
 
-        model_data <- read.csv("../../../Approach_3/Output/Albedo_Estimates/albedo_estimates_approach_3.csv")
+        model_data <- read.csv("../../../Approach_4/Output/Albedo_Estimates/albedo_estimates_approach_4.csv")
 
 ```
 
@@ -738,6 +516,7 @@ $$C_{ij} = (A_{ij}S_{jk}) + (A_{ij}S_{jk}) + (A_{ij}S_{jk})\\\;\\C=composite\;al
 
 ```
 
+
 ***
 
 #Model {.tabset .tabset-fade .tabset-pills}
@@ -756,6 +535,8 @@ I created a correlation matrix to investigate possible correlations between cont
 Due to the setup of the study design and non-independence of data within each study site (i.e. 2 plots per study site, not independent of each other), I believe we'll need to use a **linear mixed effects model** to model estimated albedo as a function of treatment (moose exclusion). I gave a "first attempt" at a model below - this model was implemented via the *lme4* package in R w/ *lmer* function). I specified the "LocalityName" variable as a random intercept, in order to account for non-independence of data at the level of the study site. The main fixed effect of interest (treatment) was then specified as an interaction with month. 
 
 To select a 'best' model, I started off with a base model with all of the variables of interest (as well as 2-way interaction terms), and then created a 'filtered' model by eliminating terms that weren't significant. I also created a 'simple' model, which only included variables that I thought would be most relevant. I then used the *AIC function* to calculate AIC values for each model. Finally, I chose the model with the lowest AIC value as the 'best' (below).
+
+**Note:** Age/clearcut to lidar is not included, as this data was used to produce albedo estimates
 
 ```{r echo = FALSE, eval= TRUE, message = FALSE}
 
@@ -785,12 +566,12 @@ lmer(Composite_Albedo ~
         
 #Output
 model <- lmer(Composite_Albedo ~
-                       Treatment*Month +
-                       Clearcut_Lidar +
-                       Moose_Density +
-                       Canopy_Height_MAD +
-                       (1 | LocalityName),
-               data = model_data)
+                     Treatment*Month + 
+                     Productivity_Index +
+                     Canopy_Height_MAD +
+                     Moose_Density +
+                     (1 | LocalityName),
+             data = model_data)
         
 tab_model(model, digits = 5)
 
