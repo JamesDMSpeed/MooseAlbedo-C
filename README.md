@@ -65,7 +65,7 @@ These interactive R Markdown reports are dynamically generated from the scripts 
 
 <br/><br/>
 ## Question 2:
-### How does moose browsing affect surface albedo in successional Norwegian boreal forest on a regional scale?
+### How does moose density affect surface albedo in successional Norwegian boreal forests on a regional scale?
 
 **Summary**:
 This component of the project seeks to examine the relationship between albedo and moose density in Norwegian successional boreal forests. It uses a forest data product from NIBIO (SatSkog), spatial gridded climate data from SeNorge, and spatial herbivore density data from previous SustHerb work to model albedo as a function of moose density.
