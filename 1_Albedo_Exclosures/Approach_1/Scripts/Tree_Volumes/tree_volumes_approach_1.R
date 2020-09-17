@@ -82,6 +82,7 @@
                 
                 #Volume
                 t2016$Volume_m3 <- as.numeric(c(''))
+        
                 
                 #Biomass
                 t2016$Biomass_g <- as.numeric(c(''))
@@ -193,7 +194,7 @@
                         #Add calculated biomass to 'Biomass' column
                         t2016[row, "Biomass_g"] <- biomass
                         
-                        #Add calculated volume to 'Volume' column
+                        #Add calculated volume (m3) to 'Volume' column
                         t2016[row, "Volume_m3"] <- volume
                         
                                 
@@ -216,11 +217,33 @@
         
 #CALCULATE TOTAL VOLUME FOR EACH SUBPLOT -------------------------------------------------------------------------
 
-        #NOTE: 'NH' subplot for 'UB' treatment at '1NSUB' had no observations (this is why subplot_sums has 119 rows instead of 120)
+        #NOTE: 'NH' subplot for 'UB' treatment at '1NSUB' had no observations 
         
-        #Sum all subplots together to produce a plot-level estimate of volume
-        subplot_sums <- aggregate(t2016$Volume_m3, by = list(LocalityName = t2016$LocalityName, LocalityCode= t2016$LocalityCode, Treatment = t2016$Treatment), FUN = sum)
-        names(subplot_sums)[4] <- "Volume_m3"
+        #Sum all subplots together to produce a PLOT-LEVEL estimate of volume
+        plot_sums <- aggregate(t2016$Volume_m3, by = list(LocalityName = t2016$LocalityName, LocalityCode= t2016$LocalityCode, Treatment = t2016$Treatment), FUN = sum)
+        names(plot_sums)[4] <- "Volume_m3"
+        
+        #Calculate volume/area (which is used in the albedo model)
+        
+                #Create placeholder column
+                plot_sums$Volume_m3_ha <- as.numeric("")
+                
+                #Convert summed area of all circular subplots for a given plot to hectares (ha)
+                
+                        #Each subplot has a radius of 2m - A = pi*r^2
+                        subplot_area <- pi*(2^2) #12.57m2
+                        
+                        #Sum 4 subplots together to get total plot area in m2
+                        plot_area <- 4*subplot_area #50.26548m2
+                        
+                        #Convert m2 to hectares (ha) - 1m2 = 0.0001 ha (divide by 10,000)
+                        plot_area_ha <- plot_area/10000
+                        
+                #Divide total summed plot volume (m3) by summed plot area (ha)
+                plot_sums$Volume_m3_ha <- plot_sums$Volume_m3 / plot_area_ha
+        
+        
+        
         
 #END CALCULATE TOTAL VOLUME FOR EACH SUBPLOT -------------------------------------------------------------------------
         
@@ -235,15 +258,16 @@
 #DATA VISUALIZATION ------------------------------------------------------------------------------------------
         
         #Make sure data has correct class
-        subplot_sums$Volume_m3 <- as.numeric(subplot_sums$Volume_m3)
-        subplot_sums$Treatment <- as.factor(subplot_sums$Treatment)
+        plot_sums$Volume_m3 <- as.numeric(plot_sums$Volume_m3)
+        plot_sums$Volume_m3_ha <- as.numeric(plot_sums$Volume_m3_ha)
+        plot_sums$Treatment <- as.factor(plot_sums$Treatment)
         
         
         #Boxplot to visualize difference in volume by treatment
-        vol_plot <- ggplot(data = subplot_sums, aes(x = Treatment, y = Volume_m3, fill = Treatment)) +
+        vol_plot <- ggplot(data = plot_sums, aes(x = Treatment, y = Volume_m3_ha, fill = Treatment)) +
                 geom_boxplot() +
                 ggtitle("Range of plot volumes for SustHerb study sites") +
-                labs(x = "Site Treatment", y = bquote("Summed plot volume"~(m^3))) +
+                labs(x = "Site Treatment", y = bquote("Summed plot volume"~(m^3/ha))) +
                 theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                       legend.position = "none",
                       axis.text.x = element_text(size = 44, margin = margin(t=16)),
@@ -252,11 +276,11 @@
                       axis.title.y = element_text(size = 60, margin = margin(r=40)))
         
         #Faceted bar plot - total plot volume for each study site, w/ comparison between treatments
-        vol_plot_faceted <- ggplot(data = subplot_sums, aes(x = Treatment, y = Volume_m3, fill = Treatment)) +
+        vol_plot_faceted <- ggplot(data = plot_sums, aes(x = Treatment, y = Volume_m3_ha, fill = Treatment)) +
                 geom_bar(position="dodge", stat="identity") +
                 facet_wrap(~ LocalityName, ncol = 5) +
                 ggtitle("Plot volumes for SustHerb study sites") +
-                labs(x = "Site Treatment", y = bquote("Summed blot volume"~(m^3))) +
+                labs(x = "Site Treatment", y = bquote("Summed blot volume"~(m^3/ha))) +
                 theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                       legend.position = "none",
                       axis.text.x = element_text(size = 20, margin = margin(t=16)),
@@ -266,11 +290,11 @@
                       strip.text.x = element_text(size = 20))
         
         #Histogram of volume by treatment
-        vol_hist <- ggplot(data = subplot_sums, aes(x = Volume_m3, fill = Treatment, group = Treatment)) +
+        vol_hist <- ggplot(data = plot_sums, aes(x = Volume_m3_ha, fill = Treatment, group = Treatment)) +
                 geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
                 geom_density(alpha= 0.5) +
                 ggtitle("Density plot of plot volumes") +
-                labs(x = "Summed plot volume (m3)", y = "Density") +
+                labs(x = "Summed plot volume (m3/ha)", y = "Density") +
                 theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                       legend.title = element_text(size = 40),
                       legend.text = element_text(size = 36),
@@ -294,7 +318,7 @@
 #WRITE OUTPUT --------------------------------------------------------------------------------------------------------
 
         #Write CSV of SUBPLOT volumes to output folder
-        write.csv(subplot_sums, file = '1_Albedo_Exclosures/Approach_1/Output/Tree_Volumes/tree_volumes_approach_1.csv', row.names = TRUE)
+        write.csv(plot_sums, file = '1_Albedo_Exclosures/Approach_1/Output/Tree_Volumes/tree_volumes_approach_1.csv', row.names = TRUE)
 
         #Export volume boxplot as PNG
         png(filename = "1_Albedo_Exclosures/Approach_1/Output/Tree_Volumes/plot_volumes_approach_1.png",

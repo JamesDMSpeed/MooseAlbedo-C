@@ -13,6 +13,7 @@
         library(raster)
         library(GGally)
         library(lattice)
+        library(gmodels)
 
 ###END PACKAGES ----------------------------------------------------------------------------------------
 
@@ -124,7 +125,7 @@
                                 tree_data$LocalityCode <- as.factor(tree_data$LocalityCode)
                                 plot_volumes$LocalityCode <- as.factor(plot_volumes$LocalityCode)
                                 
-                                #Get vector of levels for sites that will be used (n = 74)
+                                #Get vector of levels for sites that will be used (n = 30; only in Trøndelag)
                                 used_sites <- levels(plot_volumes$LocalityCode)
                         
                                 #Filter tree data to used sites
@@ -150,24 +151,29 @@
                 source("3_Albedo_Model/albedo_model_volume.R")
                                 
                 #Blank dataframe to hold final albedo values
-                albedo2 <- data.frame("Month" = double(), "Composite_Albedo" = double(), "LocalityCode" = factor())
+                albedo2 <- data.frame("Month" = integer(),
+                                      "Spruce_Albedo" = double(),
+                                      "Pine_Albedo" = double(),
+                                      "Birch_Albedo" = double(),
+                                      "Composite_Albedo" = double(),
+                                      "LocalityName" = factor())
                                 
                 #For each site, run albedo model function w/ relevant arguments
                 for(i in 1:length(plot_volumes$LocalityCode)){
                         
                         #Get site code
-                        a <- plot_volumes[i, "LocalityCode"]
+                        a <- as.character(plot_volumes[i, "LocalityCode"][[1]])
                         
                         #Get site name
-                        b <- plot_volumes[i, "LocalityName"]
+                        b <- as.character(plot_volumes[i, "LocalityName"][[1]])
                         
                         #Get treatment
                         c <- plot_volumes[i, "Treatment"]
                         
                         #Get corresponding function arguments
                         
-                                #Volume
-                                a_vol <- plot_volumes$Volume_m3[plot_volumes$LocalityCode == a]
+                                #Volume (IMPORTANT: USE VOLUME/AREA VALUE - m3/ha - THIS IS THE CORRECT PARAMETER IN THE MODEL)
+                                a_vol <- plot_volumes$Volume_m3_ha[plot_volumes$LocalityCode == a]
                                 
                                 #Spruce %
                                 a_spruce <- tree_data$Prop_spruce[tree_data$LocalityCode == a]
@@ -229,9 +235,10 @@
 
 
 
-#EXPLORE DATA -----------------------------------------------------------------------------
+#FINALIZE DATA -----------------------------------------------------------------------------------------
 
-        ##Coalesce all data into single dataframe (for analysis)
+                
+        ##Coalesce all data into single dataframe (for analysis) -------------------
                 
                 #Add new columns
                 albedo2$Region = ''
@@ -301,30 +308,71 @@
                 model_data$Red_Deer_Density <- as.numeric(model_data$Red_Deer_Density)
                 model_data$Roe_Deer_Density <- as.numeric(model_data$Roe_Deer_Density)
                 model_data$Canopy_Height_MAD <- as.numeric(model_data$Canopy_Height_MAD)
-
-        ##Explore data w/ plots
-                        
-                ##Bar plot of final albedo values, by treatment
-                model_plot1 <- ggplot(data = model_data, aes(x = Treatment, y = Composite_Albedo, fill = Treatment)) +
-                        geom_boxplot() +
-                        ggtitle("Range of albedo estimates for SustHerb study sites") +
-                        labs(x = "Site Treatment", y = "Albedo") +
-                        scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
-                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
-                              legend.position = "none",
-                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
                 
-                ##Time series points w/ smooth line (grouped by treatment)
-                model_plot2 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, color = Treatment, group = Treatment)) +
-                        geom_point() +
-                        stat_summary(fun=mean,geom="line",lwd=2,aes(group=Treatment)) +
-                        ggtitle("Monthly albedo estimates for SustHerb study sites") +
-                                labs(x = "Month", y = "Albedo") +
-                                scale_x_discrete(limits=c(1:12)) +                               
-                                scale_color_manual(values=wes_palette(n=2, name="FantasticFox1")) +
+                
+                
+        #Create "melted" version of the data (so I can plot and facet by species-specific albedo) ---------
+                
+                #"Expand" model data - create 3 copies of each row (3 species)
+                model_melt <- model_data[rep(seq_len(nrow(model_data)), each = 3), ]
+                
+                #Add new columns for species + albedo
+                model_melt$Albedo <- as.numeric('')
+                model_melt$Species <- rep(c("Spruce","Pine","Birch"), each = 1, times = nrow(model_melt)/3)
+                
+                #Loop through all rows and add relevant albedo value
+                for(i in 1:nrow(model_melt)){
+                        
+                        spec <- model_melt[i, "Species"]
+                        model_melt[i, "Albedo"] <- model_melt[i, paste(spec, "_Albedo", sep = "")]
+                        
+                }
+                
+                #Remove unused columns
+                model_melt <- model_melt[,c(1,6:17)]
+
+                
+#END FINALIZE DATA -----------------------------------------------------------------------------------------                
+                
+                
+        
+                        
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+                
+                
+                
+                
+#EXPLORE DATA --------------------------------------------------------------------------------
+                
+        ##Explore data w/ plots
+        pd <- position_dodge(0.2)
+                
+                #Composite albedo ----
+                
+                        
+                
+                        #Scatterplot
+                        model_data$Month <- as.integer(model_data$Month)
+                        plot_c1 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, color = Treatment)) +
+                                        geom_point(position = pd) +
+                                        geom_smooth(span = 0.1, se = F) +
+                                        ggtitle("Composite Albedo by Treatment (n = 15)") +
+                                        labs(y = "Composite Albedo") +
+                                        scale_x_discrete(limits = c(1,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                              legend.title = element_text(size = 40),
+                                              legend.text = element_text(size = 36),
+                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                
+                        #Boxplot Time Series
+                        model_data$Month <- as.factor(model_data$Month)
+                        plot_c2 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, fill = Treatment)) +
+                                geom_boxplot() +
+                                ggtitle("Composite Albedo by Treatment (n = 15)") +
+                                labs(y = "Composite Albedo") +
                                 theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                                       legend.title = element_text(size = 40),
                                       legend.text = element_text(size = 36),
@@ -333,51 +381,195 @@
                                       axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
                                       axis.title.y = element_text(size = 60, margin = margin(r=40)))
                 
-                #Grouped boxplot
-                model_data$Month <- as.factor(model_data$Month)
-                model_plot3 <- ggplot(data = model_data, aes(x = Month, y = Composite_Albedo, fill = Treatment)) +
-                        geom_boxplot() +
-                        ggtitle("Monthly albedo estimates for SustHerb study sites") +
-                        labs(x = "Month", y = "Albedo") +
-                        scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
-                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36),
-                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                #Species-specific albedos ----
                 
-                #Density plot of albedo estimates by treatment
-                model_hist <- ggplot(data = model_data, aes(x = Composite_Albedo, fill = Treatment, group = Treatment)) +
-                        geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
-                        geom_density(alpha= 0.5) +
-                        ggtitle("Frequency of Albedo Values") +
-                        labs(x = "Albedo", y = "Frequency") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36),
-                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        #Scatterplot
+                        plot1 <- ggplot(data = model_melt, aes(x = Month, y = Albedo, color = Treatment)) +
+                                        geom_point(position = pd) +
+                                        facet_wrap(~ Species, ncol = 1) +
+                                        geom_smooth(span = 0.1, se = F) +
+                                        ggtitle("Species-Specific Albedo by Treatment (n = 15)") +
+                                        scale_x_discrete(limits = c(1,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                              legend.title = element_text(size = 40),
+                                              legend.text = element_text(size = 36),
+                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                        
+                        #Mean values w/ error bars
+                        
+                                #Aggregate mean albedo values by Treatment and Species
+                                means <- aggregate(model_melt$Albedo, by = list(Treatment = model_melt$Treatment, Species = model_melt$Species, Month = model_melt$Month), FUN = mean)
                 
-                #Density of albedo estimates (log transformed)
-                model_hist_log <- ggplot(data = model_data, aes(x = Composite_Albedo, fill = Treatment, group = Treatment)) +
-                        geom_histogram(aes(y=..density..), bins = 30, alpha=1, position="identity") +
-                        geom_density(alpha= 0.5) +
-                        ggtitle("Frequency of Albedo Values") +
-                        labs(x = "log(Albedo)", y = "Frequency") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36),
-                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 60, margin = margin(r=40))) +
-                        scale_x_continuous(trans = 'log10')
+                                #Aggregate SE values by Treatment and Spcies
+                                sd <- aggregate(model_melt$Albedo, by = list(Treatment = model_melt$Treatment, Species = model_melt$Species, Month = model_melt$Month), FUN = sd)
+                                
+                                #Bind together 
+                                stat <- cbind(means, sd[4])
+                                colnames(stat)[4] <- "Mean_Albedo"
+                                colnames(stat)[5] <- "SD"
+                                
+                                #Plot
+                                stat$Month <- as.integer(stat$Month)
+                                plot2 <- ggplot(data = stat, aes(x = Month, y = Mean_Albedo, color = Treatment, group = Treatment)) +
+                                                geom_errorbar(aes(ymin = Mean_Albedo-SD, ymax = Mean_Albedo+SD), colour="black", width=.3, position=pd) +
+                                                geom_line(position = pd, lwd = 2) +
+                                                geom_point(position = pd, size=6) +
+                                                facet_wrap(~ Species, ncol = 1) +
+                                                ggtitle("Average Species-Specific Albedo by Treatment (n = 15)") +
+                                                labs(y = "Mean Albedo") +
+                                                scale_x_discrete(limits = c(1,12), breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+                                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                                      legend.title = element_text(size = 40),
+                                                      legend.text = element_text(size = 36),
+                                                      strip.text = element_text(size = 36),
+                                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                      
+                                
+        #Plot "exclosure effect" (excl-open) ----------
+        
+                #Composite ----
+                                
+                        #Create new df w/ excl-open for each LocalityName
+                        
+                                #Aggregate
+                                comp_albedo_diff <- aggregate(model_data$Composite_Albedo,
+                                                         by = list(Month = model_data$Month,
+                                                                   LocalityName = model_data$LocalityName),
+                                                         FUN = diff)
+                                
+                                names(comp_albedo_diff)[3] <- "Albedo_Diff_Excl_Open"
+                                comp_albedo_diff$Albedo_Diff_Excl_Open <- as.numeric(comp_albedo_diff$Albedo_Diff_Excl_Open)
+                                
+                                #Plot
+                                
+                                        #Means w/ CI
+                                
+                                                #Create means df
+                                                comp_albedo_means <- aggregate(comp_albedo_diff$Albedo_Diff_Excl_Open,
+                                                                               by = list(Month = comp_albedo_diff$Month),
+                                                                               FUN = mean)
+                                                
+                                                comp_albedo_means$CI_Lower <- ''
+                                                comp_albedo_means$CI_Upper <- ''
+                                                
+                                                #Add CIs for each month of data
+                                                for(i in 1:12){
+                                                        
+                                                        comp_albedo_means[i, "CI_Lower"] <- ci(comp_albedo_diff$Albedo_Diff_Excl_Open[comp_albedo_diff$Month == i])[2]
+                                                        comp_albedo_means[i, "CI_Upper"] <- ci(comp_albedo_diff$Albedo_Diff_Excl_Open[comp_albedo_diff$Month == i])[3]
+                                                        
+                                                }
+                                        
+                                                
+                                                colnames(comp_albedo_means)[2] <- "Mean_Diff"
+                                                comp_albedo_means$Month <- as.integer(comp_albedo_means$Month)
+                                                comp_albedo_means$Mean_Diff <- as.numeric(comp_albedo_means$Mean_Diff)
+                                                comp_albedo_means$CI_Lower <- as.numeric(comp_albedo_means$CI_Lower)
+                                                comp_albedo_means$CI_Upper <- as.numeric(comp_albedo_means$CI_Upper)
+                                                
+                                                #Plot
+                                                plot_diff_1 <- ggplot(data = comp_albedo_means, aes(x = Month, y = Mean_Diff)) +
+                                                                        geom_errorbar(aes(ymin = CI_Lower, ymax = CI_Upper), colour="black", width=.4) +
+                                                                        geom_line(lwd = 1.3) +
+                                                                        geom_point(size=6) +
+                                                                        ggtitle("Avg. Treatment Effect on Composite Albedo\n(Excl. - Open) - Bars = 95% CIs") +
+                                                                        labs(y = "Average Composite Albedo Difference\n(Excl. - Open)") +
+                                                                        scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+                                                                        scale_y_continuous(limits = c(-0.05, 0.05)) +
+                                                                        geom_hline(yintercept=0, linetype="dashed", color = "#666666") + 
+                                                                        theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                                                              legend.title = element_text(size = 40),
+                                                                              legend.text = element_text(size = 36),
+                                                                              strip.text = element_text(size = 36),
+                                                                              axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                                                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                                                              axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                                                              axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                                
+                                        
+                                
+                                
+                                
+                                
+                                
+                #Species-specific ----
                 
-              
+                        #Create new df w/ excl-open for each LocalityName
+                                
+                                #Aggregate
+                                spec_albedo_diff <- aggregate(model_melt$Albedo,
+                                                              by = list(Month = model_melt$Month,
+                                                                        LocalityName = model_melt$LocalityName,
+                                                                        Species = model_melt$Species),
+                                                              FUN = diff)
+                                
+                                names(spec_albedo_diff)[4] <- "Albedo_Diff_Excl_Open"
+                                spec_albedo_diff$Albedo_Diff_Excl_Open <- as.numeric(spec_albedo_diff$Albedo_Diff_Excl_Open)
+                                
+                                #Means w/ SD
+                                
+                                        #Create means df
+                                        spec_albedo_means <- aggregate(spec_albedo_diff$Albedo_Diff_Excl_Open,
+                                                                       by = list(Month = spec_albedo_diff$Month,
+                                                                                 Species = spec_albedo_diff$Species),
+                                                                       FUN = mean)
+                                        
+                                        spec_albedo_means$CI_Lower <- ''
+                                        spec_albedo_means$CI_Upper <- ''
+                                        
+                                        #Add CIs for each month of data (and each to each species)
+                                        for(i in 1:12){
+                                                
+                                                #CI Lower
+                                                spec_albedo_means$CI_Lower[spec_albedo_means$Species == "Spruce" & spec_albedo_means$Month == i] <- ci(spec_albedo_diff$Albedo_Diff_Excl_Open[spec_albedo_diff$Species == "Spruce" & spec_albedo_diff$Month == i])[2]
+                                                spec_albedo_means$CI_Lower[spec_albedo_means$Species == "Pine" & spec_albedo_means$Month == i] <- ci(spec_albedo_diff$Albedo_Diff_Excl_Open[spec_albedo_diff$Species == "Pine" & spec_albedo_diff$Month == i])[2]
+                                                spec_albedo_means$CI_Lower[spec_albedo_means$Species == "Birch" & spec_albedo_means$Month == i] <- ci(spec_albedo_diff$Albedo_Diff_Excl_Open[spec_albedo_diff$Species == "Birch" & spec_albedo_diff$Month == i])[2]
+                                                
+                                                #CI Upper
+                                                spec_albedo_means$CI_Upper[spec_albedo_means$Species == "Spruce" & spec_albedo_means$Month == i] <- ci(spec_albedo_diff$Albedo_Diff_Excl_Open[spec_albedo_diff$Species == "Spruce" & spec_albedo_diff$Month == i])[3]
+                                                spec_albedo_means$CI_Upper[spec_albedo_means$Species == "Pine" & spec_albedo_means$Month == i] <- ci(spec_albedo_diff$Albedo_Diff_Excl_Open[spec_albedo_diff$Species == "Pine" & spec_albedo_diff$Month == i])[3]
+                                                spec_albedo_means$CI_Upper[spec_albedo_means$Species == "Birch" & spec_albedo_means$Month == i] <- ci(spec_albedo_diff$Albedo_Diff_Excl_Open[spec_albedo_diff$Species == "Birch" & spec_albedo_diff$Month == i])[3]
+
+                                        }
+                                        
+                                        colnames(spec_albedo_means)[3] <- "Mean_Diff"
+                                        spec_albedo_means$Month <- as.integer(spec_albedo_means$Month)
+                                        spec_albedo_means$Mean_Diff <- as.numeric(spec_albedo_means$Mean_Diff)
+                                        spec_albedo_means$CI_Lower <- as.numeric(spec_albedo_means$CI_Lower)
+                                        spec_albedo_means$CI_Upper <- as.numeric(spec_albedo_means$CI_Upper)
+                                        
+                                        #Plot
+                                        plot_diff_2 <- ggplot(data = spec_albedo_means, aes(x = Month, y = Mean_Diff, color = Species, group = Species)) +
+                                                                geom_errorbar(aes(ymin = CI_Lower, ymax = CI_Upper), colour="black", width=.4, position = pd) +
+                                                                geom_line(lwd = 1.3) +
+                                                                geom_point(size=6, position = pd) +
+                                                                ggtitle("Avg. Treatment Effect on Albedo\n(Excl. - Open) - Bars = 95% CIs") +
+                                                                labs(y = "Average Albedo Difference\n(Excl. - Open)") +
+                                                                scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+                                                                scale_y_continuous(limits = c(-0.05, 0.05)) +
+                                                                geom_hline(yintercept=0, linetype="dashed", color = "#666666") + 
+                                                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                                                      legend.title = element_text(size = 40),
+                                                                      legend.text = element_text(size = 36),
+                                                                      strip.text = element_text(size = 36),
+                                                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                                        
+                                        
+                                        
+                                        
+
+                                
+                                
+                                
 #END EXPLORE DATA -----------------------------------------------------------------------------
                 
                 
@@ -393,43 +585,64 @@
         #Write CSV to Output Folder
         write.csv(model_data, file = '1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_estimates_approach_1.csv', row.names = TRUE)
         
-        #Export albedo boxplot as PNG
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_boxplot_approach_1.png",
+        #Write Melted CSV to Output Folder        
+        write.csv(model_melt, file = '1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_estimates_melted_approach_1.csv', row.names = TRUE)
+        
+        #Composite scatterplot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_comp_timeseries.png",
             width = 2000,
             height = 2000,
             units = "px",
             bg = "white")
-        model_plot1
+        plot_c1
         dev.off()
         
-        #Export time series plot as PNG
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_time_series_approach_1.png",
-            width = 3000,
+        #Composite boxplot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_comp_boxplot.png",
+            width = 2000,
             height = 2000,
             units = "px",
             bg = "white")
-        model_plot2
+        plot_c2
         dev.off()
-        
-        #Export grouped boxplot as PNG
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_grouped_boxplot_approach_1.png",
-            width = 3000,
+               
+        #Species-specific scatterplot as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_timeseries.png",
+            width = 2000,
             height = 2000,
             units = "px",
             bg = "white")
-        model_plot3
+        plot1
         dev.off()
         
-        #Export histogram as PNG
-        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/albedo_histogram_approach_1.png",
-            width = 2500,
+        #Species-specific means + SE as PNG
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_timeseries_means.png",
+            width = 2000,
             height = 2000,
             units = "px",
             bg = "white")
-        model_hist
+        plot2
         dev.off()
-
-
+        
+        #Composite Treatment Effect Means + CI
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_comp_diff_means.png",
+            width = 2000,
+            height = 2000,
+            units = "px",
+            bg = "white")
+        plot_diff_1
+        dev.off()
+        
+        #Species-specific mean treatment effects + CI
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_spec_diff_means.png",
+            width = 2000,
+            height = 2000,
+            units = "px",
+            bg = "white")
+        plot_diff_2
+        dev.off()
+        
+        
 #END WRITE OUTPUT-------------------------------------------------------------------------               
         
        

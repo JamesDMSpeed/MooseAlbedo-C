@@ -279,7 +279,7 @@ for(file in files) {
                 
         #Define pixel resolution (m2) for CHMs
                 
-                pix_res <- 0.5
+                pix_res <- 1
                 
         #Normalize data --------------------------------------------------------------------------------------------
                 
@@ -464,6 +464,14 @@ for(file in files) {
                         
                         #Sum all volumes (m3)
                         final_plot_volume <- sum(pix_vols)
+                        
+                        #GET PLOT VOLUME/AREA (m3/ha - THIS IS THE PARAMETER USED IN THE MODEL)
+                        
+                                #Plot area = 400m2 / 10000 (to get hectares)
+                                plot_area <- 400/10000 #0.04 ha
+                                
+                                #Divide total plot volume by hectares
+                                final_plot_volume <- final_plot_volume/plot_area
                 
         #ADD SUMMED VOLUME, SITE, AND TREATMENT TO FINAL DF ----------------------------------------------------------------
         
@@ -502,7 +510,7 @@ for(file in files) {
         vol_plot <- ggplot(data = final_data, aes(x = Treatment, y = Total_plot_volume, fill = Treatment)) +
                 geom_boxplot() +
                 ggtitle("Range of plot volumes for SustHerb study sites") +
-                labs(x = "Site Treatment", y = bquote("Plot volume"~(m^3))) +
+                labs(x = "Site Treatment", y = bquote("Plot volume"~(m^3/ha))) +
                 scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
                 theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                       legend.position = "none",
@@ -516,7 +524,7 @@ for(file in files) {
                 geom_bar(position="dodge", stat="identity") +
                 facet_wrap(~ Site_name, ncol = 5) +
                 ggtitle("Total plot volume for SustHerb study sites") +
-                labs(x = "Site Treatment", y = bquote("Plot volume"~(m^3))) +
+                labs(x = "Site Treatment", y = bquote("Plot volume"~(m^3/ha))) +
                 scale_fill_manual(values=wes_palette(n=2, name="FantasticFox1")) +
                 theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
                       legend.position = "none",
