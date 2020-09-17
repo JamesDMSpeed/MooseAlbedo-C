@@ -42,24 +42,24 @@ These interactive R Markdown reports are dynamically generated from the scripts 
   * [~~Initial Report~~](https://allyworks.io/moose-albedo/exclosures/approach1/final_report_approach_1.html)
   * [Updated Report](https://allyworks.io/moose-albedo/exclosures/approach1/updated_report_approach_1.html)
 
-* **Approach 2**:
+* ~~**Approach 2**:~~
   * [~~Initial Report~~](https://allyworks.io/moose-albedo/exclosures/approach2/final_report_approach_2.html)
 
-* **Approach 3**:
+* ~~**Approach 3**:~~
   * [~~Initial Report~~](https://allyworks.io/moose-albedo/exclosures/approach3/final_report_approach_3.html)
 
-* **Approach 4**:
+* ~~**Approach 4**:~~
   * [~~Initial Report~~](https://allyworks.io/moose-albedo/exclosures/approach4/final_report_approach_4.html)
 
-Additionally, below are reports for the 'longitudinal' approach:
+~~Additionally, below are reports for the 'longitudinal' approach:~~
 
-* **Longitudinal Approach**:
-  * Age-based albedo model:
+* ~~**Longitudinal Approach**:~~
+  * ~~Age-based albedo model:~~
       * [~~Initial Report~~](https://allyworks.io/moose-albedo/exclosures/longitudinal/age/final_report_longitudinal_age.html)
 
-And finally, here are reports for comparisons between the approaches:
+~~And finally, here are reports for comparisons between the approaches:~~
 
-* **Comparisons (Appr. 1-4):**
+* ~~**Comparisons (Appr. 1-4):**~~
   * [~~Initial Report~~](https://allyworks.io/moose-albedo/exclosures/comparisons/final_report_comparisons.html)
  
 
