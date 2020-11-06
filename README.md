@@ -24,6 +24,7 @@ This component of the project is aimed at determining whether moose exclusion ha
 - 1_Albedo_Exclosures
   - Analysis (contains scripts and output for models and analysis)
   - Approach_1 (contains scripts and output for the first approach)
+  - Approach_1A (contains scripts and output for the variation of the first approach)
   - Approach_2 (OLD! // contains scripts and output for the "LiDAR Hull" approach)
   - Approach_3 (OLD! // contains scripts and output for the "LiDAR CHM" approach)
   - Approach_4 (OLD! // contains scripts and output for the "Stand Age" approach)

@@ -156,7 +156,9 @@
                                       "Pine_Albedo" = double(),
                                       "Birch_Albedo" = double(),
                                       "Composite_Albedo" = double(),
-                                      "LocalityName" = factor())
+                                      "LocalityName" = factor(),
+                                      "SWE_mm" = double(),
+                                      "Temp_K" = double())
                                 
                 #For each site, run albedo model function w/ relevant arguments
                 for(i in 1:length(plot_volumes$LocalityCode)){
@@ -242,12 +244,26 @@
                 
                 #Add new columns
                 albedo2$Region = ''
-                albedo2$Years_Since_Clearcut = ''
+                albedo2$Experiment_ID = ''
+                albedo2$District_ID = ''
+                albedo2$Longitude = ''
+                albedo2$Latitude = ''
+                albedo2$Clearcut_Year = ''
+                albedo2$Exclosure_Start_Year = ''
                 albedo2$Productivity_Index = ''
+                albedo2$Prop_Pine_2016 = ''
+                albedo2$Prop_Birch_2016 = ''
+                albedo2$Prop_Spruce_2016 = ''
+                albedo2$Plot_Volume_m3_2016 = ''
+                albedo2$Plot_Volume_m3ha_2016 = ''
                 albedo2$Moose_Density = ''
                 albedo2$Red_Deer_Density = ''
                 albedo2$Roe_Deer_Density = ''
-                albedo2$Canopy_Height_MAD = ''
+                albedo2$CH_Mean = ''
+                albedo2$CH_Median = ''
+                albedo2$CH_SD = ''
+                albedo2$CH_IQR = ''
+                albedo2$CH_MAD = ''
                 
                 #Define 'model_data' df for analysis
                 model_data <- albedo2
@@ -263,39 +279,91 @@
                         #Get site name
                         sn <- model_data[i, "LocalityName"]
                         
-                        #Get kommune number
-                        kn <- site_data$DistrictID[site_data$LocalityCode == loc]
-                        
                         #Get corresponding 'region' from site data & add
                         region <- site_data$Region[site_data$LocalityCode == loc]
                         model_data[i, "Region"] <- region
+                        
+                        #Get corresponding experiment ID & add
+                        exp_id <- site_data$ExperimentID[site_data$LocalityCode == loc]
+                        model_data[i, "Experiment_ID"] <- exp_id
+                        
+                        #Get kommune number (district ID) & add
+                        kn <- site_data$DistrictID[site_data$LocalityCode == loc]
+                        model_data[i, "District_ID"] <- kn
+                        
+                        #Longitude
+                        lon <- site_data$Longitude[site_data$LocalityCode == loc]
+                        model_data[i, "Longitude"] <- lon
+                        
+                        #Latitude
+                        lat <- site_data$Latitude[site_data$LocalityCode == loc]
+                        model_data[i, "Longitude"] <- lon
+                        
+                        #Clearcut Year
+                        ccy <- site_data$Clear.cut[site_data$LocalityCode == loc]
+                        model_data[i, "Clearcut_Year"] <- ccy
+                        
+                        #Exclosure Start Year
+                        esy <- site_data$Year.initiated[site_data$LocalityCode == loc]
+                        model_data[i, "Exclosure_Start_Year"] <- esy
                         
                         #Get corresponding 'productivity' & add
                         prod <- productivity$Productivity[productivity$LocalityName == sn]
                         model_data[i, "Productivity_Index"] <- prod
                         
-                        #Get 'Years Since Clearcut' number & add
-                        ccl <- site_data$Clear.cut[site_data$LocalityCode == loc]
-                        ccl <- 2016 - ccl
-                        model_data[i, "Years_Since_Clearcut"] <- ccl
+                        #Prop of pine in 2016
+                        pp2016 <- tree_data$Prop_pine[tree_data$LocalityCode == loc]
+                        model_data[i, "Prop_Pine_2016"] <- pp2016
                         
-                        #Get canopy height MAD & add
+                        #Prop of birch in 2016
+                        bp2016 <- tree_data$Prop_birch[tree_data$LocalityCode == loc]
+                        model_data[i, "Prop_Birch_2016"] <- bp2016
+                        
+                        #Prop of spruce in 2016
+                        sp2016 <- tree_data$Prop_spruce[tree_data$LocalityCode == loc]
+                        model_data[i, "Prop_Spruce_2016"] <- sp2016
+                        
+                        #Plot volume sum in 2016
+                        vs2016 <- plot_volumes$Volume_m3[plot_volumes$LocalityCode == loc]
+                        model_data[i, "Plot_Volume_m3_2016"] <- vs2016
+                        
+                        #Plot volume/ha in 2016
+                        vs_ha2016 <- plot_volumes$Volume_m3_ha[plot_volumes$LocalityCode == loc]
+                        model_data[i, "Plot_Volume_m3ha_2016"] <- vs_ha2016
+                        
+                        #Moose density
+                        md <- hbiomass2015$`hbiomass$Ms_2015`[hbiomass2015$KOMMUNE == kn]
+                        model_data[i, "Moose_Density"] <- md
+                        
+                        #Red deer density
+                        rd <- hbiomass2015$`hbiomass$Rd__2015`[hbiomass2015$KOMMUNE == kn]
+                        model_data[i, "Red_Deer_Density"] <- rd
+                        
+                        #Roe deer density
+                        rdd <- hbiomass2015$`hbiomass$R_d_2015`[hbiomass2015$KOMMUNE == kn]
+                        model_data[i, "Roe_Deer_Density"] <- rdd
+                        
+                        #Canopy Height Mean
+                        chmean <- site_data$Mean[site_data$LocalityCode == loc]
+                        model_data[i, "CH_Mean"] <- chmean
+                        
+                        #Canopy Height Mean
+                        chmedian <- site_data$Median[site_data$LocalityCode == loc]
+                        model_data[i, "CH_Median"] <- chmedian
+                        
+                        #Canopy Height SD
+                        chsd <- site_data$SD[site_data$LocalityCode == loc]
+                        model_data[i, "CH_SD"] <- chsd
+                        
+                        #Canopy Height IQR
+                        chiqr <- site_data$IQR[site_data$LocalityCode == loc]
+                        model_data[i, "CH_IQR"] <- chiqr
+                        
+                        #Canopy height MAD 
                         mad <- site_data$MAD[site_data$LocalityCode == loc]
-                        model_data[i, "Canopy_Height_MAD"] <- mad
+                        model_data[i, "CH_MAD"] <- mad
                         
-                        #Get 2015 herbivore densities and add
                         
-                                #Moose density
-                                md <- hbiomass2015$`hbiomass$Ms_2015`[hbiomass2015$KOMMUNE == kn]
-                                model_data[i, "Moose_Density"] <- md
-                                
-                                #Red deer density
-                                rd <- hbiomass2015$`hbiomass$Rd__2015`[hbiomass2015$KOMMUNE == kn]
-                                model_data[i, "Red_Deer_Density"] <- rd
-                                
-                                #Roe deer density
-                                rdd <- hbiomass2015$`hbiomass$R_d_2015`[hbiomass2015$KOMMUNE == kn]
-                                model_data[i, "Roe_Deer_Density"] <- rdd
                         
                 }
                 
@@ -303,14 +371,10 @@
                 model_data$Productivity_Index <- as.numeric(model_data$Productivity_Index)
                 model_data$Month <- as.numeric(model_data$Month)
                 model_data$LocalityCode <- as.character(model_data$LocalityCode)
-                model_data$Years_Since_Clearcut <- as.numeric(model_data$Years_Since_Clearcut)
                 model_data$Moose_Density <- as.numeric(model_data$Moose_Density)
                 model_data$Red_Deer_Density <- as.numeric(model_data$Red_Deer_Density)
                 model_data$Roe_Deer_Density <- as.numeric(model_data$Roe_Deer_Density)
-                model_data$Canopy_Height_MAD <- as.numeric(model_data$Canopy_Height_MAD)
-                
-                
-                
+
         #Create "melted" version of the data (so I can plot and facet by species-specific albedo) ---------
                 
                 #"Expand" model data - create 3 copies of each row (3 species)
@@ -329,7 +393,7 @@
                 }
                 
                 #Remove unused columns
-                model_melt <- model_melt[,c(1,6:17)]
+                model_melt <- model_melt[,c(1,6:33)]
 
                 
 #END FINALIZE DATA -----------------------------------------------------------------------------------------                
@@ -448,6 +512,33 @@
                                 
                                 #Plot
                                 
+                                        #Versus productivity index
+                                
+                                                #Add productivity index to df
+                                                comp_albedo_diff$Productivity <- ''
+                                                for(i in 1:nrow(comp_albedo_diff)){
+                                                        
+                                                        locale <- comp_albedo_diff[i, "LocalityName"]
+                                                        comp_albedo_diff[i, "Productivity"] <- productivity$Productivity[productivity$LocalityName == locale][1]
+                                                
+                                                }
+                                                
+                                                comp_albedo_diff$Productivity <- as.numeric(comp_albedo_diff$Productivity)
+                                                
+                                                #Plot
+                                                plot_prod <- ggplot(data = comp_albedo_diff, aes(x = Productivity, y = Albedo_Diff_Excl_Open)) +
+                                                                geom_point() +
+                                                                facet_wrap(~ Month) +
+                                                                ggtitle("Treatment Effect vs. Productivity Index (n = 15)\nFaceted by Month") +
+                                                                scale_x_continuous(limits = c(0,0.3), breaks = c(0,0.1,0.2,0.3)) +
+                                                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
+                                                                      legend.title = element_text(size = 40),
+                                                                      legend.text = element_text(size = 36),
+                                                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
+                                                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
+                                                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
+                                                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
+                                
                                         #Means w/ CI
                                 
                                                 #Create means df
@@ -548,23 +639,85 @@
                                         plot_diff_2 <- ggplot(data = spec_albedo_means, aes(x = Month, y = Mean_Diff, color = Species, group = Species)) +
                                                                 geom_errorbar(aes(ymin = CI_Lower, ymax = CI_Upper), colour="black", width=.4, position = pd) +
                                                                 geom_line(lwd = 1.3) +
-                                                                geom_point(size=6, position = pd) +
-                                                                ggtitle("Avg. Treatment Effect on Albedo\n(Excl. - Open) - Bars = 95% CIs") +
-                                                                labs(y = "Average Albedo Difference\n(Excl. - Open)") +
+                                                                geom_point(size=6, position = pd, aes(shape = Species)) +
+                                                                ggtitle("Effect of Exclosure on Albedo (n = 15)") +
+                                                                labs(y = "Mean Albedo Difference\n(Excl. - Open)") +
                                                                 scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
-                                                                scale_y_continuous(limits = c(-0.05, 0.05)) +
+                                                                scale_y_continuous(limits = c(-0.03, 0.015)) +
                                                                 geom_hline(yintercept=0, linetype="dashed", color = "#666666") + 
-                                                                theme(plot.title = element_text(hjust = 0.5, size = 60, margin = margin(t = 40, b = 40)),
-                                                                      legend.title = element_text(size = 40),
-                                                                      legend.text = element_text(size = 36),
-                                                                      strip.text = element_text(size = 36),
-                                                                      axis.text.x = element_text(size = 44, margin = margin(t=16)),
-                                                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                                                                      axis.title.x = element_text(size = 60, margin = margin(t=40, b = 40)),
-                                                                      axis.title.y = element_text(size = 60, margin = margin(r=40)))
-                                                        
+                                                                theme_bw() +
+                                                                theme(plot.title = element_text(hjust = 0.5, size = 42, margin = margin(t = 40, b = 40)),
+                                                                      legend.title = element_text(size = 32),
+                                                                      legend.text = element_text(size = 28),
+                                                                      axis.text.x = element_text(size = 34, margin = margin(t=16)),
+                                                                      axis.text.y = element_text(size = 34, margin = margin(r=16)),
+                                                                      axis.title.x = element_text(size = 40, margin = margin(t=40, b = 40)),
+                                                                      axis.title.y = element_text(size = 40, margin = margin(r=40)))
+                                        
+                                        #Plot
+                                        plot_diff_3 <- ggplot(data = spec_albedo_means, aes(x = Month, y = Mean_Diff, color = Species, group = Species)) +
+                                                geom_errorbar(aes(ymin = CI_Lower, ymax = CI_Upper), colour="black", width=.4, position = pd) +
+                                                geom_line(lwd = 1.3) +
+                                                geom_point(size=6, position = pd, aes(shape = Species)) +
+                                                ggtitle("Effect of Exclosure on Albedo (n = 15)") +
+                                                labs(y = "Mean Albedo Difference\n(Excl. - Open)") +
+                                                scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+                                                scale_y_continuous(limits = c(-0.03, 0.015)) +
+                                                geom_hline(yintercept=0, linetype="dashed", color = "#666666") + 
+                                                facet_wrap(~ Species, nrow = 3) +
+                                                theme_bw() +
+                                                theme(plot.title = element_text(hjust = 0.5, size = 44, margin = margin(t = 40, b = 40)),
+                                                      legend.title = element_text(size = 32),
+                                                      legend.text = element_text(size = 28),
+                                                      axis.text.x = element_text(size = 34, margin = margin(t=16)),
+                                                      axis.text.y = element_text(size = 34, margin = margin(r=16)),
+                                                      axis.title.x = element_text(size = 42, margin = margin(t=40, b = 40)),
+                                                      axis.title.y = element_text(size = 42, margin = margin(r=40)))
                                         
                                         
+                        #Add "3rd variables" to spec_albedo_diff df
+                                        
+                                spec_albedo_diff$SWE <- ''
+                                spec_albedo_diff$Temp <- ''
+                                spec_albedo_diff$Productivity <- ''
+                                
+                                for(i in 1:nrow(spec_albedo_diff)){
+                                        
+                                        m <- spec_albedo_diff[i, "Month"]
+                                        loc <- spec_albedo_diff[i, "LocalityName"]
+                                        
+                                        spec_albedo_diff[i, "SWE"] <- model_data$SWE_mm[model_data$Month == m & model_data$LocalityName == loc][1]
+                                        spec_albedo_diff[i, "Temp"] <- model_data$Temp_K[model_data$Month == m & model_data$LocalityName == loc][1]
+                                        spec_albedo_diff[i, "Productivity"] <- model_data$Productivity_Index[model_data$Month == m & model_data$LocalityName == loc][1]
+                                }
+                                
+                                #Plot by 3rd variables ------
+                                
+                                        #SWE
+                                        spec_albedo_diff$SWE <- as.numeric(spec_albedo_diff$SWE)
+                                        ggplot(data = spec_albedo_diff, aes(x = SWE, y = Albedo_Diff_Excl_Open, color = Species)) +
+                                                geom_point() +
+                                                geom_smooth() +
+                                                facet_wrap(~ Month)
+                                        
+                                                #NO REAL TREND ACROSS MONTHS
+                                        
+                                        #TEMP
+                                        spec_albedo_diff$Temp <- as.numeric(spec_albedo_diff$Temp)
+                                        ggplot(data = spec_albedo_diff, aes(x = Temp, y = Albedo_Diff_Excl_Open, color = Species)) +
+                                                geom_point() +
+                                                geom_smooth() +
+                                                facet_wrap(~ Month)
+                                        
+                                        #Productivity
+                                        spec_albedo_diff$Productivity <- as.numeric(spec_albedo_diff$Productivity)
+                                        ggplot(data = spec_albedo_diff, aes(x = Productivity, y = Albedo_Diff_Excl_Open, color = Species)) +
+                                                geom_point() +
+                                                geom_smooth() +
+                                                facet_wrap(~ Month)
+                                
+                                
+                                                #NO STRONG TRENDS FOR THESE 3RD VARIABLES
                                         
 
                                 
@@ -635,11 +788,29 @@
         
         #Species-specific mean treatment effects + CI
         png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_spec_diff_means.png",
+            width = 1600,
+            height = 1200,
+            units = "px",
+            bg = "white")
+        plot_diff_2
+        dev.off()
+        
+        #Species-specific mean treatment effects + CI
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_spec_diff_means_facet.png",
+            width = 1500,
+            height = 1800,
+            units = "px",
+            bg = "white")
+        plot_diff_3
+        dev.off()
+        
+        #Treatment effects (not mean) by productivity
+        png(filename = "1_Albedo_Exclosures/Approach_1/Output/Albedo_Estimates/approach_1_comp_diff_prod.png",
             width = 2000,
             height = 2000,
             units = "px",
             bg = "white")
-        plot_diff_2
+        plot_prod
         dev.off()
         
         
