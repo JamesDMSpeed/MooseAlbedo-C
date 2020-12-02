@@ -10,17 +10,14 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-##Source functions file
-#source('1_Albedo_Exclosures/1_Data/data_functions.R')
-
 
 #INITIAL DATA IMPORT --------------------------------------------------
 
         #Get cleaned site data from adjacent 'Sites' folder and add as DF
         site_data <- read.csv('1_Albedo_Exclosures/Data/SustHerb_Site_Data/cleaned_data/cleaned_data.csv', header = TRUE)
         
-        #Load in SeNorge temp data from 'SeNorge_temp_swe_data' folder (2001+ file)
-        senorge_swe <- read.csv('1_Albedo_Exclosures/Data/SeNorge/tro_hed_tel_utm33_2001_2018.csv', header = TRUE)
+        #Load in SeNorge temp data from 'SeNorge_temp_swe_data' folder (2001-2019 data)
+        senorge_swe <- read.csv('1_Albedo_Exclosures/Data/SeNorge/tro_hed_tel_utm33_2001_2019.csv', header = TRUE)
         
         #Filter down to relevant columns
         senorge_swe <- senorge_swe[,c(1,4,5,6,10)]

@@ -158,7 +158,7 @@
         
         #LOAD CORRECTED SHAPEFILE
         data_filt <- st_read("2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/corrected_shapefile/corrected_shapefile.shp")
-        beep(b)
+        beep(3)
         
         #DRAW BOUNDING BOXES FOR AREAS OF INTEREST -------
         #NOTE: Coordinates of boxes are manually chosen (based on initial plots of moose density)
@@ -519,7 +519,7 @@
                 #ROLLING MEANS FOR VOLUME ------------
                         
                         #Rolling means for Spruce        
-                        roll_spruce <- as.data.frame(rollmean(spruce_vol, 5, align = "center"))
+                        roll_spruce <- as.data.frame(rollapplyr(spruce_vol, 5, mean, partial = TRUE))
                         ggplot(data = roll_spruce, aes(x = Group.1, y = x)) +
                                 geom_point() +
                                 geom_line() +
@@ -527,7 +527,7 @@
                         
                 
                         #Rolling means for Pine        
-                        roll_pine <- as.data.frame(rollmean(pine_vol, 5, align = "center"))
+                        roll_pine <- as.data.frame(rollapplyr(pine_vol, 5, mean, partial = TRUE))
                         ggplot(data = roll_pine, aes(x = Group.1, y = x)) +
                                 geom_point() +
                                 geom_line() +
@@ -535,7 +535,7 @@
                         
                         
                         #Rolling means for Birch
-                        roll_birch <- as.data.frame(rollmean(birch_vol, 5, align = "center"))
+                        roll_birch <- as.data.frame(rollapplyr(birch_vol, 5, mean, partial = TRUE))
                         ggplot(data = roll_birch, aes(x = Group.1, y = x)) +
                                 geom_point() +
                                 geom_line() +
@@ -600,507 +600,10 @@
                                 geom_point() +
                                 geom_line() +
                                 labs(x = "Moose Density (kg/km2)", y = "Mean Birch Stand Volume (m3/ha)\nRolling Average")
+               
                         
-                                
-                                
-                        
-#NOT SEEING ANY TRENDS ---------------------
-                        
-        #DO TRENDS EXIST ACROSS ENTIRE COUNTRY?
-                        
-                #Calculate mean volume for each tree species by moose density
-                big_means_birch <- aggregate(unified$vuprhal, by = list(unified$Ms_Dnst), FUN = mean)
-                big_means_pine <- aggregate(unified$vuprhaf, by = list(unified$Ms_Dnst), FUN = mean)
-                big_means_spruce <- aggregate(unified$vuprhag, by = list(unified$Ms_Dnst), FUN = mean)
-                                
-                #Calculate rolling averages
-                big_roll_b <- as.data.frame(rollmean(big_means_birch, 5, align = "center"))
-                big_roll_p <- as.data.frame(rollmean(big_means_pine, 5, align = "center"))
-                big_roll_s <- as.data.frame(rollmean(big_means_spruce, 5, align = "center"))
-                     
-                #Plot
-                
-                        #Birch
-                        ggplot(data = big_roll_b, aes(x = Group.1, y = x)) +
-                                geom_point() +
-                                geom_line() +
-                                labs(x = "Moose Density (kg/km2)", y = "Mean Birch Stand Volume (m3/ha)\nRolling Average")
-                        
-                        #Spruce
-                        ggplot(data = big_roll_s, aes(x = Group.1, y = x)) +
-                                geom_point() +
-                                geom_line() +
-                                labs(x = "Moose Density (kg/km2)", y = "Mean Spruce Stand Volume (m3/ha)\nRolling Average")
-                        
-                        #Pine
-                        ggplot(data = big_roll_p, aes(x = Group.1, y = x)) +
-                                geom_point() +
-                                geom_line() +
-                                labs(x = "Moose Density (kg/km2)", y = "Mean Pine Stand Volume (m3/ha)\nRolling Average")
-                        
-                        
-                        
-                        
-                              
-        #VOLUME BY ELEVATION RANGE -----------------------
-                        
-                #Facet by elevation range
-
-                        #Birch (Deciduous)
-                        ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhal)) +
-                                geom_point(alpha = 0.3) +
-                                geom_smooth(method = "loess", span = 50, se = F) +
-                                theme_bw() +
-                                facet_wrap(~ cut_interval(dem, n = 6)) +
-                                labs(x = "Moose Density (kg/km2)", y = "Deciduous Stand Volume (m3/ha)")
-                        
-                        #Pine
-                        ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhag)) +
-                                geom_point(alpha = 0.3) +
-                                geom_smooth(method = "loess", span = 50, se = F) +
-                                theme_bw() +
-                                facet_wrap(~ cut_interval(dem, n = 6)) +
-                                labs(x = "Moose Density (kg/km2)", y = "Pine Stand Volume (m3/ha)")
-                        
-                        #Spruce
-                        ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhaf)) +
-                                geom_point(alpha = 0.3) +
-                                geom_smooth(method = "loess", span = 50, se = F) +
-                                theme_bw() +
-                                facet_wrap(~ cut_interval(dem, n = 6)) +
-                                labs(x = "Moose Density (kg/km2)", y = "Spruce Stand Volume (m3/ha)")
-                        
-                        
-        #VOLUME BY PLOT AGE
-                
-                #Birch (Deciduous)
-                ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhal)) +
-                        geom_point(alpha = 0.3) +
-                        geom_smooth(method = "loess", span = 50, se = F) +
-                        theme_bw() +
-                        facet_wrap(~ cut_interval(alder, n = 6)) +
-                        labs(x = "Moose Density (kg/km2)", y = "Deciduous Stand Volume (m3/ha)")
-                        
-                #Pine
-                ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhag)) +
-                        geom_point(alpha = 0.3) +
-                        geom_smooth(method = "loess", span = 50, se = F) +
-                        theme_bw() +
-                        facet_wrap(~ cut_interval(alder, n = 6)) +
-                        labs(x = "Moose Density (kg/km2)", y = "Pine Stand Volume (m3/ha)")
-                
-                #Spruce
-                ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhaf)) +
-                        geom_point(alpha = 0.3) +
-                        geom_smooth(method = "loess", span = 50, se = F) +
-                        theme_bw() +
-                        facet_wrap(~ cut_interval(alder, n = 6)) +
-                        labs(x = "Moose Density (kg/km2)", y = "Spruce Stand Volume (m3/ha)")
-                        
-        
-        #VOLUME BY FOREST TYPE
-                
-                #Birch
-                ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhal)) +
-                        geom_point(alpha = 0.3) +
-                        geom_smooth(method = "loess", span = 50, se = F) +
-                        theme_bw() +
-                        facet_wrap(~ treslag) +
-                        labs(x = "Moose Density (kg/km2)", y = "Deciduous Stand Volume (m3/ha)")
-                
-                #Pine
-                ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhag)) +
-                        geom_point(alpha = 0.3) +
-                        geom_smooth(method = "loess", span = 50, se = F) +
-                        theme_bw() +
-                        facet_wrap(~ treslag) +
-                        labs(x = "Moose Density (kg/km2)", y = "Pine Stand Volume (m3/ha)")
-                
-                #Spruce
-                ggplot(data = subset(unified, Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhaf)) +
-                        geom_point(alpha = 0.3) +
-                        geom_smooth(method = "loess", span = 50, se = F) +
-                        theme_bw() +
-                        facet_wrap(~ treslag) +
-                        labs(x = "Moose Density (kg/km2)", y = "Spruce Stand Volume (m3/ha)")
-                        
-##FINDINGS: LOOKS LIKE TRENDS MIGHT BE MOST NOTICEABLE AT LOWER ELEVATIONS (OTHER FACTORS SEEM SLIGHTLY LESS IMPORTANT)       
-                        
-        #CENTRAL PLOT---------
-                
-                #VOLUME BY ELEVATION RANGE -----------------------
-                
-                        #Facet by elevation range
-                        
-                        #Birch (Deciduous)
-                        ggplot(data = subset(unified, Plot == "Central"), aes(x = Ms_Dnst, y = vuprhal)) +
-                                geom_point(alpha = 0.3) +
-                                geom_smooth(method = "loess", span = 50, se = F) +
-                                theme_bw() +
-                                facet_wrap(~ cut_interval(dem, n = 6)) +
-                                labs(x = "Moose Density (kg/km2)", y = "Deciduous Stand Volume (m3/ha)")
-                        
-                        #Pine
-                        ggplot(data = subset(unified, Plot == "Central"), aes(x = Ms_Dnst, y = vuprhag)) +
-                                geom_point(alpha = 0.3) +
-                                geom_smooth(method = "loess", span = 50, se = F) +
-                                theme_bw() +
-                                facet_wrap(~ cut_interval(dem, n = 6)) +
-                                labs(x = "Moose Density (kg/km2)", y = "Pine Stand Volume (m3/ha)")
-                        
-                        #Spruce
-                        ggplot(data = subset(unified, Plot == "Central"), aes(x = Ms_Dnst, y = vuprhaf)) +
-                                geom_point(alpha = 0.3) +
-                                geom_smooth(method = "loess", span = 50, se = F) +
-                                theme_bw() +
-                                facet_wrap(~ cut_interval(dem, n = 6)) +
-                                labs(x = "Moose Density (kg/km2)", y = "Spruce Stand Volume (m3/ha)")
-                        
-                        
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-        
-        #INVESTIGATE SWE WITHIN SOUTHEAST PLOT
-        unified_exp$Month <- as.factor(unified_exp$Month)
-        ggplot(data = subset(unified_exp, Plot == "Southeast"), aes(x = Month, y = SWE)) +
-                geom_boxplot()
-
-        
-        
-
-                        
-        ## ELEVATION CAUSES HUGE VARIATION IN ALBEDO - DOES IT MAKE SENSE TO LIMIT TO ELEVATION RANGE?
-                        
-                        #Identify elevation ranges
-                        
-                                #Plot elevation
-                                ggplot(data = unified_exp, aes(x = Plot, y = dem)) +
-                                        geom_boxplot() +
-                                        theme_bw() +
-                                
-                                #Explore volume vs moose density in Southeast plot
-                                
-                                        #Birch volume
-                                        ggplot(data = subset(unified_exp, Species == "Birch" & Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhal, color = dem)) +
-                                                geom_point(alpha = 0.1) +
-                                                geom_smooth(method = "lm") +
-                                                facet_wrap(~ Month) +
-                                                theme_bw() +
-                                                labs(x = "Moose Density (kg/km2)", y = "Birch Stand Volume (m3/ha)") +
-                                                ggtitle("Birch Volume vs. Moose Density in Southeast Plot")
-                                        
-                                        #Pine volume
-                                        ggplot(data = subset(unified_exp, Species == "Pine" & Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhaf, color = dem)) +
-                                                geom_point(alpha = 0.1) +
-                                                geom_smooth(method = "lm") +
-                                                facet_wrap(~ Month) +
-                                                theme_bw() +
-                                                labs(x = "Moose Density (kg/km2)", y = "Pine Stand Volume (m3/ha)") +
-                                                ggtitle("Pine Volume vs. Moose Density in Southeast Plot")
-                                        
-                                        #Spruce volume
-                                        ggplot(data = subset(unified_exp, Species == "Spruce" & Plot == "Southeast"), aes(x = Ms_Dnst, y = vuprhag, color = dem)) +
-                                                geom_point(alpha = 0.1) +
-                                                geom_smooth(method = "lm") +
-                                                facet_wrap(~ Month) +
-                                                theme_bw() +
-                                                labs(x = "Moose Density (kg/km2)", y = "Spruce Stand Volume (m3/ha)") +
-                                                ggtitle("Spruce Volume vs. Moose Density in Southeast Plot")
-                                
-                                        
-
-                        #Explore elevation and albedo within Southeast plot
-        
-                                #Birch Albedo
-                                ggplot(data = subset(unified_exp, Species == "Birch" & Plot == "Southeast"), aes(x = Ms_Dnst, y = Albedo, color = dem)) +
-                                        geom_point(alpha = 0.1) +
-                                        geom_smooth(method = "lm") +
-                                        facet_wrap(~ Month) +
-                                        theme_bw() +
-                                        labs(x = "Moose Density (kg/km2)", y = "Birch Albedo") +
-                                        ggtitle("Birch Albedo vs. Moose Density in Southeast Plot")
-                        
-                                        #Very large stratification between elevations - seems clear that I'll need to limit to 
-                                        #a specific elevation range
-                                
-                                #Spruce Albedo
-                                ggplot(data = subset(unified_exp, Species == "Spruce" & Plot == "Southeast"), aes(x = Ms_Dnst, y = Albedo, color = dem)) +
-                                        geom_point(alpha = 0.1) +
-                                        geom_smooth(method = "lm") +
-                                        facet_wrap(~ Month) +
-                                        theme_bw() +
-                                        labs(x = "Moose Density (kg/km2)", y = "Spruce Albedo") +
-                                        ggtitle("Spruce Albedo vs. Moose Density in Southeast Plot")
-                                
-                                
-                                #Pine Albedo
-                                ggplot(data = subset(unified_exp, Species == "Pine" & Plot == "Southeast"), aes(x = Ms_Dnst, y = Albedo, color = dem)) +
-                                        geom_point(alpha = 0.1) +
-                                        geom_smooth(method = "lm") +
-                                        facet_wrap(~ Month) +
-                                        theme_bw() +
-                                        labs(x = "Moose Density (kg/km2)", y = "Pine Albedo") +
-                                        ggtitle("Pine Albedo vs. Moose Density in Southeast Plot")
-        
-        
-                #Explore species-specific volume
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-                #Export plots
-        
-                        #Birch Albedo
-                        png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/albedo_plots/birch_albedo_by_month.png",
-                            width = 2000,
-                            height = 2000,
-                            units = "px",
-                            bg = "white")
-                        
-                        ggplot(data = subset(unified_exp, Species == "Birch"), aes(x = Ms_Dnst, y = Albedo, color = Plot)) +
-                                geom_point(alpha = 0.1) +
-                                geom_smooth(method = NULL) +
-                                facet_wrap(~ Month) +
-                                scale_y_continuous(limits = c(0,1), breaks = c(0,0.2,0.4,0.6,0.8,1)) +
-                                ggtitle("Moose Density vs. Birch Albedo (by Month)") +
-                                labs(x = "Moose Density (kg/km-2)", y = "Albedo (Birch)") +
-                                theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                                      legend.title = element_text(size = 40),
-                                      legend.text = element_text(size = 36, margin = margin(t=16)),
-                                      strip.text.x = element_text(size = 32),
-                                      axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                                      axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                                      axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                        
-                        dev.off()
-                        
-                        
-                        #Pine Albedo
-                        png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/albedo_plots/pine_albedo_by_month.png",
-                            width = 2000,
-                            height = 2000,
-                            units = "px",
-                            bg = "white")
-                        
-                        ggplot(data = subset(unified_exp, Species == "Pine"), aes(x = Ms_Dnst, y = Albedo, color = Plot)) +
-                                geom_point(alpha = 0.1) +
-                                geom_smooth(method = NULL) +
-                                facet_wrap(~ Month) +
-                                scale_y_continuous(limits = c(0,1), breaks = c(0,0.2,0.4,0.6,0.8,1)) +
-                                ggtitle("Moose Density vs. Pine Albedo (by Month)") +
-                                labs(x = "Moose Density (kg/km-2)", y = "Albedo (Pine)") +
-                                theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                                      legend.title = element_text(size = 40),
-                                      legend.text = element_text(size = 36, margin = margin(t=16)),
-                                      strip.text.x = element_text(size = 32),
-                                      axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                                      axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                                      axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                        
-                        dev.off()
-                
-                        
-                        #Spruce Albedo
-                        png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/albedo_plots/spruce_albedo_by_month.png",
-                            width = 2000,
-                            height = 2000,
-                            units = "px",
-                            bg = "white")
-                        
-                        ggplot(data = subset(unified_exp, Species == "Spruce"), aes(x = Ms_Dnst, y = Albedo, color = Plot)) +
-                                geom_point(alpha = 0.1) +
-                                geom_smooth(method = NULL) +
-                                facet_wrap(~ Month) +
-                                scale_y_continuous(limits = c(0,1), breaks = c(0,0.2,0.4,0.6,0.8,1)) +
-                                ggtitle("Moose Density vs. Spruce Albedo (by Month)") +
-                                labs(x = "Moose Density (kg/km-2)", y = "Albedo (Spruce)") +
-                                theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                                      legend.title = element_text(size = 40),
-                                      legend.text = element_text(size = 36, margin = margin(t=16)),
-                                      strip.text.x = element_text(size = 32),
-                                      axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                                      axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                                      axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                        
-                        dev.off()
-                        
-                        beep(b)
-                        
-                        
-        #Descriptive statistics for plots
-                        
-                #Age
-                png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/descriptive/age.png",
-                    width = 1500,
-                    height = 1500,
-                    units = "px",
-                    bg = "white")
-                
-                ggplot(data = unified, aes(x = Plot, y = alder)) +
-                        geom_boxplot() +
-                        ggtitle("Forest Plot Age (by Location)") +
-                        labs(x = "Location", y = "Age (years)") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36, margin = margin(t=16)),
-                              strip.text.x = element_text(size = 32),
-                              axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                
-                dev.off()
-                        
-                #Volume
-                png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/descriptive/volume.png",
-                    width = 1500,
-                    height = 1500,
-                    units = "px",
-                    bg = "white")
-                
-                ggplot(data = unified, aes(x = Plot, y = vuprha)) +
-                        geom_boxplot() +
-                        ggtitle("Forest Plot Volume (by Location)") +
-                        labs(x = "Location", y = "Volume (m3/ha)") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36, margin = margin(t=16)),
-                              strip.text.x = element_text(size = 32),
-                              axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                
-                dev.off()
-                
-                #SWE
-                png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/descriptive/swe.png",
-                    width = 1800,
-                    height = 1500,
-                    units = "px",
-                    bg = "white")
-                
-                unified_exp$Month <- as.factor(unified_exp$Month)
-                ggplot(data = unified_exp, aes(x = Month, y = SWE, fill = Plot)) +
-                        geom_boxplot() +
-                        ggtitle("Forest Plot SWE\n(by Location)") +
-                        labs(x = "Month", y = "Mean Plot Snow-Water Equivalent (mm)") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36, margin = margin(t=16)),
-                              legend.position = "bottom",
-                              strip.text.x = element_text(size = 32),
-                              axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                
-                dev.off()
-                        
-                #Temp
-                png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/descriptive/temp.png",
-                    width = 1800,
-                    height = 1500,
-                    units = "px",
-                    bg = "white")
-                
-                ggplot(data = unified_exp, aes(x = Month, y = Temp, fill = Plot)) +
-                        geom_boxplot() +
-                        ggtitle("Forest Plot Temperature\n(by Location)") +
-                        labs(x = "Month", y = "Mean Plot Temperature (K)") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36, margin = margin(t=16)),
-                              legend.position = "bottom",
-                              strip.text.x = element_text(size = 32),
-                              axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                
-                dev.off()
-                
-                #Moose Density
-                png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/descriptive/moose_density.png",
-                    width = 1500,
-                    height = 1500,
-                    units = "px",
-                    bg = "white")
-                
-                ggplot(data = unified_exp, aes(x = Plot, y = Ms_Dnst)) +
-                        geom_boxplot() +
-                        ggtitle("Forest Plot Moose Density\n(by Location)") +
-                        labs(x = "Location", y = "Moose Metabolic Biomass (kg/km2)") +
-                        theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                              legend.title = element_text(size = 40),
-                              legend.text = element_text(size = 36, margin = margin(t=16)),
-                              strip.text.x = element_text(size = 32),
-                              axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                              axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                              axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                              axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                
-                dev.off()
-                
-                
-                #Filter to an elevation range (100-300m)
-                se_elev <- unified_exp[unified_exp$Plot == "Southeast" &
-                                       unified_exp$dem >= 100 &
-                                       unified_exp$dem <= 300,]
-
-                png(filename = "2_Albedo_Regional/Approach_1_SatSkog/Output/Final_Approach/unfiltered/albedo_plots/se_filt_elevation.png",
-                    width = 1800,
-                    height = 1500,
-                    units = "px",
-                    bg = "white")
-                
-                ggplot(data = subset(se_elev, Species == "Birch"), aes(x = Ms_Dnst, y = Albedo)) +
-                        geom_point(alpha = 0.1) +
-                        geom_smooth(method = NULL) +
-                        facet_wrap(~ Month) +
-                        scale_y_continuous(limits = c(0,1), breaks = c(0,0.2,0.4,0.6,0.8,1)) +
-                                ggtitle("Moose Density vs. Birch Albedo (by Month)\nSoutheast Plot Only\nFiltered to 100-300m Elevation\n(n = 18898 plots)") +
-                                labs(x = "Moose Density (kg/km-2)", y = "Albedo (Birch)") +
-                                theme(plot.title = element_text(hjust = 0.5, size = 50, margin = margin(t = 40, b = 40)),
-                                      legend.title = element_text(size = 40),
-                                      legend.text = element_text(size = 36, margin = margin(t=16)),
-                                      strip.text.x = element_text(size = 32),
-                                      axis.text.x = element_text(size = 38, margin = margin(t=16)),
-                                      axis.text.y = element_text(size = 40, margin = margin(r=16)),
-                                      axis.title.x = element_text(size = 50, margin = margin(t=40, b = 40)),
-                                      axis.title.y = element_text(size = 50, margin = margin(r=40)))
-                
-                dev.off()
-                
-                
-
+                                 
+        #NO NOTICEABLE TRENDS
         
 #END CREATE UNIFIED DATASET --------------------------------------------------------------------------------
                         
@@ -1122,14 +625,134 @@
                 
                 #Filter to forest dominated by spruce, pine, or birch (no mixed)
                 filt <- filt[filt$treslag %in% c("Grandominert", "Lauvdominert", "Furudominert"),]
+                beep(b)
                 
                 #Filter to homogenous forest (>75% coverage)
                 
-                        ggplot(data = subset(filt, Species == "Birch"), aes(x = Ms_Dnst, y = Albedo, color = Plot)) +
-                                geom_point(alpha = 0.1) +
-                                geom_smooth(method = NULL) +
-                                facet_wrap(~ Month) +
-                                scale_y_continuous(limits = c(0,1), breaks = c(0,0.2,0.4,0.6,0.8,1))
+                        #Filter & calculate means
+                
+                                #Birch ------
+                                
+                                        #Filter
+                                        filt_b <- filt[filt$lav_pct >= 75,]
+                
+                                        #Calculate mean birch vol for each moose density
+                                        filt_b$Ms_Dnst <- as.numeric(filt_b$Ms_Dnst)
+                                        filt_b <- aggregate(filt_b$vuprhal, by = list(filt_b$Ms_Dnst, filt_b$Plot), FUN = mean)
+                                        
+                                        #Rolling means
+                                        
+                                                #Central
+                                                filt_b_c <- filt_b[filt_b$Group.2 == "Central",]
+                                                filt_b_c <- filt_b_c[,c(1,3)]
+                                                filt_b_c <- as.data.frame(rollapplyr(filt_b_c, 7, mean, partial = TRUE))
+                                                filt_b_c$Plot <- "Central"
+                                                
+                                                #Southeast
+                                                filt_b_se <- filt_b[filt_b$Group.2 == "Southeast",]
+                                                filt_b_se <- filt_b_se[,c(1,3)]
+                                                filt_b_se <- as.data.frame(rollapplyr(filt_b_se, 7, mean, partial = TRUE))
+                                                filt_b_se$Plot <- "Southeast"
+                                                
+                                                #South
+                                                filt_b_s <- filt_b[filt_b$Group.2 == "South",]
+                                                filt_b_s <- filt_b_s[,c(1,3)]
+                                                filt_b_s <- as.data.frame(rollapplyr(filt_b_s, 7, mean, partial = TRUE))
+                                                filt_b_s$Plot <- "South"
+                                                
+                                                #Bind together
+                                                filt_b_roll <- rbind(filt_b_c, filt_b_se, filt_b_s)
+                                                
+                                        #Plot rolling means for birch
+                                        ggplot(data = filt_b_roll, aes(x = Group.1, y = x, color = Plot)) +
+                                                geom_point() +
+                                                geom_line() +
+                                                labs(x = "Moose Density", y = "Birch Stand Volume (m3/ha)\nRolling Average")
+                                                
+                                
+                                #Spruce
+                                        
+                                        #Filter
+                                        filt_s <- filt[filt$grn_pct >= 75,]
+                                        
+                                        #Calculate mean birch vol for each moose density
+                                        filt_s$Ms_Dnst <- as.numeric(filt_s$Ms_Dnst)
+                                        filt_s <- aggregate(filt_s$vuprhag, by = list(filt_s$Ms_Dnst, filt_s$Plot), FUN = mean)
+                                        
+                                        #Rolling means
+                                        
+                                                #Central
+                                                filt_s_c <- filt_s[filt_s$Group.2 == "Central",]
+                                                filt_s_c <- filt_s_c[,c(1,3)]
+                                                filt_s_c <- as.data.frame(rollapplyr(filt_s_c, 7, mean, partial = TRUE))
+                                                filt_s_c$Plot <- "Central"
+                                                
+                                                #Southeast
+                                                filt_s_se <- filt_s[filt_s$Group.2 == "Southeast",]
+                                                filt_s_se <- filt_s_se[,c(1,3)]
+                                                filt_s_se <- as.data.frame(rollapplyr(filt_s_se, 7, mean, partial = TRUE))
+                                                filt_s_se$Plot <- "Southeast"
+                                                
+                                                #South
+                                                filt_s_s <- filt_s[filt_s$Group.2 == "South",]
+                                                filt_s_s <- filt_s_s[,c(1,3)]
+                                                filt_s_s <- as.data.frame(rollapplyr(filt_s_s, 7, mean, partial = TRUE))
+                                                filt_s_s$Plot <- "South"
+                                        
+                                        #Bind together
+                                        filt_s_roll <- rbind(filt_s_c, filt_s_se, filt_s_s)
+                                        
+                                        #Plot rolling means for birch
+                                        ggplot(data = filt_s_roll, aes(x = Group.1, y = x, color = Plot)) +
+                                                geom_point() +
+                                                geom_line() +
+                                                labs(x = "Moose Density", y = "Spruce Stand Volume (m3/ha)\nRolling Average")
+                                        
+                                
+                                #Pine
+
+                                        #Filter
+                                        filt_p <- filt[filt$fur_pct >= 75,]
+                                        
+                                        #Calculate mean birch vol for each moose density
+                                        filt_p$Ms_Dnst <- as.numeric(filt_p$Ms_Dnst)
+                                        filt_p <- aggregate(filt_p$vuprhaf, by = list(filt_p$Ms_Dnst, filt_p$Plot), FUN = mean)
+                                        
+                                        #Rolling means
+                                        
+                                                #Central
+                                                filt_p_c <- filt_p[filt_p$Group.2 == "Central",]
+                                                filt_p_c <- filt_p_c[,c(1,3)]
+                                                filt_p_c <- as.data.frame(rollapplyr(filt_p_c, 7, mean, partial = TRUE))
+                                                filt_p_c$Plot <- "Central"
+                                                
+                                                #Southeast
+                                                filt_p_se <- filt_p[filt_p$Group.2 == "Southeast",]
+                                                filt_p_se <- filt_p_se[,c(1,3)]
+                                                filt_p_se <- as.data.frame(rollapplyr(filt_p_se, 7, mean, partial = TRUE))
+                                                filt_p_se$Plot <- "Southeast"
+                                                
+                                                #South
+                                                filt_p_s <- filt_p[filt_p$Group.2 == "South",]
+                                                filt_p_s <- filt_p_s[,c(1,3)]
+                                                filt_p_s <- as.data.frame(rollapplyr(filt_p_s, 7, mean, partial = TRUE))
+                                                filt_p_s$Plot <- "South"
+                                                
+                                        #Bind together
+                                        filt_p_roll <- rbind(filt_p_c, filt_p_se, filt_p_s)
+                                        
+                                        #Plot rolling means for birch
+                                        ggplot(data = filt_p_roll, aes(x = Group.1, y = x, color = Plot)) +
+                                                geom_point() +
+                                                geom_line() +
+                                                labs(x = "Moose Density", y = "Pine Stand Volume (m3/ha)\nRolling Average")
+                                        
+                        
+                        #Remove filt df to save memory    
+                        rm(filt)
+                
+
+                                        
                         
         
                                         

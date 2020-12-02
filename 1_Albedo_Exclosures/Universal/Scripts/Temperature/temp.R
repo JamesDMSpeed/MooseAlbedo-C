@@ -10,8 +10,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-##Source functions file
-#source('1_Albedo_Exclosures/1_Data/data_functions.R')
+
 
 
 #INITIAL DATA IMPORT --------------------------------------------------
@@ -19,8 +18,8 @@ library(ggplot2)
         #Get cleaned site data from adjacent 'Sites' folder and add as DF
         site_data <- read.csv('1_Albedo_Exclosures/Data/SustHerb_Site_Data/cleaned_data/cleaned_data.csv', header = TRUE)
         
-        #Load in SeNorge temp data from 'SeNorge_temp_swe_data' folder (2001+ file)
-        senorge_temps <- read.csv('1_Albedo_Exclosures/Data/SeNorge/tro_hed_tel_utm33_2001_2018.csv', header = TRUE)
+        #Load in SeNorge temp data from 'SeNorge_temp_swe_data' folder (2001-2019)
+        senorge_temps <- read.csv('1_Albedo_Exclosures/Data/SeNorge/tro_hed_tel_utm33_2001_2019.csv', header = TRUE)
         
                 #Filter down to relevant columns
                 senorge_temps <- senorge_temps[,c(1,4,5,6,8)]
