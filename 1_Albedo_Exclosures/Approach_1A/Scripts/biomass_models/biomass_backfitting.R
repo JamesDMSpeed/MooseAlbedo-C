@@ -695,8 +695,8 @@
                               axis.text.y = element_text(size = 20, margin = margin(r=16)),
                               axis.title.x = element_text(size = 30, margin = margin(t=40, b = 40)),
                               axis.title.y = element_text(size = 30, margin = margin(r=40))) +
-                        annotate("text", x = 25, y = 122, size = 8, label = pe, parse=TRUE) +
-                        annotate("text", x = 25, y = 115, size = 8, label = pr, parse=TRUE)
+                        annotate("text", x = 25, y = 122, size = 8, label = re, parse=TRUE) +
+                        annotate("text", x = 25, y = 115, size = 8, label = rr, parse=TRUE)
                 
                 
                 dev.off()
