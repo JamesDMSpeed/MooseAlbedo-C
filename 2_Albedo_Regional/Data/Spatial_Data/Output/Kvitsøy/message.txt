@@ -1,2 +1,0 @@
-"" "x"
-"1" "No polygons meet criteria in this kommune"
