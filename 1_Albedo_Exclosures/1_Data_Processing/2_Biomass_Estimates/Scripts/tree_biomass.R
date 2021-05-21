@@ -15,7 +15,10 @@
         library(dplyr)
         library(tidyr)
         library(ggplot2)
-        library(wesanderson)
+
+        #Viridis package for color blindness palettes
+        library(viridis)
+
         
 ###END PACKAGES ----------------------------------------------------------------------------------------
 
@@ -31,6 +34,9 @@
 
         #Import CSV to dataframe
         data <- read.csv('1_Albedo_Exclosures/z_Data_Library/Tree_Data/Usable_Data/sustherb_tree_data.csv', header = TRUE)
+        
+        #Import site data
+        site_data <-read.csv('1_Albedo_Exclosures/z_Data_Library/SustHerb_Site_Data/Usable_Data/all_sites_data.csv', header = TRUE)
 
 #END INITIAL DATA IMPORT --------------------------------------------------------------------------------
         
@@ -64,49 +70,64 @@
         #Exclude trees > 6m (600cm)
         data <- data %>% filter(Height_cm <= 600 | is.na(Height_cm))
 
-        #Filter to "Used Sites" with available productivity data (n = 37)
-        
-                #Get 'cleaned' site data from adjacent 'Sites' folder
-                site_data <- read.csv('1_Albedo_Exclosures/z_Data_Library/SustHerb_Site_Data/Usable_Data/cleaned_data.csv', header = TRUE)
-                site_data$LocalityCode <- as.factor(site_data$LocalityCode)
+        #Standardize LocalityNames in "data" df 
                 
-                #Get vector of levels for sites that will be used (n = 74)
-                used_sites <- levels(site_data$LocalityCode)
+                #Didrik Holmsen
+                data$LocalityName[data$LocalityName == "didrik holmsen"] <- "didrik_holmsen"
                 
-                #Standardize LocalityNames in "data" df
+                #Fet 3
+                data$LocalityName[data$LocalityName == "fet 3"] <- "fet_3"
                 
-                        #Didrik Holmsen
-                        data$LocalityName[data$LocalityName == "didrik holmsen"] <- "didrik_holmsen"
-                        
-                        #Fet 3
-                        data$LocalityName[data$LocalityName == "fet 3"] <- "fet_3"
-                        
-                        #Fritsøe 1
-                        data$LocalityName[data$LocalityName == "fritsøe1"] <- "fritsoe1"
-                        
-                        #Fritsøe 2
-                        data$LocalityName[data$LocalityName == "fritsøe2"] <- "fritsoe2"
-                        
-                        #Halvard Pramhus
-                        data$LocalityName[data$LocalityName == "halvard pramhus"] <- "halvard_pramhus"
-                        
-                        #Singsaas
-                        data$LocalityName[data$LocalityName == "singsås"] <- "singsaas"
-                        
-                        #Stangeskovene Aurskog
-                        data$LocalityName[data$LocalityName == "stangeskovene aurskog"] <- "stangeskovene_aurskog"
-                        
-                        #Stangeskovene Eidskog
-                        data$LocalityName[data$LocalityName == "stangeskovene eidskog"] <- "stangeskovene_eidskog"
-                        
-                        #Stig Dahlen
-                        data$LocalityName[data$LocalityName == "stig dæhlen"] <- "stig_dahlen"
-                        
-                        #Truls Holm
-                        data$LocalityName[data$LocalityName == "truls holm"] <- "truls_holm"
-                        
-                #Filter to used sites
-                data <- data[data$LocalityCode %in% used_sites,] #Brings us to 37 LocalityNames - looks good
+                #Fritsøe 1
+                data$LocalityName[data$LocalityName == "fritsøe1"] <- "fritsoe1"
+                
+                #Fritsøe 2
+                data$LocalityName[data$LocalityName == "fritsøe2"] <- "fritsoe2"
+                
+                #Halvard Pramhus
+                data$LocalityName[data$LocalityName == "halvard pramhus"] <- "halvard_pramhus"
+                
+                #Singsaas
+                data$LocalityName[data$LocalityName == "singsås"] <- "singsaas"
+                
+                #Stangeskovene Aurskog
+                data$LocalityName[data$LocalityName == "stangeskovene aurskog"] <- "stangeskovene_aurskog"
+                
+                #Stangeskovene Eidskog
+                data$LocalityName[data$LocalityName == "stangeskovene eidskog"] <- "stangeskovene_eidskog"
+                data$LocalityName[data$LocalityName == "stangeskovene eidskog "] <- "stangeskovene_eidskog"
+                
+                #Stig Dahlen
+                data$LocalityName[data$LocalityName == "stig dæhlen"] <- "stig_dahlen"
+                
+                #Truls Holm
+                data$LocalityName[data$LocalityName == "truls holm"] <- "truls_holm"
+                
+                #Kongsvinger 1
+                data$LocalityName[data$LocalityName == "kongsvinger 1"] <- "kongsvinger_1"
+                
+                #Kongsvinger 2
+                data$LocalityName[data$LocalityName == "kongsvinger 2"] <- "kongsvinger_2"
+
+                #Maarud 1
+                data$LocalityName[data$LocalityName == "maarud 1"] <- "maarud_1"
+
+                #Maarud 2
+                data$LocalityName[data$LocalityName == "maarud 2"] <- "maarud_2"
+
+                #Maarud 3
+                data$LocalityName[data$LocalityName == "maarud 3"] <- "maarud_3"
+
+                #Nes 1
+                data$LocalityName[data$LocalityName == "nes 1"] <- "nes_1"
+
+                #Nes 2
+                data$LocalityName[data$LocalityName == "nes 2"] <- "nes_2"
+
+                #Sørum 1
+                data$LocalityName[data$LocalityName == "sørum 1"] <- "sorum_1"
+
+              
                 
         #Add year column
                 
@@ -127,6 +148,23 @@
                 data$Year <- dates
                 
                         #FIXED YEAR ISSUE MENTIONED ABOVE - DATES SHOULD NOW BE CORRECT
+                
+                
+        ##FILTER OUT 3 TRØNDELAG SITES THAT WERE ACCIDENTALLY THINNED IN 2015 (sites #9, 10, 13)----
+                
+                #SITE 9: MALVIK (MAB + MAUB)
+
+                #SITE 10: SELBU_FLUB (FLB + FLUB)
+                
+                #SITE 13: HI_TYDAL (HIB + HIUB)
+                bad_sites <- c("MAB", "MAUB", "FLB", "FLUB", "HIB", "HIUB")
+                data <- data[!data$LocalityCode %in% bad_sites,] #Brings us to 44 LocalityNames (looks good)
+                
+        ##TOTAL:
+        
+                #Hedmark: 16 sites
+                #Telemark: 16 sites
+                #Trøndelag: 15 sites
                 
 
 #END DATA FILTERING -------------------------------------------------------------------------------------
@@ -261,10 +299,6 @@
                 
                 
                 
-        #DECISION MADE TO REMOVE TWO SITES FROM HEDMARK IN 2nd year of exclosure
-        data <- data[!(data$Region == "Hedmark" & data$Years_Since_Exclosure == 2),]
-                
-
         
 #END BIOMASS CALCULATION USING EXISTING MODELS -----------------------------------------------------------
                 
@@ -296,6 +330,7 @@
         #Load data if starting here
         data <- read.csv("1_Albedo_Exclosures/1_Data_Processing/2_Biomass_Estimates/Output/tree_biomass.csv", header = T)
         
+       
         #TOTAL SUBPLOT BIOMASS BY TREATMENT --------------
                 
                 #Sum total biomass (g) for each plot
@@ -368,12 +403,12 @@
 
                         #Plot
                         ggplot(data = avg_biomass_df, aes(x = Years_Since_Exclosure, y = Mean_subplot_biomass_kg_m2, color = TNN, group = TNN)) +
-                                geom_errorbar(aes(ymin = (Mean_subplot_biomass_kg_m2 - SE), ymax = (Mean_subplot_biomass_kg_m2 + SE)), colour="black", width=0.5, position = position_dodge(0.2)) +
+                                geom_errorbar(aes(ymin = (Mean_subplot_biomass_kg_m2 - SE), ymax = (Mean_subplot_biomass_kg_m2 + SE)), colour="#666666", width=0.5, position = position_dodge(0.2)) +
                                 geom_point(aes(shape = TNN), size = 1.75, position = position_dodge(0.2)) +
                                 geom_line(aes(linetype = TNN)) +
-                                labs(x = "Years Since Exclosure", y = "Aboveground Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
+                                labs(x = "Years Since Exclosure", y = " Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
                                 scale_x_continuous(breaks = c(1,3,5,7,9,11)) +
-                                scale_color_manual(values = pal) +
+                                scale_color_manual(values = viridis(n = 2, alpha = 1, begin = 0, end = 0.6)) +
                                 theme_bw() +
                                 theme(
                                         axis.title.x = element_text(size = 12, margin = margin(t=10)),
@@ -456,9 +491,9 @@
                                         geom_point(aes(shape = TNN), size = 1.75, position = position_dodge(0.3)) +
                                         geom_line(aes(linetype = TNN)) +
                                         facet_wrap(~simple_taxa, nrow = 2) +
-                                        labs(x = "Years Since Exclosure", y = "Aboveground Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
+                                        labs(x = "Years Since Exclosure", y = "Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
                                         scale_x_continuous(breaks = c(2,4,6,8,10)) +
-                                        scale_color_manual(values = pal) +
+                                        scale_color_manual(values = viridis(n = 2, alpha = 1, begin = 0, end = 0.6)) +
                                         theme_bw() +
                                         theme(
                                                 axis.title.x = element_text(size = 12, margin = margin(t=10)),
@@ -549,11 +584,11 @@
                         ggplot(data = spec_simp_bio, aes(x = Years_Since_Exclosure, y = Mean_subplot_biomass_kg_m2, color = TNN, group = TNN)) +
                                 geom_errorbar(aes(ymin = (Mean_subplot_biomass_kg_m2 - SE), ymax = (Mean_subplot_biomass_kg_m2 + SE)), colour="black", width=0.5, position = position_dodge(0.3)) +
                                 geom_point(aes(shape = TNN), size = 1.75, position = position_dodge(0.3)) +
-                                geom_line(aes(linetype = TNN)) +
+                                geom_line(aes(linetype = TNN), position = position_dodge(0.3)) +
                                 facet_wrap(~Group, nrow = 3) +
-                                labs(x = "Years Since Exclosure", y = "Aboveground Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
+                                labs(x = "Years Since Exclosure", y = "Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
                                 scale_x_continuous(breaks = c(1,3,5,7,9,11)) +
-                                scale_color_manual(values = pal) +
+                                scale_color_manual(values = viridis(n = 2, alpha = 1, begin = 0, end = 0.6)) +
                                 theme_bw() +
                                 theme(
                                         axis.title.x = element_text(size = 12, margin = margin(t=10)),
@@ -606,19 +641,44 @@
 
                                         
                                 #Plot
+                                
+                                #Label for Hedmark facet
+                                ann_text_1 <- data.frame(Years_Since_Exclosure = 8.6, Mean_subplot_biomass_kg_m2 = 1.33, lab = "||",
+                                                       Region = "Hedmark", TNN = "Browsed")
+                                ann_text_2 <- data.frame(Years_Since_Exclosure = 8.6, Mean_subplot_biomass_kg_m2 = 0.88, lab = "||",
+                                                         Region = "Hedmark", TNN = "Browsed")
+                                
                                 ggplot(data = total_reg, aes(x = Years_Since_Exclosure, y = Mean_subplot_biomass_kg_m2, color = TNN, group = TNN)) +
                                         geom_errorbar(aes(ymin = (Mean_subplot_biomass_kg_m2 - SE), ymax = (Mean_subplot_biomass_kg_m2 + SE)), colour="black", width=0.5, position = position_dodge(0.3)) +
                                         geom_point(aes(shape = TNN), size = 1.75, position = position_dodge(0.3)) +
-                                        geom_line(aes(linetype = TNN)) +
+                                        geom_line(aes(linetype = TNN), position = position_dodge(0.3)) +
                                         facet_wrap(~Region, nrow = 3) +
-                                        labs(x = "Years Since Exclosure", y = "Aboveground Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
+                                        labs(x = "Years Since Exclosure", y = "Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
                                         scale_x_continuous(breaks = c(1,3,5,7,9,11)) +
-                                        scale_color_manual(values = pal) +
+                                        scale_color_manual(values = viridis(n = 2, alpha = 1, begin = 0, end = 0.6)) +
                                         theme_bw() +
                                         theme(
                                                 axis.title.x = element_text(size = 12, margin = margin(t=10)),
                                                 axis.title.y = element_text(size = 12, margin = margin(r=10))
-                                        )
+                                        ) +
+                                        geom_label(data = ann_text_1,
+                                                  label = "||",
+                                                  angle = 0.5,
+                                                  color = "#22A884FF",
+                                                  size = 3,
+                                                  label.padding = unit(0, "lines"),
+                                                  label.r = unit(0, "lines"),
+                                                  label.size = NA) +
+                                        geom_label(data = ann_text_2,
+                                                   label = "||",
+                                                   angle = 0.5,
+                                                   color = "#440154FF",
+                                                   size = 3,
+                                                   label.padding = unit(-0.05, "lines"),
+                                                   label.r = unit(0, "lines"),
+                                                   label.size = NA)
+                                        
+                                        
                         
                         
                         
@@ -669,11 +729,11 @@
                         ggplot(data = spec_simp_region, aes(x = Years_Since_Exclosure, y = Mean_subplot_biomass_kg_m2, color = TNN, group = TNN)) +
                                 geom_errorbar(aes(ymin = (Mean_subplot_biomass_kg_m2 - SE), ymax = (Mean_subplot_biomass_kg_m2 + SE)), colour="black", width=0.5, position = position_dodge(0.3)) +
                                 geom_point(aes(shape = TNN), size = 1.75, position = position_dodge(0.3)) +
-                                geom_line(aes(linetype = TNN)) +
+                                geom_line(aes(linetype = TNN), position = position_dodge(0.3)) +
                                 facet_grid(Region~Group) +
-                                labs(x = "Years Since Exclosure", y = "Aboveground Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
+                                labs(x = "Years Since Exclosure", y = "Biomass "~(kg/m^2), color = "Treatment:", shape = "Treatment:", linetype = "Treatment:") +
                                 scale_x_continuous(breaks = c(1,3,5,7,9,11)) +
-                                scale_color_manual(values = pal) +
+                                scale_color_manual(values = viridis(n = 2, alpha = 1, begin = 0, end = 0.6)) +
                                 theme_bw() +
                                 theme(
                                         axis.title.x = element_text(size = 12, margin = margin(t=10)),

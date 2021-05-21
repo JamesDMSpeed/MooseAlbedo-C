@@ -30,24 +30,25 @@
         #NOTE: 'FID' variable is unique ID for each LocalityCode
         senorge_locs <- read.csv('1_Albedo_Exclosures/z_Data_Library/SeNorge_Climate_Data/Original_Data/tro_hed_tel_utm33_localities.csv', header = T)
         
+                #48 LocalityNames (but only tree data for 47 sites) - need to filter to 47 used sites
+        
         #Load site data for SustHerb sites used in project analysis
-        site_data <- read.csv('1_Albedo_Exclosures/z_Data_Library/SustHerb_Site_Data/Usable_Data/cleaned_data.csv', header = T)
+        site_data <- read.csv('1_Albedo_Exclosures/z_Data_Library/SustHerb_Site_Data/Usable_Data/all_sites_data.csv', header = T)
         
-        #Load tree observations for SustHerb sites 
+
         
-        
-#END LOAD DATA -----------------------------
-        
+#END LOAD DATA -----------------------------------------------------------------------------------------------------
         
         
-#////////////////////////////////////////////
+        
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-#FORMAT/FILTER DATA -----------------------------
+#FORMAT/FILTER DATA -----------------------------------------------------------------------------------------------
 
         #Filter SeNorge data to sites that are used in rest of analysis (as they have full data from Snøan's project)
-        #(Note: These are the 74 sites/37 locality names in the 'site_data' CSV)
+        #(Note: These are the 94 sites/47 locality names in the 'site_data' CSV)
         
                 #Use 'LocalityCode' variable to filter out FIDs that correspond to unused SustHerb sites
                         
@@ -59,7 +60,7 @@
                         senorge_locs$LocalityCode <- as.factor(senorge_locs$LocalityCode)
                         senorge_locs <- senorge_locs[senorge_locs$LocalityCode %in% used_sites,]
                         
-                                #Filters to 37 localities, which matches up with used sites (looks good)
+                                #Filters to 47 localities, which matches up with used sites (looks good)
                                 #Now have only 'used sites' in senorge_locs df
                         
                 #Filter SeNorge data by FIDs corresponding to 'used sites' (i.e. those in senorge_locs df)
@@ -172,7 +173,7 @@
                         
                         #Get LocalityCode of 'browsed' site in LocalityName i
                         #(site FID is associated w/ browsed site)
-                        br <- as.character(site_data$LocalityCode[site_data$LocalityName == loc & site_data$Treatment == "open"])
+                        br <- as.character(site_data$LocalityCode[site_data$LocalityName == loc & site_data$Treatment == "B"])
                         
                         
                         #Loop through months 1-12 and calculate averages for each LocalityName
@@ -238,6 +239,10 @@
                 
         
         #GENERATE PLOTS (Colored by region) -------------
+                
+                #Start here if loading data -----------
+                final_data <- read.csv(final_data, '1_Albedo_Exclosures/z_Data_Library/SeNorge_Climate_Data/Averages/average_climate_data_by_site.csv', header = T)
+                
         
                 #Set strip text labels
                 months <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -414,22 +419,31 @@
                 
         #GENERATE PLOTS --------------
                 
+                #START HERE IF LOADING -----
+                reg_means <- read.csv('1_Albedo_Exclosures/z_Data_Library/SeNorge_Climate_Data/Averages/average_climate_data_by_region.csv', header = T)
+                
+                #Define discrete color-blind-friendly palette
+                pal <- c("#009E73", "#56B4e9", "#e69f00")
+                
                 
                 #TEMPERATURE
                 g1 <- ggplot(reg_means, aes(x = Month, y = Temperature_K, color = Region, fill = Region)) +
                         geom_ribbon(aes(ymin = (Temperature_K - Temperature_SE), ymax = (Temperature_K + Temperature_SE)), alpha = 0.5, lwd = 0.1) +
                         geom_line() +
-                        geom_point(size = 0.5) +
+                        geom_point(size = 1) +
                         labs(x = "Month", y = "Temperature (K)") + 
                         theme_bw() +
                         scale_x_continuous(limits = c(1, 12), breaks = c(1:12)) +
-                        scale_color_manual(values = pal) +
-                        scale_fill_manual(values = pal) +
+                        scale_color_manual(values = c(pal[1], pal[2], pal[3])) +
+                        scale_fill_manual(values = c(pal[1], pal[2], pal[3])) +
+                        ggtitle("(a)") +
                         theme(
                                 legend.position = "none",
                                 axis.title.x = element_text(size = 12, margin = margin(t=10)),
                                 axis.title.y = element_text(size = 12, margin = margin(r=10)),
-                                panel.grid.minor = element_blank()
+                                panel.grid.minor = element_blank(),
+                                panel.grid.major.x = element_blank(),
+                                plot.title = element_text(face = "bold")
                         ) +
                         guides(fill = F) +
                         guides(color=guide_legend(override.aes=list(fill=pal[1:3])))
@@ -440,17 +454,20 @@
                 g2 <- ggplot(reg_means, aes(x = Month, y = SWE_mm, color = Region, fill = Region)) +
                         geom_ribbon(aes(ymin = (SWE_mm - SWE_SE), ymax = (SWE_mm + SWE_SE)), alpha = 0.5, lwd = 0.1) +
                         geom_line() +
-                        geom_point(size = 0.5) +
+                        geom_point(size = 1) +
                         labs(x = "Month", y = "SWE (mm)") + 
                         theme_bw() +
+                        ggtitle("(b)") +
                         scale_x_continuous(limits = c(1, 12), breaks = c(1:12)) +
-                        scale_color_manual(values = pal) +
-                        scale_fill_manual(values = pal) +
+                        scale_color_manual(values = c(pal[1], pal[2], pal[3])) +
+                        scale_fill_manual(values = c(pal[1], pal[2], pal[3])) +
                         theme(
                                 legend.position = "none",
                                 axis.title.x = element_text(size = 12, margin = margin(t=10)),
                                 axis.title.y = element_text(size = 12, margin = margin(r=10)),
-                                panel.grid.minor = element_blank()
+                                panel.grid.minor = element_blank(),
+                                panel.grid.major.x = element_blank(),
+                                plot.title = element_text(face = "bold")
                         ) +
                         guides(fill = F) +
                         guides(color=guide_legend(override.aes=list(fill=pal[1:3])))
@@ -469,31 +486,37 @@
                         
                         #Sample plot for universal legend
                         gl <- ggplot(reg_means, aes(x = Month, y = SWE_mm, color = Region)) +
-                                #geom_ribbon(aes(ymin = (Temperature_K - Temperature_SE), ymax = (Temperature_K + Temperature_SE)), alpha = 0.5, lwd = 0.1) +
+                                geom_ribbon(aes(ymin = (Temperature_K - Temperature_SE), ymax = (Temperature_K + Temperature_SE)), alpha = 0.5, lwd = 0.1) +
                                 geom_line() +
-                                geom_point(size = 0.5) +
+                                geom_point(size = 1.1) +
                                 labs(x = "Month", y = "SWE (mm)") + 
                                 theme_bw() +
                                 scale_x_continuous(limits = c(1, 12), breaks = c(1:12)) +
-                                scale_color_manual(values = pal) +
-                                scale_fill_manual(values = pal) +
+                                scale_color_manual(values = c(pal[1], pal[2], pal[3])) +
+                                scale_fill_manual(values = c(pal[1], pal[2], pal[3])) +
                                 theme(
                                         legend.position = "bottom",
                                         axis.title.x = element_text(size = 12, margin = margin(t=10)),
                                         axis.title.y = element_text(size = 12, margin = margin(r=10)),
-                                        panel.grid.minor = element_blank()
+                                        panel.grid.minor = element_blank(),
+                                        legend.background = element_rect(fill="#fafafa",
+                                                                         size=0.1, linetype="solid", 
+                                                                         colour ="#666666")
                                 ) +
-                                guides(fill = F) +
-                                guides(color=guide_legend(override.aes=list(fill=pal[1:3])))
+                                guides(color=guide_legend(override.aes=list(fill=pal[1:3]))) +
+                                guides(fill=guide_legend(override.aes=list(fill=pal[1:3])))
+                        
                         gl
                         
                         #Extract legend
                         shared_legend <- extract_legend(gl)
                         
                         top_row <- plot_grid(g1, NULL, g2, ncol = 3, rel_widths = c(0.475, 0.05, 0.475))
-                        complex_plot <- plot_grid(top_row, shared_legend, ncol = 1, rel_heights = c(0.65, 0.1))
+                        complex_plot <- plot_grid(top_row, NULL, shared_legend, ncol = 1, rel_heights = c(0.75, 0.04, 0.1))
                         complex_plot
-                
+                        
+                        complex_stacked <- plot_grid(g1, NULL, g2, NULL, shared_legend, ncol = 1, rel_heights = c(0.45, 0.025, 0.45, 0.025, 0.05))
+                        complex_stacked
 
 #END COMPUTE AVERAGE T & SWE **BY REGION** -----------------------------
 
