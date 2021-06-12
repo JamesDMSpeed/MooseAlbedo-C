@@ -165,6 +165,23 @@
                 #Y-axis label
                 lab <- expression(paste("CO"[2], "-equivalent  (", "kg/m"^2, ")"))
                 
+                #REPLACE REGION LABELS WITH COUNTY LABELS -----
+                
+                        #Avg C
+                        avg_c$Counties[avg_c$Region == "Trøndelag"] <- "Trøndelag"
+                        avg_c$Counties[avg_c$Region == "Hedmark"] <- "Innlandet and Viken"
+                        avg_c$Counties[avg_c$Region == "Telemark"] <- "Vestfold and Telemark"
+                        
+                        #Avg A
+                        avg_a$Counties[avg_a$Region == "Trøndelag"] <- "Trøndelag"
+                        avg_a$Counties[avg_a$Region == "Hedmark"] <- "Innlandet and Viken"
+                        avg_a$Counties[avg_a$Region == "Telemark"] <- "Vestfold and Telemark"
+                        
+                        #Net
+                        avg_net$Counties[avg_net$Region == "Trøndelag"] <- "Trøndelag"
+                        avg_net$Counties[avg_net$Region == "Hedmark"] <- "Innlandet and Viken"
+                        avg_net$Counties[avg_net$Region == "Telemark"] <- "Vestfold and Telemark"
+                
                 #Plot
                 ggplot() +
                         geom_hline(yintercept = 0, linetype = 2, color = "#c6c6c6") +
@@ -174,7 +191,7 @@
                         geom_line(data = avg_a, aes(x = Years_Since_Exclosure, Avg_C_Eq_Delta_A, color = paste("CO2-eq. ", "\U0394", "\U03B1", sep = "")), lwd = 0.65) +
                         geom_ribbon(data = avg_net, aes(x = Years_Since_Exclosure, y = Avg_C_Eq_Net, ymin = (Avg_C_Eq_Net - SE), ymax = (Avg_C_Eq_Net + SE), fill = "Net CO2-eq."), position = position_dodge(0.2), alpha = 0.5, lwd = 0) +
                         geom_line(data = avg_net, aes(x = Years_Since_Exclosure, y = Avg_C_Eq_Net, color = "Net CO2-eq."), lwd = 0.65) +
-                        facet_wrap(~Region, ncol = 2) +
+                        facet_wrap(~ Counties, ncol = 2) +
                         scale_x_continuous(limits = c(1,11), breaks = c(1,3,5,7,9,11)) +
                         scale_color_manual(values = c(pal[1], pal[2], pal[3])) +
                         scale_fill_manual(values = c(pal[1], pal[2], pal[3])) +
@@ -196,9 +213,50 @@
                                 #EXPORT @ 450x400px
                 
                 
-                
+        #SITE PAIR COMPARISON (w/ Trøndelag) ----
         
+                #Global look at net CO2-eq. trends
+                ggplot(data = data[data$Region == "Trøndelag",], aes(x = Years_Since_Exclosure, y = Net_C_Eq, color = LocalityName)) +
+                        geom_line()
                 
+                        #Bratsberg and NSB Verdal have differing trends
+                
+                #Faceted plot ------
+                
+                        #Define df ---
+                        d1 <- data[data$LocalityName == "bratsberg" | data$LocalityName == "nsb_verdal",]
+                
+                        #Site labels (for use in paper) ---
+                        d1$Site_Label <- as.character('')
+                        d1$Site_Label[d1$LocalityName == "bratsberg"] <- "Site 8"
+                        d1$Site_Label[d1$LocalityName == "nsb_verdal"] <- "Site 5"
+                        
+                        #Generate plot
+                        ggplot() +
+                                geom_hline(yintercept = 0, linetype = 2, color = "#c6c6c6") +
+                                geom_line(data = d1, aes(x = Years_Since_Exclosure, C_Eq_Delta_C, color = paste("CO2-eq. ", "\U0394", "C", sep = "")), lwd = 1) +
+                                geom_line(data = d1, aes(x = Years_Since_Exclosure, C_Eq_Delta_A, color = paste("CO2-eq. ", "\U0394", "\U03B1", sep = "")), lwd = 1) +
+                                geom_line(data = d1, aes(x = Years_Since_Exclosure, y = Net_C_Eq, color = "Net CO2-eq."), lwd = 1) +
+                                scale_x_continuous(limits = c(1,11), breaks = c(1,3,5,7,9,11)) +
+                                scale_color_manual(values = c(pal[1], pal[2], pal[3])) +
+                                scale_fill_manual(values = c(pal[1], pal[2], pal[3])) +
+                                facet_wrap(~Site_Label) +
+                                labs(x = "Years Since Exclosure", y = lab, fill = "", color = "") +
+                                theme_bw() +
+                                theme(
+                                        panel.grid.minor = element_blank(),
+                                        panel.grid.major.x = element_blank(),
+                                        axis.title.x = element_text(margin = margin(t = 10)),
+                                        axis.title.y = element_text(margin = margin(r = 10)),
+                                        legend.position = "bottom",
+                                        legend.background = element_rect(fill="#fafafa",
+                                                                         size=0.1, linetype="solid", 
+                                                                         colour ="#666666")
+                                )
+                        
+                                #Export @ 500x300px
+
+                        
 
         
 #CALCULATE AVERAGES + SE BY REGION & PLOT ----------------------------------------------------------------------------------------------
